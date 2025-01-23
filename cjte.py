@@ -14,9 +14,12 @@ def calculate_cjte(xi, y, xc, model_order_range=(4, 16)):
     Returns:
     - cjte: float, the computed CJTE value.
     """
-    def normalize(signal):
+    def normalize(signal, epsilon=1e-8):
         """Normalize the signal by subtracting mean and dividing by standard deviation."""
-        return (signal - np.mean(signal)) / np.std(signal)
+        std = np.std(signal)
+        if std < epsilon:
+            return signal - np.mean(signal)  # If std is too small, just subtract the mean
+        return (signal - np.mean(signal)) / std
 
     def compute_prediction_error(y, predictors):
         """Compute prediction error variance using linear regression."""
