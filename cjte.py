@@ -50,7 +50,7 @@ def calculate_cjte(xi, y, xc, model_order_range=(4, 16)):
         return best_order
 
     # Step 1: Normalize the signals
-    xi, y, xc = map(normalize, [xi, y])
+    xi, y = map(normalize, [xi, y])
 
     # Step 2: Form predictors for full and restricted universes
     predictors_full = np.column_stack([y[:-1], xi[:-1], xc[:-1]])
