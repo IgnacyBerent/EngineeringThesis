@@ -1,5 +1,5 @@
 /data
-/results_csv
-/results_pdf
+*.csv
+*.pdf
 .venv
 __pycache__
