@@ -1,5 +1,6 @@
 /data
 *.csv
 *.pdf
+*.png
 .venv
 __pycache__
