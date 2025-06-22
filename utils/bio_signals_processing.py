@@ -1,9 +1,5 @@
-import pandas as pd
 import numpy as np
 import neurokit2 as nk
-import matplotlib.pyplot as plt
-import scipy.signal as sp_sig
-import re
 
 
 def find_peaks(
@@ -15,14 +11,14 @@ def find_peaks(
     """
     Find peaks in a signal.
 
-    args:
+    Parameters:
         signal (np.array): signal data.
         sampling_rate (int): Sampling rate of the signal in Hz.
         mindelay (float): Minimum delay between peaks in seconds.
         mode (str): "up" for upward peaks, "down" for downward peaks, "both" for both.
-    returns:
+    Returns:
         np.array: Indices of the detected peaks in the signal.
-    exceptions:
+    Exceptions:
         ValueError: If mode is not one of "up", "down", or "both".
     """
 
@@ -61,15 +57,15 @@ def find_peaks(
         return peaks
 
 
-def get_hp(peaks: np.array, sampling_rate: int = 200):
+def get_hp(peaks: np.array, sampling_rate: int = 200) -> np.array:
     """
     Calculate heart period (HP) from peak indices of abp signal.
 
-        args:
-            peaks (np.array): Indices of the detected upward peaks in the signal.
-            sampling_rate (int): Sampling rate of the signal in Hz.
-        returns:
-            np.array: Heart period (HP) in seconds.
+    Parameters:
+        peaks (np.array): Indices of the detected upward peaks in the signal.
+        sampling_rate (int): Sampling rate of the signal in Hz.
+    Returns:
+        np.array: Heart period (HP) in seconds.
     """
     rr = np.diff(peaks) / sampling_rate
     hp = 1 / rr
@@ -83,11 +79,11 @@ def get_sap(signal: np.array, peaks: np.array) -> np.array:
         It is assumed that the peaks are upward peaks.
         SAP(i) equals the value of the signal at the peak index.
 
-        args:
-            signal (np.array): signal data.
-            peaks (np.array): Indices of the detected upward peaks in the signal.
-        returns:
-            np.array: Systolic Amplitude Peaks (SAP) in the signal.
+    Parameters:
+        signal (np.array): signal data.
+        peaks (np.array): Indices of the detected upward peaks in the signal.
+    Returns:
+        np.array: Systolic Amplitude Peaks (SAP) in the signal.
     """
     sap = np.array([signal[peak] for peak in peaks])[
         1:
@@ -102,11 +98,11 @@ def get_map(signal: np.array, peaks: np.array) -> np.array:
         The first peak is assumed to be a downward peak.
         The MAP is calculated as (2 * DP + SP) / 3, where DP is the value at the downward peak and SP is the value at the upward peak.
 
-        args:
-            signal (np.array): signal data.
-            peaks (np.array): Indices of the detected upward and downward peaks in the signal.
-        returns:
-            np.array: Mean Arterial Pressure (MAP) calculated from the peaks in the signal.
+    Parameters:
+        signal (np.array): signal data.
+        peaks (np.array): Indices of the detected upward and downward peaks in the signal.
+    Returns:
+        np.array: Mean Arterial Pressure (MAP) calculated from the peaks in the signal.
     """
     first_peak = 0 if peaks[0] < peaks[1] else 1
 
