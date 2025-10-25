@@ -1,0 +1,338 @@
+\documentclass[12pt,a4paper,twoside,openany]{book}
+\let\cleardoublepage\clearpage
+
+\usepackage{pre}
+
+
+%%% TITLE PAGE %%%
+
+\title
+    {
+    \vspace{-2.5cm}
+    {\includegraphics[width=.215\textwidth]{figs/PWrLogo.eps}} 
+    \par \vspace{1ex} \large{WROCŁAW UNIVERSITY OF SCIENCE AND TECHNOLOGY} 
+	\par \vspace{1ex}
+	{\scshape\large Faculty of Fundamental Problems of Technology\par}
+    \vspace{0.5cm}
+    {\scshape\small Biomedical Engineering, Medical Informatics\par}
+	\vspace{2cm}
+    {\large \underline{Engineering thesis}\par}  % Preserve either Bachelor or Master, not both.
+    \vspace{2cm}
+	{\Large{\bf A comparative analysis of algorithms for transfer entropy and conditional joint transfer entropy with consideration of a modulating variable}}
+    }
+    
+\author
+    {
+    \vspace{1cm}
+    Author: Ignacy Berent\\
+    Supervisor: Agnieszka Uryga, PhD Eng
+    }
+\date{\vfill Wrocław~2025}
+
+%%% BEGINNING OF THE THESIS %%%
+
+\begin{document}
+
+\frontmatter
+\maketitle
+
+\chapter*{Abstract}\label{ch:abstract}
+
+{
+  \hypersetup{linkcolor=black}
+  \tableofcontents
+}
+
+\renewcommand*\listfigurename{List of figures} 
+\hypersetup{linkcolor=black}
+\listoffigures
+
+\renewcommand*\listtablename{List of tables} 
+\hypersetup{linkcolor=black}
+\listoftables
+
+\chapter*{List of selected abbreviations}\label{ch:abbreviations}
+\addcontentsline{toc}{chapter}{List of selected abbreviations}
+\begin{table}[H]
+\begin{tabular}{ll}
+\textbf{ANS}  & autonomic nervous system      \\
+\textbf{CA}  & cerebral autoregulation      \\
+\textbf{EKG}  & electrocardiography      \\
+\textbf{ABP}  & arterial blood pressure      \\
+\textbf{HR}   & heart rate                 \\
+\textbf{HP}   & heart peroid                 \\
+\textbf{SAP}  & systoic arterial pressure    \\
+\textbf{MAP}  & medium arterial pressure     \\
+\textbf{FV}   & flow velocity                \\
+\textbf{CBFV} & cerebral blood flow velocity \\
+\textbf{MCBFV} & medium cerebral blood flow velocity \\
+\textbf{ETCO2} & end-tidal carbon dioxide \\
+\textbf{TE} & transfer entropy \\
+\textbf{CJTE} & conditional joint transfer entropy \\
+
+
+\end{tabular}
+\end{table}
+
+\mainmatter
+
+\chapter{Introduction}\label{ch:intro}
+
+\section{Aim}\label{sec:aim}
+The aim of this work is to conduct a comparative analysis of algorithms for transfer entropy (TE) and conditional joint transfer entropy (CJTE), with consideration of a modulating variable. The analysis will assess the impact of analytical parameters used in entropy estimation on the results of TE and CJTE in both simulated and physiological signals.
+
+
+\section{Scope}\label{sec:scope}
+\begin{enumerate}
+    \item Literature review and analysis of algorithms (methods) within the transfer entropy group, focusing on key aspects such as signal duration, calculation window, sampling rate, type of physiological signals, study protocol, and analytical parameters
+    \item Implementation of selected algorithms for transfer entropy (TE) and conditional joint transfer entropy (CJTE)
+    \item Analysis of the impact of analytical parameters on TE and CJTE results in simulated signals
+    \item Analysis of the impact of analytical parameters on TE and CJTE results in physiological signals
+    \item Statistical analysis of the results to evaluate the usefulness of TE and CJTE algorithms for assessing relationship between signals and parameters related to cerebral autoregulation and the autonomic nervous system, considering the modulating variable
+\end{enumerate}
+
+\section{Motivation}\label{sec:motiv}
+\subsection{Nonlinear metrics in signal analysis}
+The human body is a source of many different types of signals caused by different physiological mechanisms that exist to maintain homeostasis.
+These signals often capture different patterns on different time scales, creating complex, nonlinear interactions \cite{Bogli2024}.
+A good example of such a system is, analyzed later in this study, the baroreflex. 
+
+\subsection{Entropy approach applications}
+
+\subsection{Literature overview}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Theoretical Foundations}\label{ch:theorfund}
+
+\section{Information theory}
+Mathematical treatment of the communication proposed by \cite{Shannon1948} where the definition of entropy was presented. Based on so called \textit{Shannon entropy} all the entropy--based solutions are built on.
+
+\subsection{Shannon entropy}
+The first and the simplest form of entropy definition.
+The Shannon entropy of discrete random variable \textit{X} with a probability mass fucntion $p$ is defined as:
+\begin{equation}\label{eq:entropy}
+    H(X) = -\sum_{x\in X} p(x) \cdot log(p(x))
+\end{equation}
+Used \textit{log} notation denotes natural logarithm, and the outcome can be understood as ammount of information in nats. 
+In case of logarithm of base 2 that would mean that the information is measured in bits and would be at the same time the data compression limit \cite{Cover2006}.
+
+As an example of how it works, we can take tossing a fair coin 3 times. In Table \ref{tab:cointossing} we observe that tossing a coin 3 times can result in one of the 8 possible states, each of equal probability equal to $\frac{1}{16}$. After putting this into formula \ref{eq:entropy} we are getting:
+\begin{equation}
+    H(X) = -\sum_{i=1}^{8} p(i) \cdot log(p(i)) = -\sum_{i=1}^{8} \frac{1}{8} \cdot log(\frac{1}{8}) \approx 2.08\text{ nats}
+\end{equation}
+or for base 2 logarithm:
+\begin{equation}
+    H(X) = -\sum_{i=1}^{8} p(i) \cdot log_2(p(i)) = 3\text{ bits}
+\end{equation}
+
+Oryginally natural logarithms were used and so is done in this work. 
+
+It is worth mentioning that for many cases in biological signals imporoved versions of Shannon entropy are commonly used, such as fuzzy, sample entropy \cite{Castiglioni2023}, or multiscale entropy which applies entropy to different time scales \cite{Costa2003}.
+\begin{table}[H]
+\centering
+\caption{All possible combinations of tossing a fair coin 3 times, where H and T denotes respectively heads and tails}
+\label{tab:cointossing}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{No.} & \textbf{Coin Combination} & \textbf{Probability p(x)} \\
+\hline
+1 & HHH & $\frac{1}{8}$ \\
+2 & HHT & $\frac{1}{8}$ \\
+3 & HTH & $\frac{1}{8}$ \\
+4 & HTT & $\frac{1}{8}$ \\
+5 & THH & $\frac{1}{8}$ \\
+6 & THT & $\frac{1}{8}$ \\
+7 & TTH & $\frac{1}{8}$ \\
+8 & TTT & $\frac{1}{8}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Joint entropy}
+The slight modyfication of Shannon Entropy is Joint Entropy which is uncertainty included in the random vector $(X,Y)$ defined as:
+\begin{equation}\label{eq:joint_entropy}
+    H(X,Y) = -\sum_{x\in X}\sum_{y\in Y} p(x,y) \cdot log(p(x,y))
+\end{equation}
+As and example we can provide extension of previous experiment by tossing a coin 2 times with addition of rolling a dice once. The propability is in Table \ref{tab:cointossing_dice_2coins}. After applying formula \ref{eq:joint_entropy} we are getting:
+\begin{equation}
+    H(X,Y) = -\sum_{i=1}^{4}\sum_{j=1}^{6} p(i,j) \cdot log(p(i,j)) = -\sum_{i=1}^{4}\sum_{j=1}^{6} p(\frac{1}{24}) \cdot log(p(\frac{1}{24})) \approx 3.18\text{ nats}
+\end{equation}
+\begin{table}[H]
+\centering
+\caption{All possible combinations of tossing a fair coin 2 times and throwing a fair 6-sided die once, where H and T denote heads and tails}
+\label{tab:cointossing_dice_2coins}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{No.} & \textbf{Coin Combination} & \textbf{Die Result} & \textbf{Probability $p(x,y)$} \\
+\hline
+1  & HH & 1 & $\frac{1}{24}$ \\
+2  & HH & 2 & $\frac{1}{24}$ \\
+3  & HH & 3 & $\frac{1}{24}$ \\
+4  & HH & 4 & $\frac{1}{24}$ \\
+5  & HH & 5 & $\frac{1}{24}$ \\
+6  & HH & 6 & $\frac{1}{24}$ \\
+7  & HT & 1 & $\frac{1}{24}$ \\
+8  & HT & 2 & $\frac{1}{24}$ \\
+9  & HT & 3 & $\frac{1}{24}$ \\
+10 & HT & 4 & $\frac{1}{24}$ \\
+11 & HT & 5 & $\frac{1}{24}$ \\
+12 & HT & 6 & $\frac{1}{24}$ \\
+13 & TH & 1 & $\frac{1}{24}$ \\
+14 & TH & 2 & $\frac{1}{24}$ \\
+15 & TH & 3 & $\frac{1}{24}$ \\
+16 & TH & 4 & $\frac{1}{24}$ \\
+17 & TH & 5 & $\frac{1}{24}$ \\
+18 & TH & 6 & $\frac{1}{24}$ \\
+19 & TT & 1 & $\frac{1}{24}$ \\
+20 & TT & 2 & $\frac{1}{24}$ \\
+21 & TT & 3 & $\frac{1}{24}$ \\
+22 & TT & 4 & $\frac{1}{24}$ \\
+23 & TT & 5 & $\frac{1}{24}$ \\
+24 & TT & 6 & $\frac{1}{24}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+\subsection{Conditional entropy}
+Another important definition is Conditional Entropy (CE):
+
+\begin{equation}\label{eq:conditional_entropy}
+    H(X|Y) = -\sum_{x\in X}\sum_{y\in Y} p(x,y) \cdot log(\frac{p(x,y)}{p(y)})
+\end{equation}
+
+We can also define Conditional entropy with usage of  Joint and Shannon entropy using chain rule:
+
+\begin{equation}\label{eq:conditional_entropy_chain}
+    H(X|Y) = H(X,Y) - H(Y)
+\end{equation}
+
+We can consider it as a uncertrainity of $X$ given $Y$. It has also the following property:
+\begin{equation}
+    0 \leq H(X|Y) \leq H(X)
+\end{equation}
+The lower the value of Conditional Entropy, the better $Y$ reduces uncertainty of X. At $H(X|Y)=H(X)$, the variable $Y$ is irrelevant for the reduction in uncertainty.
+
+\subsection{Transfer entropy}
+Definition of Transfer Entropy (TE) was proposed for the first time in the article "Measuring Information Transfer" by \cite{Schreiber2000}. It is a model-free measure of the directional inflow from a time series $Y_t$ to a time series $X_t$.
+
+TE does Markovian assumption that \textit{a discrete time stochastic process $\{X_t\}_t\in N$ is a Markov chain of order m when, for any $t>m$, the follwoing property holds}:
+\begin{equation}\label{eq:markov-chain}
+    P(X_t=x_t|X_{t-1} = x_{t-1}, \dots, X_1=x_1) =
+\end{equation}
+\begin{equation*}
+     P(X_t=x_t|X_{t-1} = x_{t-1}, \dots, X_{t-m}=x_{t-m})
+\end{equation*}
+
+So, the future state of this process depends only on its past $m$ states. From the notation it also results in that TE will be considered only in discrete time.
+
+The last thing to define TE is Embedding Vector. \textit{Let $\{U_t\}_{t \in \mathbb{Z}}$ be a time series. The embedding vector $U_t^{d,\tau}$ is the following random vector of past states of $U_t$}:
+\begin{equation}\label{eq:embedding-vector}
+    U_t^{d,\tau} = (U_t,U_{t-\tau},U_{t-2\tau},\dots,U_{t-(d-1)\tau})
+\end{equation}
+
+In our case the notation can be simplified to $U_t^{(d)}$ when $\tau = 1$. In literature, the parameter d is called the embedding dimension and $\tau$ is called the embedding delay.
+
+Now we can finally define Transfer Entropy at time t, from $l^{th}$ order Markov process $Y_t$ to the $k^{th}$ order Markov process $X_t$. Simillary as in case of CE we can do it in both ways:
+\begin{equation}\label{eq:te-analytical}
+    TE_{Y\to X}^{k,l}(t) = \sum_{x_t,x_{t-1}^{(k)},y_{t-1}^{(l)}}p(x_t,x_{t-1}^{(k)},y_{t-1}^{(l)}) \cdot log(\frac{x_t|x_{t-1}^{(k)},y_{t-1}^{(l)}}{x_t|x_{t-1}^{(k)}})
+\end{equation}
+or
+\begin{equation}\label{eq:te-nonanalytical}
+    TE_{Y\to X}^{k,l}(t) = H(X_{t}|X_{t-1}^{(k)}) - H(X_t|X_{t-1}^{(k)},Y_{t-1}^{(m)}) 
+\end{equation}
+
+From equation \ref{eq:te-nonanalytical} we can understand it as a reduction in uncertainty of $X$ resolved by past values of $Y$ over past values of just $X$.
+
+\subsection{Conditional joint transfer entropy}
+
+\section{Estimation techniques}
+\cite{genccaga2018transfer}\cite{lee2012transfer}\cite{rozo2021benchmarking}\cite{wen2023kendall}\cite{dvp}
+
+\section{Autonomic nervous system}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Materials \& Methods}\label{ch:matmeth}
+
+\section{Synthetic signals}
+
+\section{Physiological signals}\label{sec:physsig}
+
+\subsection{Research group}\label{subsec:researchgr}
+The data set with the physiological signals come from the study conducted for the AUTOMATIC project conducted at Wrocaw University of Wroclaw and Technology (WUST). 
+It consists of 37 young healthy volunteers (21 males, 16 males, median age: 22 years, range 18-31 years). 
+Everyone was instructed not to consume alcohol and caffeine 12 hours before the study and declared to be free of medication. 
+Measurements were taken under the supervision of a profesional physician and were approved by the Comission of Bioethics (KB-179/2023/N) \citep{Uryga_2024}.
+
+\subsection{Data acquisition}\label{subsec:dataacq}
+The signals used are: arterial blood pressure (ABP), recorded noninvasively using a photoplethysmograph (Finometer MIDI) and end--tidal carbon dioxide (ETCO$_{2}$), recorded using a capnograph and used as modulating factor.
+
+Measurements were made at room temperature with minimal external stimuli as in Figure \ref{fig:experiment-setup} and were carried out in four stages lasting 5 minutes each and performed one after another. 
+In stage 1 subjects were breathing at their resting rate, and in stages 2,3,4 they were performing controlled breathing guided by metromone, respectively, at rates 6,10 and 15 breaths per minute (bpm).
+
+For simplification, only signals of 6 and 15 bpm were taken under analysis. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figs/experiment_setup.jpg}
+    \caption{The experiment setup}
+    \label{fig:experiment-setup}
+\end{figure}
+
+\subsection{Implementation}\label{sec:implementation}
+Firstly both SAP and HP were derived from the ABP signal using follwoing formulas:
+\begin{equation}\label{eq:sap_from_abp}
+    SAP(i) = ABP(peak(i))\text{ } [mm/Hg]
+\end{equation}
+\begin{equation}\label{eq:rr_from_abp}
+    RR(i) = \frac{peak(i+1) - peak(i)}{fs}\text{ } [s]
+\end{equation}
+\begin{equation}
+    HP(i) = \frac{1}{RR(i)} \text{ } [s]
+\end{equation}
+
+Where $fs$ is a sampling frequency and $peak(i)$ is the index of the i-th peak in the abp signal found using the \textit{ppg\_clean} function in the neurokit2 python library \cite{neurokit2}. Visualization of how it works is shown in the Figure \ref{fig:peaks-finding}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figs/peaks_finding.png}
+    \caption{Method of calculating SAP and HP from ABP signal}
+    \label{fig:peaks-finding}
+\end{figure}
+
+% Opisać że dane byly wyczyszczone
+% Opisać jak neurokit znajduje peaki + przykłady
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Results}\label{ch:results}
+\section{Synthetic signals}
+
+\section{Physiological signals}\label{sec:physsig}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Discussion}\label{ch:disco}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Summary}\label{ch:summary}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Further Development}\label{ch:furtherdev}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{plain}
+\bibliography{refs}
+
+\appendix
+
+
+
+\end{document}

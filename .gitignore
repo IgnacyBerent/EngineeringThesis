@@ -3,7 +3,13 @@
 /results_csv
 *.csv
 *.pdf
-*.png
 .venv
 __pycache__
 .pytest_cache
+# LaTeX
+*.aux
+*.log
+*.toc
+*.bbl
+*.blg
+*.out
