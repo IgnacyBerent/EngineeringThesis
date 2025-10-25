@@ -13,3 +13,9 @@ __pycache__
 *.bbl
 *.blg
 *.out
+*.brf
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.synctex.gz

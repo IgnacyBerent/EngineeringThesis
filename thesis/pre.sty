@@ -1,41 +1,60 @@
 \usepackage[utf8]{inputenc}
-\usepackage[OT4]{fontenc}
-\usepackage{graphicx}
-\usepackage{amsfonts}
-\usepackage{array}
-\usepackage{amsmath}
-\usepackage{xcolor}
-\usepackage{fancyhdr}
-\usepackage{tabularx}
-\usepackage{booktabs}
-\usepackage{upgreek}
-\usepackage{rotating}
-\usepackage[small]{caption}
-\usepackage{subcaption}
-\usepackage[titletoc]{appendix}% http://ctan.org/pkg/appendices
-\usepackage{afterpage}
-\usepackage{changepage}
-\usepackage{multirow}
-\usepackage{bm}
-\usepackage{upquote}
-\usepackage[round]{natbib} % For bibliography
-\bibliographystyle{apalike}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+
+% Page layout
+\usepackage[top=3.5cm,left=3.25cm,bottom=3.25cm,right=3.25cm]{geometry}
+\usepackage{setspace}
+\setstretch{1.1}
 \usepackage[all]{nowidow}
 \widowpenalty = 99999999
 \clubpenalty = 99999999
-\usepackage{setspace}
-\setstretch{1.1}
-\usepackage{enumitem}
-\usepackage{float}
-\usepackage[justification=centering]{caption}
 
-\usepackage[nottoc]{tocbibind}
+% Math
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{bm}
+\usepackage{upgreek}
+\usepackage{array}
 
+% Figures and tables
+\usepackage{graphicx}
+\usepackage{rotating}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{tabularx}
 \usepackage{makecell}
+\usepackage{multirow}
 
+% Lists
+\usepackage{enumitem}
+
+% Bibliography
+\usepackage[round]{natbib} % For bibliography
+\bibliographystyle{apalike}
+
+% Captions
+\usepackage[justification=centering, font=small]{caption}
+
+% Appendices
+\usepackage[titletoc]{appendix}
+
+% Misc
+\usepackage{titlesec}
+\usepackage{changepage}
+\usepackage{afterpage}
+\usepackage{fancyhdr}
+\usepackage{footnotebackref}
+\usepackage{bookmark}
 \usepackage{url}
+\usepackage{float}
+
+% Hyperref: last
 \def\UrlBreaks{\do\/\do-\/\do.\/\do_}
 
+% ToC for bibliography and list of figures/tables
+\usepackage[nottoc]{tocbibind}
 % PAGINY
 \pagestyle{fancy}
 \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
@@ -83,16 +102,9 @@
     \if@twocolumn\hbox{}\newpage\fi\fi\fi}
 \makeatother \clearpage{\pagestyle{plain}\cleardoublepage}
 
-\usepackage[top=3.5cm,left=3.25cm,bottom=3.25cm,right=3.25cm]{geometry}
-
 \raggedbottom
 
-\definecolor{links}{rgb}{0, 0, 0.8}
-\usepackage[colorlinks=true,citecolor=links,linkcolor=links,urlcolor=links,pagebackref=true]{hyperref}
-\usepackage{footnotebackref}
-
 % Adjust chapters
-\usepackage{titlesec}
 \titleformat{\chapter}[display]
   {\huge\bfseries} % Formatting of the chapter title
   {\chaptername\ \thechapter} % Chapter numbering

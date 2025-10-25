@@ -1,0 +1,49 @@
+\chapter{Materials \& Methods}\label{ch:matmeth}
+
+\section{Synthetic signals}
+
+\section{Physiological signals}\label{sec:physsig}
+
+\subsection{Research group}\label{subsec:researchgr}
+The data set with the physiological signals come from the study conducted for the AUTOMATIC project conducted at Wrocaw University of Wroclaw and Technology (WUST). 
+It consists of 37 young healthy volunteers (21 males, 16 males, median age: 22 years, range 18-31 years). 
+Everyone was instructed not to consume alcohol and caffeine 12 hours before the study and declared to be free of medication. 
+Measurements were taken under the supervision of a profesional physician and were approved by the Comission of Bioethics (KB-179/2023/N) \citep{Uryga_2024}.
+
+\subsection{Data acquisition}\label{subsec:dataacq}
+The signals used are: arterial blood pressure (ABP), recorded noninvasively using a photoplethysmograph (Finometer MIDI) and end--tidal carbon dioxide (ETCO$_{2}$), recorded using a capnograph and used as modulating factor.
+
+Measurements were made at room temperature with minimal external stimuli as in Figure \ref{fig:experiment-setup} and were carried out in four stages lasting 5 minutes each and performed one after another. 
+In stage 1 subjects were breathing at their resting rate, and in stages 2,3,4 they were performing controlled breathing guided by metromone, respectively, at rates 6,10 and 15 breaths per minute (bpm).
+
+For simplification, only signals of 6 and 15 bpm were taken under analysis. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figs/experiment_setup.jpg}
+    \caption{The experiment setup}
+    \label{fig:experiment-setup}
+\end{figure}
+
+\subsection{Implementation}\label{sec:implementation}
+Firstly both SAP and HP were derived from the ABP signal using follwoing formulas:
+\begin{equation}\label{eq:sap_from_abp}
+    SAP(i) = ABP(peak(i))\text{ } [mm/Hg]
+\end{equation}
+\begin{equation}\label{eq:rr_from_abp}
+    RR(i) = \frac{peak(i+1) - peak(i)}{fs}\text{ } [s]
+\end{equation}
+\begin{equation}
+    HP(i) = \frac{1}{RR(i)} \text{ } [s]
+\end{equation}
+
+Where $fs$ is a sampling frequency and $peak(i)$ is the index of the i-th peak in the abp signal found using the \textit{ppg\_clean} function in the neurokit2 python library \cite{neurokit2}. Visualization of how it works is shown in the Figure \ref{fig:peaks-finding}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figs/peaks_finding.png}
+    \caption{Method of calculating SAP and HP from ABP signal}
+    \label{fig:peaks-finding}
+\end{figure}
+
+%TODO: Opisać że dane byly wyczyszczone
+%TODO: Opisać jak neurokit znajduje peaki + przykłady
