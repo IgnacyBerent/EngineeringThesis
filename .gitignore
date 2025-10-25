@@ -1,7 +1,9 @@
 /data
+/conferences
 /results_csv
 *.csv
 *.pdf
 *.png
 .venv
 __pycache__
+.pytest_cache
