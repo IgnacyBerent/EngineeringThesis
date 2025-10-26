@@ -1,7 +1,8 @@
 \chapter{Theoretical Foundations}\label{ch:theorfund}
 
 \section{Information theory}
-Mathematical treatment of the communication proposed by \cite{Shannon1948} where the definition of entropy was presented. Based on so called \textit{Shannon entropy} all the entropy--based solutions are built on.
+Mathematical treatment of the communication proposed by \cite{Shannon1948} where the definition of entropy was presented. 
+Based on so called \textit{Shannon entropy} all the entropy--based solutions are built on.
 
 \subsection{Shannon entropy}
 The first and the simplest form of entropy definition.
@@ -49,7 +50,8 @@ The slight modyfication of Shannon Entropy is Joint Entropy which is uncertainty
 \begin{equation}\label{eq:joint_entropy}
     H(X,Y) = -\sum_{x\in X}\sum_{y\in Y} p(x,y) \cdot log(p(x,y))
 \end{equation}
-As and example we can provide extension of previous experiment by tossing a coin 2 times with addition of rolling a dice once. The propability is in Table \ref{tab:cointossing_dice_2coins}. After applying formula \ref{eq:joint_entropy} we are getting:
+As and example we can provide extension of previous experiment by tossing a coin 2 times with addition of rolling a dice once. 
+The propability is in Table \ref{tab:cointossing_dice_2coins}. After applying formula \ref{eq:joint_entropy} we are getting:
 \begin{equation}
     H(X,Y) = -\sum_{i=1}^{4}\sum_{j=1}^{6} p(i,j) \cdot log(p(i,j)) = -\sum_{i=1}^{4}\sum_{j=1}^{6} p(\frac{1}{24}) \cdot log(p(\frac{1}{24})) \approx 3.18\text{ nats}
 \end{equation}
@@ -106,10 +108,12 @@ We can consider it as a uncertrainity of $X$ given $Y$. It has also the followin
 \begin{equation}
     0 \leq H(X|Y) \leq H(X)
 \end{equation}
-The lower the value of Conditional Entropy, the better $Y$ reduces uncertainty of X. At $H(X|Y)=H(X)$, the variable $Y$ is irrelevant for the reduction in uncertainty.
+The lower the value of Conditional Entropy, the better $Y$ reduces uncertainty of X. 
+At $H(X|Y)=H(X)$, the variable $Y$ is irrelevant for the reduction in uncertainty.
 
 \subsection{Transfer entropy}
-Definition of Transfer Entropy (TE) was proposed for the first time in the article "Measuring Information Transfer" by \cite{Schreiber2000}. It is a model-free measure of the directional inflow from a time series $Y_t$ to a time series $X_t$.
+Definition of Transfer Entropy (TE) was proposed for the first time in the article "Measuring Information Transfer" by \cite{Schreiber2000}. 
+It is a model-free measure of the directional inflow from a time series $Y_t$ to a time series $X_t$.
 
 TE does Markovian assumption that \textit{a discrete time stochastic process $\{X_t\}_t\in N$ is a Markov chain of order m when, for any $t>m$, the follwoing property holds}:
 \begin{equation}\label{eq:markov-chain}
@@ -119,16 +123,21 @@ TE does Markovian assumption that \textit{a discrete time stochastic process $\{
      P(X_t=x_t|X_{t-1} = x_{t-1}, \dots, X_{t-m}=x_{t-m})
 \end{equation*}
 
-So, the future state of this process depends only on its past $m$ states. From the notation it also results in that TE will be considered only in discrete time.
+So, the future state of this process depends only on its past $m$ states. 
+From the notation it also results in that TE will be considered only in discrete time.
 
-The last thing to define TE is Embedding Vector. \textit{Let $\{U_t\}_{t \in \mathbb{Z}}$ be a time series. The embedding vector $U_t^{d,\tau}$ is the following random vector of past states of $U_t$}:
+The last thing to define TE is Embedding Vector. 
+\textit{Let $\{U_t\}_{t \in \mathbb{Z}}$ be a time series. 
+The embedding vector $U_t^{d,\tau}$ is the following random vector of past states of $U_t$}:
 \begin{equation}\label{eq:embedding-vector}
     U_t^{d,\tau} = (U_t,U_{t-\tau},U_{t-2\tau},\dots,U_{t-(d-1)\tau})
 \end{equation}
 
-In our case the notation can be simplified to $U_t^{(d)}$ when $\tau = 1$. In literature, the parameter d is called the embedding dimension and $\tau$ is called the embedding delay.
+In our case the notation can be simplified to $U_t^{(d)}$ when $\tau = 1$. 
+In literature, the parameter d is called the embedding dimension and $\tau$ is called the embedding delay
 
-Now we can finally define Transfer Entropy at time t, from $l^{th}$ order Markov process $Y_t$ to the $k^{th}$ order Markov process $X_t$. Simillary as in case of CE we can do it in both ways:
+Now we can finally define Transfer Entropy at time t, from $l^{th}$ order Markov process $Y_t$ to the $k^{th}$ order Markov process $X_t$. 
+Simillary as in case of CE we can do it in both ways:
 \begin{equation}\label{eq:te-analytical}
     TE_{Y\to X}^{k,l}(t) = \sum_{x_t,x_{t-1}^{(k)},y_{t-1}^{(l)}}p(x_t,x_{t-1}^{(k)},y_{t-1}^{(l)}) \cdot log(\frac{x_t|x_{t-1}^{(k)},y_{t-1}^{(l)}}{x_t|x_{t-1}^{(k)}})
 \end{equation}
