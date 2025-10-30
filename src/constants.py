@@ -1,0 +1,8 @@
+from pathlib import Path
+
+METADATA_PATH = Path('data/metadata.xlsx')
+BREATHING_DATA_DIRECTORY_PATH = Path('data/CONTROL_BREATHING_RECORDINGS')
+
+SAMPLING_FREQUENCY = 200
+
+DEFAULT_TIME_DELAY = 1

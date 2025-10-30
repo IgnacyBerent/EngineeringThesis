@@ -1,36 +1,47 @@
+from itertools import product
+from typing import TypedDict
+
 import numpy as np
 from numpy.typing import NDArray
-from scipy.stats import chi2
-from itertools import product
+from scipy.stats import chi2, rankdata
+
+from src.constants import DEFAULT_TIME_DELAY
+
+_DEFAULT_RANKING_METHOD = 'ordinal'
+_DEFAULT_EMBEDDING_DIMENSION = 1
+_DEFAULT_SIGNIFICANCE_LEVEL = 0.05
 
 
-def get_embedded_vector(x: np.array, d: int, tau: int = 1) -> np.array:
+class DVPartition(TypedDict):
+    mins: NDArray[np.integer]
+    maxs: NDArray[np.integer]
+    N: int
+
+
+def rank_transform(x: NDArray[np.floating]) -> NDArray[np.integer]:
+    return rankdata(x, method=_DEFAULT_RANKING_METHOD)
+
+
+def get_embedded_vector(x: NDArray, d: int = _DEFAULT_EMBEDDING_DIMENSION, tau: int = DEFAULT_TIME_DELAY) -> NDArray:
     """
-    Embedded vector U_t^{d,\tau} for a variable x is the following vector:
+    Embedded vector U_t^{d,tau} for a variable x is the following vector:
 
-    U_t^{d,\tau} = (U_t,U_{t-\tau},U_{t-2\tau},\dots,U_{t-(d-1)\tau})
-
-    Parameters
-    ----------
-        x (np.array): A 1D numpy array representing the random variable.
-        d (int): The embedding dimension.
-        tau (int): The time delay.
-
-    Returns
-    -------
-        embedded : np.array
-            A 2D numpy array where each row is an embedded vector.
+    U_t^{d,tau} = (U_t,U_{t-tau},U_{t-2tau},...,U_{t-(d-1)tau})
     """
     x = np.asarray(x)
     n = len(x) - (d - 1) * tau
     if n <= 0:
-        raise ValueError("Time series too short for given embedding.")
+        raise ValueError('Time series too short for given embedding.')
 
-    embedded = np.column_stack([x[i : i + n] for i in range(0, d * tau, tau)])
-    return embedded
+    return np.column_stack([x[i : i + n] for i in range(0, d * tau, tau)])
 
 
-def dv_partition_nd(data, mins, maxs, alpha=0.05) -> list[dict]:
+def dv_partition_nd(
+    data: NDArray[np.integer],
+    mins: NDArray[np.integer],
+    maxs: NDArray[np.integer],
+    alpha: float = _DEFAULT_SIGNIFICANCE_LEVEL,
+) -> list[DVPartition]:
     """
     Generic Darbellay-Vajda adaptive partitioning.
 
@@ -59,31 +70,18 @@ def dv_partition_nd(data, mins, maxs, alpha=0.05) -> list[dict]:
         return []
 
     # mid-points along each dimension
-    divs = (mins + maxs) // 2
+    divs: NDArray[np.integer] = (mins + maxs) // 2
     d = len(mins)
 
-    # count in every 2^d child box
-    counts = []
-    masks = []
-    for bits in product([0, 1], repeat=d):  # 000… to 111…
-        lo = np.where(np.array(bits) == 0, mins, divs + 1)
-        hi = np.where(np.array(bits) == 0, divs, maxs)
-        mask = np.all((sub >= lo) & (sub <= hi), axis=1)
-        masks.append(mask)
-        counts.append(mask.sum())
-    counts = np.asarray(counts)
-    mean = counts.mean()
+    counts, masks = _count_child_boxes(sub, d, divs, mins, maxs)
 
-    # χ² statistic
-    if mean == 0:
+    is_uniform = _is_uniform(d=d, counts=counts, alpha=alpha)
+    if is_uniform is None:
         return []
-    T = np.sum((mean - counts) ** 2 / mean)
-    crit = chi2.ppf(1 - alpha, df=(2**d) - 1)
 
-    # if non-uniform and splittable, recurse
-    if (T > crit) and np.any(maxs - mins):
+    if (not is_uniform) and np.any(maxs - mins):
         parts = []
-        for bits, mask in zip(product([0, 1], repeat=d), masks):
+        for bits, mask in zip(product([0, 1], repeat=d), masks, strict=False):
             if mask.sum() == 0:
                 continue
             lo = np.where(np.array(bits) == 0, mins, divs + 1)
@@ -91,4 +89,27 @@ def dv_partition_nd(data, mins, maxs, alpha=0.05) -> list[dict]:
             parts.extend(dv_partition_nd(data, lo, hi, alpha))
         return parts
     # else this box is a leaf
-    return [{"mins": mins.copy(), "maxs": maxs.copy(), "N": int(n)}]
+    return [{'mins': mins.copy(), 'maxs': maxs.copy(), 'N': int(n)}]
+
+
+def _count_child_boxes(
+    sub: NDArray[np.integer], d: int, divs: NDArray[np.integer], mins: NDArray[np.integer], maxs: NDArray[np.integer]
+) -> tuple[NDArray[np.integer], list[NDArray[np.bool]]]:
+    counts: list[int] = []
+    masks: list[NDArray[np.bool]] = []
+    for bits in product([0, 1], repeat=d):  # 000… to 111…
+        lo = np.where(np.array(bits) == 0, mins, divs + 1)
+        hi = np.where(np.array(bits) == 0, divs, maxs)
+        mask = np.all((sub >= lo) & (sub <= hi), axis=1)
+        masks.append(mask)
+        counts.append(mask.sum())
+    return np.asarray(counts), masks
+
+
+def _is_uniform(d: int, counts: NDArray, alpha: float) -> None | bool:
+    mean = counts.mean()
+    if mean == 0:
+        return None
+    T = np.sum((mean - counts) ** 2 / mean)
+    crit = chi2.ppf(1 - alpha, df=(2**d) - 1)
+    return crit >= T
