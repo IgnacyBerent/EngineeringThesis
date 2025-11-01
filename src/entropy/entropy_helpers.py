@@ -1,15 +1,13 @@
 from itertools import product
-from typing import TypedDict
+from typing import TypedDict, cast
 
 import numpy as np
 from numpy.typing import NDArray
 from scipy.stats import chi2, rankdata
 
-from src.constants import DEFAULT_TIME_DELAY
+from src.constants import DEFAULT_EMBEDDING_DIMENSION, DEFAULT_SIGNIFICANCE_LEVEL, DEFAULT_TIME_DELAY
 
 _DEFAULT_RANKING_METHOD = 'ordinal'
-_DEFAULT_EMBEDDING_DIMENSION = 1
-_DEFAULT_SIGNIFICANCE_LEVEL = 0.05
 
 
 class DVPartition(TypedDict):
@@ -22,25 +20,23 @@ def rank_transform(x: NDArray[np.floating]) -> NDArray[np.integer]:
     return rankdata(x, method=_DEFAULT_RANKING_METHOD)
 
 
-def get_embedded_vector(x: NDArray, d: int = _DEFAULT_EMBEDDING_DIMENSION, tau: int = DEFAULT_TIME_DELAY) -> NDArray:
+def get_deleyed_vector(x: NDArray, d: int = DEFAULT_EMBEDDING_DIMENSION, tau: int = DEFAULT_TIME_DELAY) -> NDArray:
     """
-    Embedded vector U_t^{d,tau} for a variable x is the following vector:
+    Embedded (delay) vector U_t^{d,τ} for a variable x is defined as:
 
-    U_t^{d,tau} = (U_t,U_{t-tau},U_{t-2tau},...,U_{t-(d-1)tau})
+    U_t^{d,τ} = (U_{t-(d-1)τ}, U_{t-(d-2)τ}, ..., U_t)
     """
-    x = np.asarray(x)
     n = len(x) - (d - 1) * tau
     if n <= 0:
         raise ValueError('Time series too short for given embedding.')
-
-    return np.column_stack([x[i : i + n] for i in range(0, d * tau, tau)])
+    return np.column_stack([x[i : i + n] for i in range((d - 1) * tau, -1, -tau)])
 
 
 def dv_partition_nd(
     data: NDArray[np.integer],
-    mins: NDArray[np.integer],
-    maxs: NDArray[np.integer],
-    alpha: float = _DEFAULT_SIGNIFICANCE_LEVEL,
+    mins: NDArray[np.integer] | None = None,
+    maxs: NDArray[np.integer] | None = None,
+    alpha: float = DEFAULT_SIGNIFICANCE_LEVEL,
 ) -> list[DVPartition]:
     """
     Generic Darbellay-Vajda adaptive partitioning.
@@ -62,6 +58,10 @@ def dv_partition_nd(
         - 'maxs': (d,) int array, upper bounds of the partition box.
         - 'N': int, number of points in this partition box.
     """
+    if mins is None or maxs is None:
+        mins = cast(NDArray[np.integer], np.min(data, axis=0))
+        maxs = cast(NDArray[np.integer], np.max(data, axis=0))
+
     # select points inside current box
     inside = np.all((data >= mins) & (data <= maxs), axis=1)
     sub = data[inside]
