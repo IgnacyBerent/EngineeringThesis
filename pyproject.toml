@@ -6,19 +6,18 @@ description = "A comparative analysis of algorithms for transfer entropy and con
 readme = "README.md"
 requires-python = ">=3.14,<3.15.0"
 dependencies = [
-    "matplotlib>=3.10.7",
-    "neurokit2>=0.2.12",
-    "numpy>=2.3.4",
-    "pandas>=2.3.3",
-    "scipy>=1.16.2",
+  "ipykernel>=7.1.0",
+  "ipython>=9.6.0",
+  "jupyter>=1.1.1",
+  "matplotlib>=3.10.7",
+  "neurokit2>=0.2.12",
+  "numpy>=2.3.4",
+  "pandas>=2.3.3",
+  "scipy>=1.16.2",
 ]
 
 [dependency-groups]
-dev = [
-    "mypy>=1.18.2",
-    "pre-commit>=4.3.0",
-    "ruff>=0.14.2",
-]
+dev = ["mypy>=1.18.2", "pre-commit>=4.3.0", "ruff>=0.14.2"]
 
 [tool.mypy]
 files = ["src"]
