@@ -5,7 +5,7 @@ import neurokit2 as nk
 import numpy as np
 from numpy.typing import NDArray
 
-from src.constants import SAMPLING_FREQUENCY
+from src.common.constants import SAMPLING_FREQUENCY
 
 _DEFAULT_MIN_DELAY = 0.3
 _DEFAULT_FIND_PEAKS_METHOD = 'elgendi'

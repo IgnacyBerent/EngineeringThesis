@@ -10,3 +10,17 @@ class FFT_Result:
     f: NDArray[np.floating]
     mag: NDArray[np.floating]
     phases: NDArray[np.floating]
+
+
+@dataclass
+class BreathingRawData:
+    abp: NDArray[np.floating]
+    rr: NDArray[np.floating]
+    etco2: NDArray[np.floating]
+
+
+@dataclass
+class PatientRawData:
+    id: int
+    baseline: BreathingRawData
+    cb_6b: BreathingRawData

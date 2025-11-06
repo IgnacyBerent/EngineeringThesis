@@ -6,8 +6,8 @@ from numpy.typing import NDArray
 from scipy.fft import fft, ifft
 from scipy.signal import butter, filtfilt
 
-from src.constants import SAMPLING_FREQUENCY
-from src.mytypes import FFT_Result
+from src.common.constants import SAMPLING_FREQUENCY
+from src.common.mytypes import FFT_Result
 
 DEFAULT_BUTTERFILT_ORDER = 4
 DEFAULT_FREQUENCY_SEPARATION = 0.2

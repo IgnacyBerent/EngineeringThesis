@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.typing import NDArray
 
-from src.constants import DEFAULT_EMBEDDING_DIMENSION, DEFAULT_SIGNIFICANCE_LEVEL, DEFAULT_TIME_DELAY
+from src.common.constants import DEFAULT_EMBEDDING_DIMENSION, DEFAULT_SIGNIFICANCE_LEVEL, DEFAULT_TIME_DELAY
 from src.entropy.entropy_helpers import DVPartition, dv_partition_nd, get_deleyed_vector, rank_transform
 
 

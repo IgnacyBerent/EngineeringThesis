@@ -2,7 +2,7 @@ import numpy as np
 from numpy.typing import NDArray
 from scipy import ndimage, stats
 
-from src.constants import DEFAULT_TIME_DELAY
+from src.common.constants import DEFAULT_TIME_DELAY
 
 
 def transfer_entropy(

@@ -5,7 +5,7 @@ import numpy as np
 from numpy.typing import NDArray
 from scipy.stats import chi2, rankdata
 
-from src.constants import DEFAULT_EMBEDDING_DIMENSION, DEFAULT_SIGNIFICANCE_LEVEL, DEFAULT_TIME_DELAY
+from src.common.constants import DEFAULT_EMBEDDING_DIMENSION, DEFAULT_SIGNIFICANCE_LEVEL, DEFAULT_TIME_DELAY
 
 _DEFAULT_RANKING_METHOD = 'ordinal'
 
