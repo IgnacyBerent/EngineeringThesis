@@ -47,9 +47,9 @@ def get_peaks(
             mindelay=mindelay,
         )
 
-    if peaks_up and peaks_down:
+    if peaks_up is not None and peaks_down is not None:
         return np.sort(np.concatenate((peaks_up, peaks_down)))
-    if peaks_up:
+    if peaks_up is not None:
         return peaks_up
     return cast(NDArray[np.floating], peaks_down)
 
@@ -69,21 +69,26 @@ def _find_peaks(
     return cast(NDArray[np.floating], peaks)
 
 
-def get_hp(peaks: NDArray[np.floating], sampling_rate: int = SAMPLING_FREQUENCY) -> NDArray[np.floating]:
-    rr = np.diff(peaks) / sampling_rate
-    return 1 / rr
+def get_hp_from_peaks(peaks: NDArray[np.floating], sampling_rate: int = SAMPLING_FREQUENCY) -> NDArray[np.floating]:
+    sampling_period = 1 / sampling_rate * 1000
+    return np.diff(peaks) * sampling_period
 
 
-def get_sap(signal: NDArray[np.floating], peaks: NDArray[np.floating]) -> NDArray[np.floating]:
+def get_hp_from_abp(abp: NDArray[np.floating], sampling_rate: int = SAMPLING_FREQUENCY) -> NDArray[np.floating]:
+    peaks = get_peaks(abp, PeaksMode.UP, sampling_rate)
+    return get_hp_from_peaks(peaks)
+
+
+def get_sap(abp: NDArray[np.floating], peaks: NDArray[np.floating]) -> NDArray[np.floating]:
     """
     Calculate Systolic Amplitude Peaks (SAP) from abp signal and its peak indices.
         It is assumed that the peaks are upward peaks.
         SAP(i) equals the value of the signal at the peak index.
     """
-    return np.array([signal[peak] for peak in peaks])[1:]  # skip first peak to match length of hp
+    return np.array([abp[peak] for peak in peaks])[1:]  # skip first peak to match length of hp
 
 
-def get_map(signal: NDArray[np.floating], peaks: NDArray[np.floating]) -> NDArray[np.floating]:
+def get_map(abp: NDArray[np.floating], peaks: NDArray[np.floating]) -> NDArray[np.floating]:
     """
     Calculate Mean Arterial Pressure (MAP) from abp signal and its peak indices.
         It assumes that the peaks are alternating between downward and upward peaks.
@@ -93,8 +98,8 @@ def get_map(signal: NDArray[np.floating], peaks: NDArray[np.floating]) -> NDArra
 
     map_ = []
     for i in range(first_downward_peak_index, len(peaks) - 2, 2):
-        dp = signal[peaks[i]]
-        sp = signal[peaks[i + 1]]
+        dp = abp[peaks[i]]
+        sp = abp[peaks[i + 1]]
         map_.append((2 * dp + sp) / 3)
 
     return np.array(map_)

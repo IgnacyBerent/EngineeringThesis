@@ -5,7 +5,7 @@ from scipy import ndimage, stats
 from src.common.constants import DEFAULT_TIME_DELAY
 
 
-def transfer_entropy(
+def transfer_entropy_hist(
     X: NDArray[np.floating], Y: NDArray[np.floating], delay: int = DEFAULT_TIME_DELAY, gaussian_sigma: int | None = None
 ) -> float:
     """

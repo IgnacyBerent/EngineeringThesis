@@ -2,10 +2,10 @@ import numpy as np
 from numpy.typing import NDArray
 
 from src.common.constants import DEFAULT_EMBEDDING_DIMENSION, DEFAULT_SIGNIFICANCE_LEVEL, DEFAULT_TIME_DELAY
-from src.entropy.entropy_helpers import DVPartition, dv_partition_nd, get_deleyed_vector, rank_transform
+from src.data_process.entropy.helpers import DVPartition, dv_partition_nd, get_deleyed_vector, rank_transform
 
 
-def transfer_entropy(
+def transfer_entropy_dv(
     signalX: NDArray[np.floating],
     signalY: NDArray[np.floating],
     time_delay: int = DEFAULT_TIME_DELAY,
@@ -15,6 +15,8 @@ def transfer_entropy(
     """
     Calculates the transfer entropy of TE_{Y->X}
     """
+    if len(signalX) != len(signalY):
+        raise ValueError('time series entries need to have same length')
 
     trimmedX = signalX[:-time_delay]
     trimmedY = signalY[:-time_delay]

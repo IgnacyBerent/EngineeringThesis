@@ -5,18 +5,19 @@ METADATA_PATH = Path('data/metadata.xlsx')
 BREATHING_DATA_DIRECTORY_PATH = Path('data/CONTROL_BREATHING_RECORDINGS')
 
 
-CB_6 = 'CB_6.csv'
-CB_BASELINE = 'CB_BASELINE.csv'
-PATIENT_DATA_FILE_TYPES: list[str] = [CB_6, CB_BASELINE]
+class CB_FILE(str, Enum):
+    B6 = 'CB_6.csv'
+    B10 = 'CB_10.csv'
+    B15 = 'CB_15.csv'
+    BASELINE = 'CB_BASELINE.csv'
 
 
-class SignalColumnNames(str, Enum):
+class SignalColumns(str, Enum):
     ABP = 'abp_cnap[mmHg]'
-    RR = 'rr[rpm]'
     ETCO2 = 'etco2[mmHg]'
 
 
-SAMPLING_FREQUENCY = 200
+SAMPLING_FREQUENCY = 200  # Hz
 
 DEFAULT_TIME_DELAY = 1
 DEFAULT_EMBEDDING_DIMENSION = 1

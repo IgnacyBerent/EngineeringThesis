@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy.typing import NDArray
 
+from src.data_process.fft import filter_frequencies, reconstruct_signal
 from src.plots.constatns import DPI, RECTANGLE_FIG_SIZE
-from src.signal_processing.fft import filter_frequencies, reconstruct_signal
 
 
 def plot_fft(f, mag, fc=None, freqs=None, title=None) -> None:
