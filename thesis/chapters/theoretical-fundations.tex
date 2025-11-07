@@ -142,7 +142,7 @@ In literature, the parameter d is called the embedding dimension and $\tau$ is c
 Now we can finally define Transfer Entropy at time t, from $l^{th}$ order Markov process $Y_t$ to the $k^{th}$ order Markov process $X_t$. 
 Simillary as in case of CE we can do it in both ways:
 \begin{equation}\label{eq:te-analytical}
-    TE_{Y\to X}^{k,l}(t) = \sum_{x_t,x_{t-1}^{(k)},y_{t-1}^{(l)}}p(x_t,x_{t-1}^{(k)},y_{t-1}^{(l)}) \cdot log(\frac{x_t|x_{t-1}^{(k)},y_{t-1}^{(l)}}{x_t|x_{t-1}^{(k)}})
+  TE_{Y\to X}^{k,l}(t) = \sum_{x_t,x_{t-1}^{(k)},y_{t-1}^{(l)}}p(x_t,x_{t-1}^{(k)},y_{t-1}^{(l)}) \cdot log(\frac{p(x_t|x_{t-1}^{(k)},y_{t-1}^{(l)})}{p(x_t|x_{t-1})})
 \end{equation}
 or
 \begin{equation}\label{eq:te-nonanalytical}
