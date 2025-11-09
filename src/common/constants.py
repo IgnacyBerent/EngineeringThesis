@@ -5,11 +5,15 @@ METADATA_PATH = Path('data/metadata.xlsx')
 BREATHING_DATA_DIRECTORY_PATH = Path('data/CONTROL_BREATHING_RECORDINGS')
 
 
-class CB_FILE(str, Enum):
-    B6 = 'CB_6.csv'
-    B10 = 'CB_10.csv'
-    B15 = 'CB_15.csv'
-    BASELINE = 'CB_BASELINE.csv'
+class CB_FILE_TYPE(str, Enum):
+    B6 = 'CB_6'
+    B10 = 'CB_10'
+    B15 = 'CB_15'
+    BASELINE = 'CB_BASELINE'
+
+    @property
+    def csv(self) -> str:
+        return f'{self.value}.csv'
 
 
 class SignalColumns(str, Enum):

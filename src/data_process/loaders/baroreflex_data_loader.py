@@ -1,16 +1,12 @@
 from pathlib import Path
 from typing import override
 
-from src.common.constants import BREATHING_DATA_DIRECTORY_PATH, CB_FILE, SignalColumns
-from src.common.logger import logger
-from src.common.mytypes import BaroreflexRawData, PatientData
-from src.data_process.loaders.data_loader import CBFileError, DataLoader
+from src.common.constants import BREATHING_DATA_DIRECTORY_PATH, CB_FILE_TYPE, SignalColumns
+from src.common.mytypes import PatientData
+from src.data_process.loaders.data_loader import DataLoader
 
 
-class BaroreflexDataLoader(DataLoader[BaroreflexRawData]):
-    def __init__(self) -> None:
-        super().__init__(BaroreflexRawData)
-
+class BaroreflexDataLoader(DataLoader):
     @property
     @override
     def _data_directory(self) -> Path:
@@ -18,19 +14,15 @@ class BaroreflexDataLoader(DataLoader[BaroreflexRawData]):
 
     @property
     @override
-    def _csv_columns(self) -> list[str]:
-        return [SignalColumns.ABP, SignalColumns.ETCO2]
+    def _csv_columns(self) -> dict[str, str]:
+        return {'abp': SignalColumns.ABP, 'etco2': SignalColumns.ETCO2}
 
     @override
-    def load_single_patient_raw_data(self, patient_directory: Path) -> PatientData | None:
-        patient_id = self._get_patient_id(patient_directory)
-        try:
-            return PatientData(
-                id=patient_id,
-                cb_6b=self.load_single_cb_csv_file(patient_directory / CB_FILE.B6),
-                baseline=self.load_single_cb_csv_file(patient_directory / CB_FILE.BASELINE),
-            )
-        except CBFileError as e:
-            logger.warning(f'Failed to load all columns for patient {patient_id}: \n {e}')
-        except FileNotFoundError as e:
-            logger.warning(f'Failed to find all cb files for patient {patient_id}: \n {e}')
+    def load_single_patient_raw_data(self, patient_directory: Path) -> PatientData:
+        return {
+            'id': self._get_patient_id(patient_directory),
+            CB_FILE_TYPE.B6: self.load_single_cb_csv_file(patient_directory / CB_FILE_TYPE.B6.csv),
+            CB_FILE_TYPE.B10: self.load_single_cb_csv_file(patient_directory / CB_FILE_TYPE.B10.csv),
+            CB_FILE_TYPE.B15: self.load_single_cb_csv_file(patient_directory / CB_FILE_TYPE.B15.csv),
+            CB_FILE_TYPE.BASELINE: self.load_single_cb_csv_file(patient_directory / CB_FILE_TYPE.BASELINE.csv),
+        }

@@ -1,17 +1,20 @@
 from typing import override
 
-from src.common.mytypes import BaroreflexProcessedData, BaroreflexRawData
+from src.common.mytypes import ArrayDataDict
 from src.data_process.processors.data_processor import DataProcessor
 from src.data_process.utils import PeaksMode, get_hp_from_abp, get_peaks, get_sap
 
 
-class BaroreflexDataProcessor(DataProcessor[BaroreflexRawData, BaroreflexProcessedData]):
+class BaroreflexDataProcessor(DataProcessor):
     @override
-    def _process_single_cb(self, raw_data: BaroreflexRawData) -> BaroreflexProcessedData:
-        abp = raw_data.abp
-        abp_peaks = get_peaks(abp, PeaksMode.UP)
+    def _process_single_cb(self, raw_data: ArrayDataDict) -> ArrayDataDict:
+        abp = raw_data.get('abp')
+        etco2 = raw_data.get('etco2')
+        if abp is None or etco2 is None:
+            raise ValueError
 
+        abp_peaks = get_peaks(abp, PeaksMode.UP)
         sap = get_sap(abp, abp_peaks)
         hp = get_hp_from_abp(abp)
-        etco2_shortened = self._average_to_length(raw_data.etco2, len(sap))
-        return BaroreflexProcessedData(sap=sap, hp=hp, etco2=etco2_shortened)
+        etco2_shortened = self._average_to_length(etco2, len(sap))
+        return {'sap': sap, 'hp': hp, 'etco2': etco2_shortened}
