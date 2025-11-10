@@ -1,6 +1,7 @@
 import csv
 from collections import defaultdict
 from collections.abc import Generator
+from pathlib import Path
 from typing import cast
 
 import numpy as np
@@ -15,27 +16,30 @@ class ResultsGenerator:
         self._results: dict[str, dict[int, dict[str, float]]] = defaultdict(
             lambda: defaultdict(lambda: defaultdict(float))
         )
+        self._fieldnames: list[str] = ['pid', 'cb_type']
 
     def generate_results_csv(self, file_path: str) -> None:
         if not file_path.endswith('.csv'):
             file_path += '.csv'
+        if Path(file_path).exists():
+            logger.warning(f'File: {file_path} already exists!')
+            file_path = file_path.split('.')[0] + '(1).csv'
 
-        field_names = set()
-        for _, _, cb_data in self.iterate_cb_data():
-            field_names.update(cb_data.keys())
+        try:
+            with open(file_path, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=self._fieldnames)
+                writer.writeheader()
 
-        metric_names = sorted(field_names)
-
-        header = ['pid', 'cb_type'] + metric_names
-        with open(file_path, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=header)
-            writer.writeheader()
-
-            for cb_type, pid_dict in self._results.items():
-                for pid, metrics in pid_dict.items():
-                    row = {'pid': pid, 'cb_type': cb_type}
-                    row.update(metrics)
-                    writer.writerow(row)
+                for cb_type, pid_dict in self._results.items():
+                    for pid, metrics in pid_dict.items():
+                        row = {'pid': pid, 'cb_type': cb_type}
+                        row.update(metrics)
+                        writer.writerow(row)
+        except Exception as e:
+            logger.error('Unexpected Exception while saving to csv')
+            raise e
+        else:
+            logger.info(f'Sucesfully saved results to {file_path}')
 
     def add_means(self, patinets_data: list[PatientData]) -> None:
         for patient_id, cb_data_type, cb_data in self.iterate_cb_data(patinets_data):
@@ -54,20 +58,21 @@ class ResultsGenerator:
             patients_data = self.patients_processed_data
         for patient_data in patients_data:
             patient_id = self._get_patient_id(patient_data)
-            print(patient_id)
             if patient_id is None:
                 continue
             for cb_data_type, cb_data in patient_data.items():
-                if cb_data is ArrayDataDict:
+                if cb_data_type != 'id':
                     yield patient_id, cb_data_type, cast(ArrayDataDict, cb_data)
 
     @staticmethod
     def _get_patient_id(patient_data: PatientData) -> int | None:
         patient_id = patient_data.get('id')
-        if patient_id is not int:
+        if type(patient_id) is not int:
             logger.warning('Missing ID')
             return None
         return patient_id
 
     def _add_result(self, cb_data_type: str, patient_id: int, field_name: str, value: float) -> None:
         self._results[cb_data_type][patient_id][field_name] = value
+        if field_name not in self._fieldnames:
+            self._fieldnames.append(field_name)
