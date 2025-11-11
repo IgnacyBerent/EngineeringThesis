@@ -6,6 +6,7 @@ from typing import cast
 
 import numpy as np
 
+from src.common.constants import CONDITION_FIELD, ID_FIELD
 from src.common.logger import logger
 from src.common.mytypes import ArrayDataDict, PatientData
 
@@ -16,14 +17,14 @@ class ResultsGenerator:
         self._results: dict[str, dict[int, dict[str, float]]] = defaultdict(
             lambda: defaultdict(lambda: defaultdict(float))
         )
-        self._fieldnames: list[str] = ['pid', 'cb_type']
+        self._fieldnames: list[str] = [ID_FIELD, CONDITION_FIELD]
 
     def generate_results_csv(self, file_path: str) -> None:
         if not file_path.endswith('.csv'):
             file_path += '.csv'
         if Path(file_path).exists():
-            logger.warning(f'File: {file_path} already exists!')
-            file_path = file_path.split('.')[0] + '(1).csv'
+            logger.warning(f'Overwritting file: {file_path}!')
+            # file_path = file_path.split('.')[0] + '(1).csv'
 
         try:
             with open(file_path, 'w', newline='', encoding='utf-8') as f:
@@ -32,7 +33,7 @@ class ResultsGenerator:
 
                 for cb_type, pid_dict in self._results.items():
                     for pid, metrics in pid_dict.items():
-                        row = {'pid': pid, 'cb_type': cb_type}
+                        row = {ID_FIELD: pid, CONDITION_FIELD: cb_type}
                         row.update(metrics)
                         writer.writerow(row)
         except Exception as e:

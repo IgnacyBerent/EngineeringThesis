@@ -4,6 +4,9 @@ from pathlib import Path
 METADATA_PATH = Path('data/metadata.xlsx')
 BREATHING_DATA_DIRECTORY_PATH = Path('data/CONTROL_BREATHING_RECORDINGS')
 
+ID_FIELD = 'pid'
+CONDITION_FIELD = 'cb_type'
+
 
 class CB_FILE_TYPE(str, Enum):
     B6 = 'CB_6'
@@ -14,6 +17,10 @@ class CB_FILE_TYPE(str, Enum):
     @property
     def csv(self) -> str:
         return f'{self.value}.csv'
+
+    @classmethod
+    def order(cls) -> list[str]:
+        return [cls.BASELINE.value, cls.B6.value, cls.B10.value, cls.B15.value]
 
 
 class SignalColumns(str, Enum):
