@@ -8,7 +8,7 @@ import numpy as np
 
 from src.common.constants import CONDITION_FIELD, ID_FIELD
 from src.common.logger import logger
-from src.common.mytypes import ArrayDataDict, PatientData
+from src.common.mytypes import ArrayDataDict, FloatArray, PatientData
 
 
 class ResultsGenerator:
@@ -77,3 +77,9 @@ class ResultsGenerator:
         self._results[cb_data_type][patient_id][field_name] = value
         if field_name not in self._fieldnames:
             self._fieldnames.append(field_name)
+
+    def _get_signal(self, cb_data: ArrayDataDict, name: str, cb_data_type: str, pid: int) -> FloatArray | None:
+        signal = cb_data.get(name)
+        if signal is None:
+            logger.error(f'Field {name} does not exist in {cb_data_type} for patient {pid}!')
+        return signal

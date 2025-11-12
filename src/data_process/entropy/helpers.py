@@ -6,6 +6,7 @@ from numpy.typing import NDArray
 from scipy.stats import chi2, rankdata
 
 from src.common.constants import DEFAULT_EMBEDDING_DIMENSION, DEFAULT_SIGNIFICANCE_LEVEL, DEFAULT_TIME_DELAY
+from src.common.mytypes import FloatArray
 
 _DEFAULT_RANKING_METHOD = 'ordinal'
 
@@ -14,6 +15,38 @@ class DVPartition(TypedDict):
     mins: NDArray[np.integer]
     maxs: NDArray[np.integer]
     N: int
+
+
+def get_points_from_range(
+    points: NDArray[np.integer], dv_part: DVPartition, ranges: tuple[tuple[int, int], ...]
+) -> int:
+    mins: NDArray[np.integer] | None = None
+    maxs: NDArray[np.integer] | None = None
+
+    for start, stop in ranges:
+        part_mins, part_maxs = _get_min_max(dv_part, start, stop)
+
+        # Initialize on first loop
+        if mins is None or maxs is None:
+            mins = part_mins
+            maxs = part_maxs
+        else:
+            mins = np.hstack([mins, part_mins])
+            maxs = np.hstack([maxs, part_maxs])
+
+    mins, maxs = cast(NDArray[np.integer], mins), cast(NDArray[np.integer], maxs)
+    mask = np.all((points >= mins) & (points <= maxs), axis=1)
+    return int(mask.sum())
+
+
+def _get_min_max(dv_part: DVPartition, start: int, stop: int) -> tuple[NDArray[np.integer], NDArray[np.integer]]:
+    return dv_part['mins'][start:stop], dv_part['maxs'][start:stop]
+
+
+def trim_embed_rank(signal: FloatArray, d: int, tau: int) -> NDArray[np.integer]:
+    trimmed = signal[:-d]
+    embedded = get_deleyed_vector(trimmed, d=d, tau=tau)
+    return np.apply_along_axis(lambda x: rank_transform(x), axis=0, arr=embedded)
 
 
 def rank_transform(x: NDArray[np.floating]) -> NDArray[np.integer]:
