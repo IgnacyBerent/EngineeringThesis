@@ -21,8 +21,8 @@ sap_hp_hist = results_generator.add_te_hist('hp', 'sap')
 sap_hp_etco2 = results_generator.add_cte('hp', 'sap', 'etco2')
 
 # %%
-results_generator.generate_results_csv('baroreflex_test2.csv')
+results_generator.generate_results_csv('baroreflex_test.csv')
 
 # %%
-analyzer = StatisticsAnalyzer('baroreflex_test2.csv')
+analyzer = StatisticsAnalyzer('baroreflex_test.csv')
 [analyzer.do_rm_anova_test(field) for field in [hp_sap_dv, sap_hp_dv, hp_sap_hist, sap_hp_hist, sap_hp_etco2]]

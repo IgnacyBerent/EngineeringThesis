@@ -26,6 +26,8 @@ class CB_FILE_TYPE(str, Enum):
 class SignalColumns(str, Enum):
     ABP = 'abp_cnap[mmHg]'
     ETCO2 = 'etco2[mmHg]'
+    FVL = 'fvl'
+    FVR = 'fvr'
 
 
 SAMPLING_FREQUENCY = 200  # Hz

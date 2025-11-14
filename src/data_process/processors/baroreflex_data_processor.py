@@ -2,7 +2,7 @@ from typing import override
 
 from src.common.mytypes import ArrayDataDict
 from src.data_process.processors.data_processor import DataProcessor
-from src.data_process.utils import PeaksMode, get_hp_from_abp, get_peaks, get_sap
+from src.data_process.utils import get_hp_from_abp, get_sap
 
 
 class BaroreflexDataProcessor(DataProcessor):
@@ -13,8 +13,7 @@ class BaroreflexDataProcessor(DataProcessor):
         if abp is None or etco2 is None:
             raise ValueError
 
-        abp_peaks = get_peaks(abp, PeaksMode.UP)
-        sap = get_sap(abp, abp_peaks)
+        sap = get_sap(abp)
         hp = get_hp_from_abp(abp)
         etco2_shortened = self._average_to_length(etco2, len(sap))
         return {'sap': sap, 'hp': hp, 'etco2': etco2_shortened}

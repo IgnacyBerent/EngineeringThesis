@@ -30,7 +30,7 @@ class DataProcessor(ABC):
                 },
             }
         except ValueError:
-            logger.error(f'Missmatching field names for: {patient_raw_data}')
+            logger.error(f'Missmatching field names for patient: {patient_raw_data["id"]}')
 
     @staticmethod
     def _average_to_length(signal_to_shorten: FloatArray, target_length: int) -> FloatArray:

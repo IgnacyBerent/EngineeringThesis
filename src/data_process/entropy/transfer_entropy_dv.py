@@ -2,6 +2,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from src.common.constants import DEFAULT_EMBEDDING_DIMENSION, DEFAULT_SIGNIFICANCE_LEVEL, DEFAULT_TIME_DELAY
+from src.common.logger import logger
 from src.data_process.entropy.helpers import (
     dv_partition_nd,
     get_points_from_range,
@@ -21,6 +22,10 @@ def te_dv(
     Calculates the transfer entropy of TE_{Y->X}
     """
     if len(signalX) != len(signalY):
+        logger.error(
+            f"""Signals should have the same legth, instead have: \n
+            X:{len(signalX)}, Y:{len(signalY)}"""
+        )
         raise ValueError('time series entries need to have same length')
 
     futureX = rank_transform(signalX[(embedding_dimension - 1) * time_delay + 1 :])

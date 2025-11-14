@@ -6,6 +6,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from src.common.constants import SAMPLING_FREQUENCY
+from src.common.mytypes import FloatArray
 
 _DEFAULT_MIN_DELAY = 0.3
 _DEFAULT_FIND_PEAKS_METHOD = 'elgendi'
@@ -39,7 +40,7 @@ def get_peaks(
             method=method,
             mindelay=mindelay,
         )
-    elif mode in (PeaksMode.DOWN, PeaksMode.BOTH):
+    if mode in (PeaksMode.DOWN, PeaksMode.BOTH):
         peaks_down = _find_peaks(
             cleaned_signal * -1,
             sampling_rate=sampling_rate,
@@ -79,21 +80,23 @@ def get_hp_from_abp(abp: NDArray[np.floating], sampling_rate: int = SAMPLING_FRE
     return get_hp_from_peaks(peaks)
 
 
-def get_sap(abp: NDArray[np.floating], peaks: NDArray[np.floating]) -> NDArray[np.floating]:
+def get_sap(abp: NDArray[np.floating]) -> NDArray[np.floating]:
     """
     Calculate Systolic Amplitude Peaks (SAP) from abp signal and its peak indices.
         It is assumed that the peaks are upward peaks.
         SAP(i) equals the value of the signal at the peak index.
     """
+    peaks = get_peaks(abp, PeaksMode.UP)
     return np.array([abp[peak] for peak in peaks])[1:]  # skip first peak to match length of hp
 
 
-def get_map(abp: NDArray[np.floating], peaks: NDArray[np.floating]) -> NDArray[np.floating]:
+def get_map(abp: NDArray[np.floating]) -> NDArray[np.floating]:
     """
     Calculate Mean Arterial Pressure (MAP) from abp signal and its peak indices.
         It assumes that the peaks are alternating between downward and upward peaks.
         The first peak is assumed to be a downward peak.
     """
+    peaks = get_peaks(abp, PeaksMode.BOTH)
     first_downward_peak_index = 0 if peaks[0] < peaks[1] else 1
 
     map_ = []
@@ -103,3 +106,8 @@ def get_map(abp: NDArray[np.floating], peaks: NDArray[np.floating]) -> NDArray[n
         map_.append((2 * dp + sp) / 3)
 
     return np.array(map_)
+
+
+def get_mfv(fv: FloatArray) -> FloatArray:
+    peaks = get_peaks(fv, PeaksMode.UP)
+    return np.array([np.mean(fv[peaks[i - 1] : peaks[i]]) for i, _ in enumerate(peaks) if i > 0])

@@ -2,6 +2,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from src.common.constants import DEFAULT_EMBEDDING_DIMENSION, DEFAULT_SIGNIFICANCE_LEVEL, DEFAULT_TIME_DELAY
+from src.common.logger import logger
 from src.data_process.entropy.helpers import (
     dv_partition_nd,
     get_points_from_range,
@@ -20,9 +21,13 @@ def cjte_dv(
     dvp_alpha=DEFAULT_SIGNIFICANCE_LEVEL,
 ) -> float:
     """
-    Calculates the conditional joint transfer entropy of CJTE_{X,Y->Z|W}
+    Calculates the conditional joint transfer entropy of CJTE_{(X,Y)->Z|W}
     """
-    if len(signalX) != len(signalY) != len(signalZ) != len(signalW):
+    if not len(signalX) == len(signalY) == len(signalZ) == len(signalW):
+        logger.error(
+            f"""Signals should have the same legth, instead have: \n
+            X:{len(signalX)}, Y:{len(signalY)}, Z:{len(signalZ)}, W:{len(signalW)}"""
+        )
         raise ValueError('time series entries need to have same length')
 
     futureZ = rank_transform(signalZ[(embedding_dimension - 1) * time_delay + 1 :])
