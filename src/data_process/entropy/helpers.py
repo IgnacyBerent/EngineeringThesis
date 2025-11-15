@@ -5,7 +5,7 @@ import numpy as np
 from numpy.typing import NDArray
 from scipy.stats import chi2, rankdata
 
-from src.common.constants import DEFAULT_EMBEDDING_DIMENSION, DEFAULT_SIGNIFICANCE_LEVEL, DEFAULT_TIME_DELAY
+from src.common.constants import DEFAULT_SIGNIFICANCE_LEVEL
 from src.common.mytypes import FloatArray
 
 _DEFAULT_RANKING_METHOD = 'ordinal'
@@ -43,26 +43,29 @@ def _get_min_max(dv_part: DVPartition, start: int, stop: int) -> tuple[NDArray[n
     return dv_part['mins'][start:stop], dv_part['maxs'][start:stop]
 
 
-def trim_embed_rank(signal: FloatArray, d: int, tau: int) -> NDArray[np.integer]:
-    trimmed = signal[:-d]
-    embedded = get_deleyed_vector(trimmed, d=d, tau=tau)
+def get_past_vectors(signal: FloatArray, d: int, tau: int) -> NDArray[np.integer]:
+    embedded = get_deleyed_vector(signal, d=d, tau=tau)
     return np.apply_along_axis(lambda x: rank_transform(x), axis=0, arr=embedded)
 
 
-def rank_transform(x: NDArray[np.floating]) -> NDArray[np.integer]:
-    return rankdata(x, method=_DEFAULT_RANKING_METHOD)
-
-
-def get_deleyed_vector(x: NDArray, d: int = DEFAULT_EMBEDDING_DIMENSION, tau: int = DEFAULT_TIME_DELAY) -> NDArray:
+def get_deleyed_vector(x: NDArray, d: int, tau: int) -> NDArray:
     """
     Embedded (delay) vector U_t^{d,τ} for a variable x is defined as:
 
     U_t^{d,τ} = (U_{t-(d-1)τ}, U_{t-(d-2)τ}, ..., U_t)
     """
-    n = len(x) - (d - 1) * tau
+    n = len(x) - d * tau
     if n <= 0:
         raise ValueError('Time series too short for given embedding.')
-    return np.column_stack([x[i : i + n] for i in range((d - 1) * tau, -1, -tau)])
+    return np.column_stack([x[i - (tau - 1) : i + n - (tau - 1)] for i in range(d * tau - 1, -1, -tau)])
+
+
+def get_future_vector(signal: NDArray, d: int, tau: int) -> NDArray:
+    return rank_transform(signal[d * tau :])
+
+
+def rank_transform(x: NDArray[np.floating]) -> NDArray[np.integer]:
+    return rankdata(x, method=_DEFAULT_RANKING_METHOD)
 
 
 def dv_partition_nd(

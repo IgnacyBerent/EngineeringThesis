@@ -14,15 +14,13 @@ processed_data = data_processor.process_all(raw_data)
 results_generator = BaroreflexResultsGenerator(processed_data)
 
 # %%
-hp_sap_dv = results_generator.add_te_dv('sap', 'hp')
-sap_hp_dv = results_generator.add_te_dv('hp', 'sap')
-hp_sap_hist = results_generator.add_te_hist('sap', 'hp')
-sap_hp_hist = results_generator.add_te_hist('hp', 'sap')
-sap_hp_etco2 = results_generator.add_cte('hp', 'sap', 'etco2')
+sap_hp = results_generator.add_te_dv('hp', 'sap')
+hp_sap = results_generator.add_te_dv('sap', 'hp')
+cte = results_generator.add_cte('hp', 'sap', 'etco2')
 
 # %%
-results_generator.generate_results_csv('baroreflex_test.csv')
+results_generator.generate_results_csv('baroreflex.csv')
 
 # %%
-analyzer = StatisticsAnalyzer('baroreflex_test.csv')
-[analyzer.do_rm_anova_test(field) for field in [hp_sap_dv, sap_hp_dv, hp_sap_hist, sap_hp_hist, sap_hp_etco2]]
+analyzer = StatisticsAnalyzer('baroreflex.csv')
+[analyzer.do_rm_anova_test(field) for field in [hp_sap, sap_hp, cte]]

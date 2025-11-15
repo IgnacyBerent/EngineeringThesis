@@ -5,9 +5,9 @@ from src.common.constants import DEFAULT_EMBEDDING_DIMENSION, DEFAULT_SIGNIFICAN
 from src.common.logger import logger
 from src.data_process.entropy.helpers import (
     dv_partition_nd,
+    get_future_vector,
+    get_past_vectors,
     get_points_from_range,
-    rank_transform,
-    trim_embed_rank,
 )
 
 
@@ -30,9 +30,9 @@ def cjte_dv(
         )
         raise ValueError('time series entries need to have same length')
 
-    futureZ = rank_transform(signalZ[(embedding_dimension - 1) * time_delay + 1 :])
+    futureZ = get_future_vector(signalZ, d=embedding_dimension, tau=time_delay)
     pastX, pastY, pastZ, pastW = (
-        trim_embed_rank(signal, d=embedding_dimension, tau=time_delay)
+        get_past_vectors(signal, d=embedding_dimension, tau=time_delay)
         for signal in [signalX, signalY, signalZ, signalW]
     )
 

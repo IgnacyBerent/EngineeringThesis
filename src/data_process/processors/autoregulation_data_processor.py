@@ -9,7 +9,7 @@ from src.data_process.utils import get_hp_from_abp, get_map, get_mfv, get_sap
 _MINIMAL_VALID_MEAN_FV = 30
 
 
-class AutonomicDataProcessor(DataProcessor):
+class AutoregulationDataProcessor(DataProcessor):
     @override
     def _process_single_cb(self, raw_data: ArrayDataDict) -> ArrayDataDict:
         abp = raw_data.get('abp')
@@ -22,8 +22,12 @@ class AutonomicDataProcessor(DataProcessor):
         _map = get_map(abp)
         mfv = get_mfv(fv)
         hp = get_hp_from_abp(abp)
-        if len(hp) != len(_map):
-            _map = _map[1:]  # to match length
+        if len(hp) < len(_map):
+            _map = _map[len(_map) - len(hp) :]
+        if len(hp) > len(_map):
+            sap = sap[: len(_map) - len(hp)]
+            hp = hp[: len(_map) - len(hp)]
+            mfv = mfv[: len(_map) - len(hp)]
         if len(mfv) - len(hp) < 0:
             sap = sap[: len(mfv) - len(hp)]
             _map = _map[: len(mfv) - len(hp)]

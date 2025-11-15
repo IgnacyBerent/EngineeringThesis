@@ -6,7 +6,7 @@ from src.common.mytypes import PatientData
 from src.data_process.loaders.data_loader import DataLoader
 
 
-class AutonomicDataLoader(DataLoader):
+class AutoregulationDataLoader(DataLoader):
     @property
     @override
     def _data_directory(self) -> Path:

@@ -100,7 +100,7 @@ def get_map(abp: NDArray[np.floating]) -> NDArray[np.floating]:
     first_downward_peak_index = 0 if peaks[0] < peaks[1] else 1
 
     map_ = []
-    for i in range(first_downward_peak_index, len(peaks) - 2, 2):
+    for i in range(first_downward_peak_index, len(peaks) - 1, 2):
         dp = abp[peaks[i]]
         sp = abp[peaks[i + 1]]
         map_.append((2 * dp + sp) / 3)
