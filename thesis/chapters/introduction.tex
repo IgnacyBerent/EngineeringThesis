@@ -14,7 +14,7 @@ The aim of this work is to conduct a comparative analysis of algorithms for tran
 \end{enumerate}
 
 \newpage
-\section{Motivation}\label{sec:motiv}
+\section{Motivation}\label{sec:motivation}
 %TODO: 1, 1.5 strony
 % Heart rate is not a metromone
 % Ogólna prawda: Organiozm , układy autoregulujące homeostaza, reagują w zależności od różnych bodźców na skali milisekund
@@ -23,20 +23,20 @@ The aim of this work is to conduct a comparative analysis of algorithms for tran
 % Użycie zaawansowanych metod pozwlana na pełne przeanalizowanie zmienności
 % Poco chcemy coś warunkować, wpływ innych czynników fizjologicznych na HRV
 % Czego nam brakuje?
-Our human body is an extremly complicated machinery build from many dependent on each other mechanisms. 
-The aim of these mechanisms is to maintain so called homeostasis, which is a "steady-state".
-We are using different metrics to describe this state like ph, body temperature, heart rate.
-Depending on the constantly changing environment the human body has to adjust itself using different mechanisms that work on different time scales from miliseconds to minutes, or even hours or days.
-This mechanisms often demonstrate complex nonlinear dynamics, entagled often in various types of feedback loops. 
-In result studing this systems is not an easy task, that require using more profound techniques, to be able to analysie relationships that take place. \cite{heartmetronome}
+Our human body is an extremly complex biological machinery build from numerous mutually dependent mechanisms. 
+Their main objective is to maintain physiological homeostasis, which can be described using metrics such as pH, body temperature, or heart rate.
+To cope with a constantly changing environment, the organism must continously adjust its physiological parameters through leveraging mechanisms, that operate across multiple time scales - from miliseconds to minutes, hours, or even days \cite{heartmetronome}.
 
-One of the most important system in our body is Autonomic Nervous System (ANS). 
-It is responsible for involuntary functions in our organism, and has two major divisions - Sympathetic Nervous System (SNS) and Parasympathetic Nervous System (PNS).
-The two systems work in the opposite directions to mainain homeostatis.
-SNS is responsible for "fight or flight" response that causes increased heart rate, in contrast PNS tends to slow it and activates "rest and digest" response.
-For this reason each measurement of heart rate is the result of actual dynamic balance between those two components, and because of that we should not expect our heart to work as a perfect metronome.
+One of the key regulatory systems is heart-brain interaction governed by Autonomic Nervous System (ANS). 
+The ANS is responsible for involuntary function of most internal organs and consist of two major divisions: the Sympathetic Nervous System (SNS), and Parasympathetic Nervous System (PNS).
+Although they act in opposing directions, the shifts in their relative balance is crucial for cardiovascular stability and homeostasis.
+The SNS is responsible for "fight or flight" response, increasing heart rate and cardiac output, whereas PNS mediates "rest and digest" state, slowing down the heart and facilitating recovery.
+Importantly, heart rate regulation emerges from nonlinear and dynamic interactions between blood pressure, respiration, and autonomic neural activity \cite{reyes2013utility};\cite{hirsch1981respiratory};\cite{hirsch1996role};\cite{mccraty2009coherent}).
 
-Many studies suggest that variability in heart rate (HRV), which is a reflection of dynamic relationships in our body, carries information from both short-term and long-term memory functions that take place in ANS.
-Low HRV can be used as predictor of future heatlh problems, and is linked to many autonomic dysfuncions. 
-Because of that studing it and researching influence of different physiological factors can be crucial in developing modern techniques in the disease treatment.
+In this context, the heart rate variability (HRV) is recognized as a non-invasive measure of neurocardiac function. 
+A healthy heart is not expected to function as a perfect metronome, rather natural fluctuations in RR intervals reflect a valid physilogical responsiveness \cite{heartmetronome}.
+Numerous studies have shown that reduced HRV and diminished complexity are associated with autonomic dysfunction and increased risk of health disorders (\cite{tsuji1996impact};\cite{carney2001depression};\cite{agelink2002relationship};\cite{giardino2004combined};\cite{lehrer2004biofeedback};\cite{cohen2006power}).
+This phenomenon aligns with the loss-of-complexity theory, which suggests that aging and patological states often suppress inherent self-regulatory mechanisms, reducing variability and ability to adapt to stress \cite{lossofcomplexity}.
 
+However, the simple time domain measurements, or spectral analysis techniques, which are based on linear mathematics, are not sufficient in assesing the complex nature of such nonlinear and dynamic systems (\cite{heartmetronome};\cite{lossofcomplexity}).
+Based on concepts of 
