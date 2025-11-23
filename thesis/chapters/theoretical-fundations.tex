@@ -1,40 +1,44 @@
-\chapter{Theoretical Foundations}\label{ch:theorfund}
+\chapter{Theoretical Foundations}\label{ch:theoretical-fundations}
 
-\section{Baroreflex}
+\section{Baroreflex}\label{sec:baroreflex}
 % Czemu te sygnały, metody (z fizjologii) i co2?
 
-\section{Information theory}
-Mathematical treatment of the communication proposed by \cite{Shannon1948} where the definition of entropy was presented. 
-Based on so called \textit{Shannon entropy} all the entropy--based solutions are built on.
+\section{Information Theory}\label{sec:information-theory}
+In 1948 an article titled: \textit{"A Mathematical Theory of Communication"} was proposed by Shannon, giving raise to a new discipline called Information Theory \cite{Shannon1948}.
 
-\subsection{Shannon entropy}
-The first and the simplest form of entropy definition.
-The Shannon entropy of discrete random variable \textit{X} with a probability mass fucntion $p$ is defined as:
+Shannon's main objective was to establish a quantitative measure of information independent of its meaning.
+From this foundation, his work provided the methodology to calculate two fundamental limits: the theoretical maximum compression of a message (measured in bits) without losing information it conveys, and the noisy channel capacity, which is the maximum rate at which information can be transmitted at nearly zero error.
+
+The theory contributed fundamentally to fields like statistical physics, computer science, and mathematical statistics, and was also found useful in diverse areas such as economics, quantum mechanics, and in the study of human physiology (\cite{Cover2006};\cite{lossofcomplexity}).
+
+\subsection{Shannon Entropy}
+Shannon proposed his own definition of Entropy (called also Shannon Entropy), different from the one in the thermodynamics.
+
+In Information Theory, The Entropy $H(X)$ of a discreate random variable $X$ and propability mass function $p(x) = Pr\{X = x\}, x \in X$ is defined as:
 \begin{equation}\label{eq:entropy}
     H(X) = -\sum_{x\in X} p(x) \cdot log(p(x))
 \end{equation}
-Used \textit{log} notation denotes natural logarithm, and the outcome can be understood as ammount of information in nats. 
-In case of logarithm of base 2 that would mean that the information is measured in bits and would be at the same time the data compression limit \cite{Cover2006}.
+For convenience $p(x)$ notation is used instead of $p_X(x)$, and $log$ over $log_2$.
+Thus, $p(x)$ and $p(y)$ refer to two different random variables and are equivalent to $p_X(x)$ and $p_Y(y)$.
 
-As an example of how it works, we can take tossing a fair coin 3 times. In Table \ref{tab:cointossing} we observe that tossing a coin 3 times can result in one of the 8 possible states, each of equal probability equal to $\frac{1}{16}$. After putting this into formula \ref{eq:entropy} we are getting:
+The base of $log$ in the formula denotes the unit in which Entropy is calculated, where base 2 stands for bits. 
+The resulting number can be interpreted in different ways, based on the use case.
+From the information transfer perspective $H(X)$ will mean the maximum theoretical compression of $X$, where in the biological field it will rather be interpreted as total uncertrainity, ammount of information, or complexity of system $X$ (\cite{Cover2006};\cite{Shannon1948};\cite{lossofcomplexity}).
+
+As an example, we can take tossing a fair coin 3 times, denoting its result as $X$. 
+In Table \ref{tab:cointossing} we observe that we can have 8 possible outcomes $x$, each of equal probability $p(x)$ equal to $\frac{1}{8}$.
+After putting this into formula \ref{eq:entropy} we have:
 \begin{equation}
-    H(X) = -\sum_{i=1}^{8} p(i) \cdot log(p(i)) = -\sum_{i=1}^{8} \frac{1}{8} \cdot log(\frac{1}{8}) \approx 2.08\text{ nats}
-\end{equation}
-or for base 2 logarithm:
-\begin{equation}
-    H(X) = -\sum_{i=1}^{8} p(i) \cdot log_2(p(i)) = 3\text{ bits}
+    H(X) = -\sum_{x=1}^{8} p(x) \cdot log(p(x)) = 3\text{ bits}
 \end{equation}
 
-Oryginally natural logarithms were used and so is done in this work. 
-
-It is worth mentioning that for many cases in biological signals imporoved versions of Shannon entropy are commonly used, such as fuzzy, sample entropy \cite{Castiglioni2023}, or multiscale entropy which applies entropy to different time scales \cite{Costa2003}.
 \begin{table}[H]
 \centering
 \caption{All possible combinations of tossing a fair coin 3 times, where H and T denotes respectively heads and tails}
 \label{tab:cointossing}
 \begin{tabular}{|c|c|c|}
 \hline
-\textbf{No.} & \textbf{Coin Combination} & \textbf{Probability p(x)} \\
+\textbf{No.} & \textbf{Coin Combination} & \textbf{Probability} \\
 \hline
 1 & HHH & $\frac{1}{8}$ \\
 2 & HHT & $\frac{1}{8}$ \\
@@ -48,110 +52,70 @@ It is worth mentioning that for many cases in biological signals imporoved versi
 \end{tabular}
 \end{table}
 
-\subsection{Joint entropy}
-The slight modyfication of Shannon Entropy is Joint Entropy which is uncertainty included in the random vector $(X,Y)$ defined as:
-\begin{equation}\label{eq:joint_entropy}
+In terms of biological systems improved versions of Shannon Entropy are found to be more effective, such as Fuzzy, Sample, Distribution, or Multiscale Entropy(\cite{Costa2003};\cite{Castiglioni2023}).
+Nevertheless the core idea of measuring the ammount of information in the system stays the same.
+
+\subsection{Joint Entropy and Conditional Entropy}\label{subsec:je_ce}
+The natural extension of Entropy will be calculating it for a pair of random variables $X$ and $Y$.
+
+The Joint Entropy (JE) $H(X,Y)$ of a pair of discrete random variables ($X$, $Y$) with a joint distribution $p(x,y)$ is defined as:
+\begin{equation}\label{eq:joint-entropy}
     H(X,Y) = -\sum_{x\in X}\sum_{y\in Y} p(x,y) \cdot log(p(x,y))
 \end{equation}
-As and example we can provide extension of previous experiment by tossing a coin 2 times with addition of rolling a dice once. 
-The propability is in Table \ref{tab:cointossing_dice_2coins}. After applying formula \ref{eq:joint_entropy} we are getting:
-\begin{equation}
-    H(X,Y) = -\sum_{i=1}^{4}\sum_{j=1}^{6} p(i,j) \cdot log(p(i,j)) = -\sum_{i=1}^{4}\sum_{j=1}^{6} p(\frac{1}{24}) \cdot log(p(\frac{1}{24})) \approx 3.18\text{ nats}
-\end{equation}
-\begin{table}[H]
-\centering
-\caption{All possible combinations of tossing a fair coin 2 times and throwing a fair 6-sided die once, where H and T denote heads and tails}
-\label{tab:cointossing_dice_2coins}
-\begin{tabular}{|c|c|c|c|}
-\hline
-\textbf{No.} & \textbf{Coin Combination} & \textbf{Die Result} & \textbf{Probability $p(x,y)$} \\
-\hline
-1  & HH & 1 & $\frac{1}{24}$ \\
-2  & HH & 2 & $\frac{1}{24}$ \\
-3  & HH & 3 & $\frac{1}{24}$ \\
-4  & HH & 4 & $\frac{1}{24}$ \\
-5  & HH & 5 & $\frac{1}{24}$ \\
-6  & HH & 6 & $\frac{1}{24}$ \\
-7  & HT & 1 & $\frac{1}{24}$ \\
-8  & HT & 2 & $\frac{1}{24}$ \\
-9  & HT & 3 & $\frac{1}{24}$ \\
-10 & HT & 4 & $\frac{1}{24}$ \\
-11 & HT & 5 & $\frac{1}{24}$ \\
-12 & HT & 6 & $\frac{1}{24}$ \\
-13 & TH & 1 & $\frac{1}{24}$ \\
-14 & TH & 2 & $\frac{1}{24}$ \\
-15 & TH & 3 & $\frac{1}{24}$ \\
-16 & TH & 4 & $\frac{1}{24}$ \\
-17 & TH & 5 & $\frac{1}{24}$ \\
-18 & TH & 6 & $\frac{1}{24}$ \\
-19 & TT & 1 & $\frac{1}{24}$ \\
-20 & TT & 2 & $\frac{1}{24}$ \\
-21 & TT & 3 & $\frac{1}{24}$ \\
-22 & TT & 4 & $\frac{1}{24}$ \\
-23 & TT & 5 & $\frac{1}{24}$ \\
-24 & TT & 6 & $\frac{1}{24}$ \\
-\hline
-\end{tabular}
-\end{table}
 
-\subsection{Conditional entropy}
-Another important definition is Conditional Entropy (CE):
+Instead of calculating Entropy for the joint propability distribution, we can define Entropy over the conditioning variable instead.
 
-\begin{equation}\label{eq:conditional_entropy}
-    H(X|Y) = -\sum_{x\in X}\sum_{y\in Y} p(x,y) \cdot log(\frac{p(x,y)}{p(y)})
+The Conditional Entropy (CE) $H(X|Y)$ if ($X$,$Y$) $\sim$ $p(x,y)$ is:
+\begin{equation}\label{eq:conditional-entropy}
+    H(X|Y) = -\sum_{x\in X}\sum_{y\in Y} p(x,y) \cdot log(p(x|y))
 \end{equation}
 
-We can also define Conditional entropy with usage of  Joint and Shannon entropy using chain rule:
+The relation between CE  and JE  can be expressed using the following chain rule:
 
-\begin{equation}\label{eq:conditional_entropy_chain}
+\begin{equation}\label{eq:conditional-entropy-chain}
     H(X|Y) = H(X,Y) - H(Y)
 \end{equation}
 
-We can consider it as a uncertrainity of $X$ given $Y$. It has also the following property:
-\begin{equation}
-    0 \leq H(X|Y) \leq H(X)
-\end{equation}
-The lower the value of Conditional Entropy, the better $Y$ reduces uncertainty of X. 
-At $H(X|Y)=H(X)$, the variable $Y$ is irrelevant for the reduction in uncertainty.
+The CE can be interpreted as a reduction of the uncertrainity of $X$ given $Y$, so the better $Y$ helps to predict $X$, the smaller $H(X|Y)$ is (\cite{Shannon1948};\cite{Cover2006}).
 
 \subsection{Transfer entropy}
-Definition of Transfer Entropy (TE) was proposed for the first time in the article "Measuring Information Transfer" by \cite{Schreiber2000}. 
-It is a model-free measure of the directional inflow from a time series $Y_t$ to a time series $X_t$.
+To measure to which extent information is transfered from individual components in a dynamic and non-determenistic systems, TE was introduced \cite{Schreiber2000}. 
 
-TE does Markovian assumption that \textit{a discrete time stochastic process $\{X_t\}_t\in N$ is a Markov chain of order m when, for any $t>m$, the follwoing property holds}:
+The dynamical structure is needed for TE calculation, rather than static probabilities, as it had place for the previous entropies.
+This effect can be achived with introduction of transition probabilities from Markov process.
+The Markov random process $X$ of order $k$ has the property, that conditional probability of finding it in state $x_{t}$ at time $t$, is independent of the state $x_{t-k-1}$.
+This fact can be expressed with the following equation:
 \begin{equation}\label{eq:markov-chain}
-    P(X_t=x_t|X_{t-1} = x_{t-1}, \dots, X_1=x_1) =
+  p(x_t|x_{t-1}, \dots, x_{t-k-1}) = p(x_t|x_{t-1}, \dots, x_{t-k})
 \end{equation}
-\begin{equation*}
-     P(X_t=x_t|X_{t-1} = x_{t-1}, \dots, X_{t-m}=x_{t-m})
-\end{equation*}
 
-So, the future state of this process depends only on its past $m$ states. 
-From the notation it also results in that TE will be considered only in discrete time.
-
-The last thing to define TE is Embedding Vector. 
-\textit{Let $\{U_t\}_{t \in \mathbb{Z}}$ be a time series. 
-The embedding vector $U_t^{d,\tau}$ is the following random vector of past states of $U_t$}:
+In other words - the conditional probability of finding $X$ in state $x_t$ only depends on $k$ last states.
+The shorthand notation $x_t^{(k)} = (i_t, \dots, i_{t-k})$ from this point will be used.
+To introduce the time delay $\tau$ the following embedding vector of the past states is constructed:
 \begin{equation}\label{eq:embedding-vector}
-    U_t^{d,\tau} = (U_t,U_{t-\tau},U_{t-2\tau},\dots,U_{t-(d-1)\tau})
+  x_t^{k,\tau} = (x_t, x_{t-\tau}, x_{t-2\tau} \dots, x_{t-k\tau})
 \end{equation}
 
-In our case the notation can be simplified to $U_t^{(d)}$ when $\tau = 1$. 
-In literature, the parameter d is called the embedding dimension and $\tau$ is called the embedding delay
+However $\tau$ called also embedding delay in the most cases is set to be equal to 1, therefore is not used in the notation.
+The order of markov process noted in equation \ref{eq:embedding-vector} as $k$ is often called embedding dimensions.
 
-Now we can finally define Transfer Entropy at time t, from $l^{th}$ order Markov process $Y_t$ to the $k^{th}$ order Markov process $X_t$. 
-Simillary as in case of CE we can do it in both ways:
-\begin{equation}\label{eq:te-analytical}
-  TE_{Y\to X}^{k,l}(t) = \sum_{x_t,x_{t-1}^{(k)},y_{t-1}^{(l)}}p(x_t,x_{t-1}^{(k)},y_{t-1}^{(l)}) \cdot log(\frac{p(x_t|x_{t-1}^{(k)},y_{t-1}^{(l)})}{p(x_t|x_{t-1})})
-\end{equation}
-or
-\begin{equation}\label{eq:te-nonanalytical}
-    TE_{Y\to X}^{k,l}(t) = H(X_{t}|X_{t-1}^{(k)}) - H(X_t|X_{t-1}^{(k)},Y_{t-1}^{(m)}) 
+Finally $TE_{Y\to X}$ from random process $Y$  to random process $X$, with the corenspoding states $y_t$, $x_t$ and embedding dimensions $l$, $k$ is defined as:
+\begin{equation}\label{eq:te}
+  TE_{Y\to X}^{k,l} = \sum_{x_t,x_{t-1}^{(k)},y_{t-1}^{(l)}}p(x_t,x_{t-1}^{(k)},y_{t-1}^{(l)}) \cdot log(\frac{p(x_t|x_{t-1}^{(k)},y_{t-1}^{(l)})}{p(x_t|x_{t-1}^{(k)})})
 \end{equation}
 
-From equation \ref{eq:te-nonanalytical} we can understand it as a reduction in uncertainty of $X$ resolved by past values of $Y$ over past values of just $X$.
+From the original paper and other scientific publications the embedding dimensions $l$ and $k$ are usually set as $l=k=1$ \cite{Schreiber2000}.
 
-\subsection{Conditional joint transfer entropy}
+\subsection{Conditional Transfer Entropy and Conditional Joint Transfer Entropy}
+As in the subsection \ref{subsec:je_ce} the basic Shannon Entropy can be extended with joints and conditions and the same property is also true for TE to aquire even more powerful measurement tool.
+
+The Conditional Transfer Entropy (CTE) introduces thrid variable $Z$ responsible for conditioning.
+This property is crucial in accessing the information transfer from one process to the other excluding the influence of the third factor.
+
+Similarly to the definition \ref{eq:te}  $CTE_{Y\to X|Z}$ is equal to:
+\begin{equation}\label{eq:cte}
+  CTE_{Y\to X|Z}^{k} = \sum_{x_t,x_{t-1}^{(k)},y_{t-1}^{(k)},z_{t-1}^{(k)}}p(x_t,x_{t-1}^{(k)},y_{t-1}^{(l)},z_{t-1}^{(k)}) \cdot log(\frac{p(x_t|x_{t-1}^{(k)},y_{t-1}^{(k)},z_{t-1}^{(k)})}{p(x_t|x_{t-1}^{(k)},z_{t-1}^{(k)})})
+\end{equation}
 
 \section{Estimation techniques}
 \cite{genccaga2018transfer}\cite{lee2012transfer}\cite{rozo2021benchmarking}\cite{wen2023kendall}\cite{dvp}
