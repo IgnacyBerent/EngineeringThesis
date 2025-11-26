@@ -112,7 +112,7 @@ Usually the following property is being used to simplify TE formula:
 \end{equation}
 
 So \ref{eq:te} can be also represented as:
-\begin{equation}\label{eq:te2}
+\begin{equation}\label{eq:te-simplified}
   TE_{Y\to X}^{k,l} = \sum p(x_t,x_{t-1}^{(k)},y_{t-1}^{(l)}) \cdot log(\frac{p(x_t,x_{t-1}^{(k)},y_{t-1}^{(l)})p(x_{t-1}^{(k)})}{p(x_t,x_{t-1}^{(k)})p(x_{t-1}^{(k)},y_{t-1}^{(l)})})
 \end{equation}
 
@@ -120,18 +120,19 @@ This way the calculation comes down to calculating only the joint probabilities.
 From the original paper and other scientific publications the embedding dimensions $l$ and $k$ are usually set as $l=k=1$ (\cite{Schreiber2000};\cite{lee2012transfer}).
 
 \subsection{Conditional Transfer Entropy and Conditional Joint Transfer Entropy}
-As in the subsection \ref{subsec:je_ce} the basic Shannon Entropy can be extended with joints and conditions, and the same property is also true for TE to aquire even more powerful measurement tool.
+Unfortunatly TE is often under or over estimated due to presense of the hidden interactions that rule the very nature of the analysed casuality.
+Due to that conditioning has been proven as a necessary mean to achive the best accuracy in accessing the dynamics.
+This effect is achived in Conditional Transfer Entropy (CTE) by introducing a third variable $Z$ (\cite{mehta2018directional}\cite{shahsavari2020estimating}).
 
-The Conditional Transfer Entropy (CTE) introduces thrid variable $Z$ responsible for conditioning.
-This property is crucial in accessing the information transfer from one process to the other, excluding the influence of the third factor.
-
-Similarly to the definition \ref{eq:te}  
-$CTE_{Y\to X|Z}$ is equal to:
+Similarly to the definition \ref{eq:te} $CTE_{Y\to X|Z}$ is equal to:
 \begin{equation}\label{eq:cte}
   CTE_{Y\to X|Z}^{k} = \sum p(x_t,x_{t-1}^{(k)},y_{t-1}^{(l)},z_{t-1}^{(k)}) \cdot log(\frac{p(x_t|x_{t-1}^{(k)},y_{t-1}^{(k)},z_{t-1}^{(k)})}{p(x_t|x_{t-1}^{(k)},z_{t-1}^{(k)})})
 \end{equation}
 
-Conditional Joint Transfer Entropy (CJTE) allows to calculate transfer from two sources $X$ and $Y$ to $Z$, under condition $W$, yet often $Y=W$ is used.
+%TODO: Add equatuion for jte and use x1 x2 instead?
+There are scenarios where accessing the information transfer from two sources is needed.
+In such cases Joint Transfer Entropy (JTE) is needed, or to include also conditioning, Conditional Joint Transfer Entropy (CJTE).
+CJTE allows to calculate transfer from two sources $X$ and $Y$ to $Z$, under condition $W$, yet usage of the same signal as both source and condition is also common \cite{porta2015disentangling}.
 
 \begin{equation}\label{eq:cjte}
   CJTE_{(X,Y)\to Z|W}^{k} = \sum p(z_t,z_{t-1}^{(k)},x_{t-1}^{(k)},y_{t-1}^{(k)},w_{t-1}^{(k)}) \cdot log(\frac{p(z_t|z_{t-1}^{(k)},x_{t-1}^{(k)},y_{t-1}^{(k)},w_{t-1}^{(k)})}{p(z_t|z_{t-1}^{(k)},w_{t-1}^{(k)})})
