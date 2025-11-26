@@ -83,9 +83,9 @@ The CE can be interpreted as a reduction of the uncertrainity of $X$ given $Y$, 
 \subsection{Transfer entropy}
 To measure to which extent information is transfered from individual components in a dynamic and non-determenistic systems, TE was introduced as a model-free tool (\cite{Schreiber2000};\cite{wen2023kendall}). 
 
-The dynamical structure is needed for TE calculation, rather than static probabilities, as it had place for the previous entropies.
-This effect can be achived with introduction of transition probabilities from Markov process.
-The Markov random process $X$ of order $k$ has the property, that conditional probability of finding it in state $x_{t}$ at time $t$, is independent of the state $x_{t-k-1}$.
+The dynamical structure is needed for TE calculation, rather than static probabilities, as it had place in the previous formulas.
+This effect can be achived with the introduction of transition probabilities from Markov process.
+The Markov random process $X$ of order $k$ has a property, that conditional probability of finding it in state $x_{t}$ at time $t$, is independent of the state $x_{t-k-1}$.
 This fact can be expressed with the following equation:
 \begin{equation}\label{eq:markov-chain}
   p(x_t|x_{t-1}, \dots, x_{t-k-1}) = p(x_t|x_{t-1}, \dots, x_{t-k})
@@ -129,10 +129,13 @@ Similarly to the definition \ref{eq:te} $CTE_{Y\to X|Z}$ is equal to:
   CTE_{Y\to X|Z}^{k} = \sum p(x_t,x_{t-1}^{(k)},y_{t-1}^{(l)},z_{t-1}^{(k)}) \cdot log(\frac{p(x_t|x_{t-1}^{(k)},y_{t-1}^{(k)},z_{t-1}^{(k)})}{p(x_t|x_{t-1}^{(k)},z_{t-1}^{(k)})})
 \end{equation}
 
-%TODO: Add equatuion for jte and use x1 x2 instead?
-There are scenarios where accessing the information transfer from two sources is needed.
-In such cases Joint Transfer Entropy (JTE) is needed, or to include also conditioning, Conditional Joint Transfer Entropy (CJTE).
-CJTE allows to calculate transfer from two sources $X$ and $Y$ to $Z$, under condition $W$, yet usage of the same signal as both source and condition is also common \cite{porta2015disentangling}.
+There are scenarios where accessing the information transfer from two, or more, sources is needed.
+In such cases, Joint Transfer Entropy (JTE) is the solution, or to include also conditioning, Conditional Joint Transfer Entropy (CJTE).
+CJTE can be also used in the way, where the same signal is being used twice - as source and as condition ($Y=W$) - resulting in synergic impact of $X$ and $Y$ on $Z$, excluding past of $Y$ \cite{porta2015disentangling}.
+
+\begin{equation}\label{eq:jte}
+  JTE_{(X,Y)\to Z}^{k} = \sum p(z_t,z_{t-1}^{(k)},x_{t-1}^{(l)},y_{t-1}^{(k)}) \cdot log(\frac{p(z_t|z_{t-1}^{(k)},x_{t-1}^{(k)},y_{t-1}^{(k)})}{p(z_t|z_{t-1}^{(k)})})
+\end{equation}
 
 \begin{equation}\label{eq:cjte}
   CJTE_{(X,Y)\to Z|W}^{k} = \sum p(z_t,z_{t-1}^{(k)},x_{t-1}^{(k)},y_{t-1}^{(k)},w_{t-1}^{(k)}) \cdot log(\frac{p(z_t|z_{t-1}^{(k)},x_{t-1}^{(k)},y_{t-1}^{(k)},w_{t-1}^{(k)})}{p(z_t|z_{t-1}^{(k)},w_{t-1}^{(k)})})
