@@ -15,14 +15,6 @@ The aim of this work is to conduct a comparative analysis of algorithms for tran
 
 \newpage
 \section{Motivation}\label{sec:motivation}
-%TODO: 1, 1.5 strony
-% Heart rate is not a metromone
-% Ogólna prawda: Organiozm , układy autoregulujące homeostaza, reagują w zależności od różnych bodźców na skali milisekund
-% Autonomiczny ukłąd Nerwowy - odpowiada za pracę prawie wszytskich organów wciele, łuk odruchowy jest złożony  a daynamika jest nielioniowa, więc do opisu trzeba stosować zaawansowane nieliniowe metryki
-% Przy zaburzonej homestozie (przy patologiach) następuje przytłumienie mechanizmów autoregulujących powodująć spadek entropi (teoria dekompleksyfikacji) (przy asystoli / migotanie przedsionkow moze sie podniesc)
-% Użycie zaawansowanych metod pozwlana na pełne przeanalizowanie zmienności
-% Poco chcemy coś warunkować, wpływ innych czynników fizjologicznych na HRV
-% Czego nam brakuje?
 A human body is an extremly complex biological machinery build from numerous mutually dependent mechanisms. 
 Their main objective is to maintain physiological homeostasis, which can be described using metrics such as pH, body temperature, or heart rate.
 To cope with a constantly changing environment, the organism must continously adjust its physiological parameters through leveraging mechanisms, that operate across multiple time scales - from miliseconds to minutes, hours, or even days \cite{heartmetronome}.
@@ -37,6 +29,8 @@ In this context, the heart rate variability (HRV) is recognized as a non-invasiv
 A healthy heart is not expected to function as a perfect metronome, rather natural fluctuations in RR intervals reflect a valid physilogical responsiveness \cite{heartmetronome}.
 Numerous studies have shown that reduced HRV and diminished complexity are associated with autonomic dysfunction and increased risk of health disorders (\cite{tsuji1996impact};\cite{carney2001depression};\cite{agelink2002relationship};\cite{giardino2004combined};\cite{lehrer2004biofeedback};\cite{cohen2006power}).
 This phenomenon aligns with the loss-of-complexity theory, which suggests that aging and patological states often suppress inherent self-regulatory mechanisms, reducing variability and ability to adapt to stress \cite{lossofcomplexity}.
+However, large-scale measurement of (HRV) is challenging because it requires electrocardiography (ECG).
+For this reason, baroreflex sensitivity (BRS) can be used as an alternative, offering the benefit of being acquirable from commonly used, non-invasive arterial blood pressure (ABP) measurement alone \cite{la1995baroreflex}.
 
 However, the simple time domain measurements, or spectral analysis techniques, which are based on linear mathematics, are not sufficient in assesing the complex nature of such nonlinear and dynamic systems (\cite{heartmetronome};\cite{lossofcomplexity}).
 Based on concepts of Information Theory by Shannon, new techniques of accessing casual relationships in complex systems have been introduced with big potential in analysis of the physiological data, such as covered in this work Transfer Entropy (TE) (\cite{Shannon1948}; \cite{Schreiber2000};

@@ -1,7 +1,65 @@
 \chapter{Theoretical Foundations}\label{ch:theoretical-fundations}
 
 \section{Baroreflex}\label{sec:baroreflex}
-% Czemu te sygnały, metody (z fizjologii) i co2?
+%TODO: Czemu te sygnały, metody (z fizjologii) i co2?
+% feedfoward feedbackward - jako dwa rodzaje przenoszenia z abp na hp i co badamy
+% niska f oddechu powoduje zmniejszona aktywnosc sns i nie ma wtedy zmiennosci oddechu podczas pomiaru - kontrola warunku
+% modulowanie wspolczolnego oddechu, wykluczi
+% miecej metod mierzenia baroreflexu, (sekwencyjna, spektralna, kros korelacyjna)
+% nieinwazyjnosc jest z mierzenia abp
+% jak wolne oddychanie wiaze sie z zwiekszona aktywnoscia ukladu wspolczolnego.
+% Niska czestotliwosc oddechu wiaze sie z niska wartoscia etco2, wiec bez jego uwzglednienia mozemy dostac zle wyniki.
+
+\subsection{What is a Baroreflex?}
+The ANS is highly modulated by the baroreflex, a critical homeostatic mechanism.
+The baroreflex is a negative feedback control system that maintains ABP despite fluctuations in the RR interval, i.e., the heart period (HP).
+Baroreceptors are the crucial component of this system, placed in the carotid sinuses and the aortic arch, as well as the chambers of the heart and vena cavae \cite{heartmetronome}.
+
+When active, baroreceptors fire action potenrials, with frequency corenspoding to the ABP level.
+This modulates ANS by activation of the PNS and inhibitation of th SNS, causing reduced peripheral resistance and decrease in HP with contractility, leading to ABP reduction.
+In the oposite direction if SNS is activated, and vagal outflow inhibited the baroreflex increases ABP.
+
+\subsection{Introduction to BRS}\label{subsec:brs}
+This regulatory process, where ABP and HP influence each other, cause nonlinear (sigmoidal) relationship between them.
+Disorder of this relationship is related to pathological states, imparied regulatory capacity and aging (\cite{heartmetronome};\cite{la1995baroreflex};\cite{baroreflexcurve}).
+
+The primary function of the baroreflex is quantified by its sensitivity (BRS) or gain. 
+BRS is defined as the quantitative relationship between the stimulus (input), typically the change in Systolic Arterial Pressure (SAP), and the resulting reflex response (output), the change in HP (RR interval). 
+This index represents the neural gain of the ANS's rapid control system for maintaining blood pressure \cite{baroreflexcurve}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figs/Fitting-different-Boltzmann-sigmoidal-functions-to-real-cardiac-baroreflex-data.png}
+    \caption{Baroreflex curve in a healthy subject \cite{baroreflexcurve}}
+    \label{fig:baroreflexcurve}
+\end{figure}
+
+While BRS is conceptually a measure of the neural feedback mechanism (SAP $\to$ HP), the actual observed signal interaction is a closed-loop system, with present feedfoward mechanism, where HP also mechanically affects SAP via the Frank–Starling and Windkessel effects \cite{javorka2017causal}. 
+
+\subsection{The Influence of Respiration and CO$_2$}
+There are many factors influencing the baroreflex response, such as ventricular mechanoreceptors, chemoreceptors, and humoral substances. 
+Respiration is a particularly critical physiological factor, since it continously affects ANS and baroreflex by \textit{"respiratory gate"} phenomenon.
+It suggests that at every breath, respiratory sinus arrhythmia (RSA) is generated cauisng vagus nerve activity inhibition during inhale, shortering HP, and during expiration the opposite effect takes place [\cite{la1995baroreflex};\cite{russo2017physiological};\cite{la2008baroreflex}].
+
+For measurement standarization and to minimize respiratory confounding effect, controlled breathing protocols are a common solution. 
+However such protocols carry the risk that too low, or too high level of CO$_2$ in subjects will be present, affecting chemoreceptors, which may alter BRS estimation result.
+Therefore, end-tidal CO$_2$ (ETCO$_2$) level monitoring is essential to assure the correctness of the analysis [\cite{debeck2010heart};\cite{Uryga_2024}].
+
+\subsection{BRS Measurement Methods}
+There are numerous ways of BRS measurement, each with its own benefits and drawbacks.
+
+The oldest one, called also pharmacological method, involced injection of vasoconstrictive agent to induce ABP increase.
+This forces cardiovascular system to operate over a wide range of pressures, allowing to obtain data points necessary to fit the complete baroreflex curve.
+While highly accurate, this method is highly invasive and not feasible for long-term monitoring or large-scale application \cite{la1995baroreflex}.
+
+Further studies were trying to asses the BRS in non-invasive way using classical time series analysis techniques from ABP and HP recordings.
+These techniuques included both time and spectral domain linear coupling quantivication from cross-corelation or coherence functions.
+Nonlinear coupling could be acquired by mutual information, but all of these methods were suffering from the presence of the bidirectional coupling between SAP and HP described in subsection \ref{subsec:brs} \cite{javorka2017causal}.
+
+Modern apporaches focus on accessing the directional effect.
+Two methods with their extensions are often cosidered - granger casuality (GC) and TE.
+Studies suggest that these methods are equivalent to each other, under gaussian assumptions, however in case of non-linear dependencies, TE is found to be superior [\cite{javorka2017causal};\cite{lee2012transfer};\cite{barnett2009granger}].
+
 
 \section{Information Theory}\label{sec:information-theory}
 In 1948 an article titled: \textit{"A Mathematical Theory of Communication"} was proposed by Shannon, giving raise to a new discipline called Information Theory \cite{Shannon1948}.
@@ -81,6 +139,7 @@ The relation between CE  and JE  can be expressed using the following chain rule
 The CE can be interpreted as a reduction of the uncertrainity of $X$ given $Y$, so the better $Y$ helps to predict $X$, the smaller $H(X|Y)$ is (\cite{Shannon1948};\cite{Cover2006}).
 
 \subsection{Transfer entropy}
+%TODO: DODAĆ KOD
 To measure to which extent information is transfered from individual components in a dynamic and non-determenistic systems, TE was introduced as a model-free tool (\cite{Schreiber2000};\cite{wen2023kendall}). 
 
 The dynamical structure is needed for TE calculation, rather than static probabilities, as it had place in the previous formulas.
@@ -142,6 +201,10 @@ CJTE can be also used in the way, where the same signal is being used twice - as
 \end{equation}
 
 \subsection{Probability Estimation Techniques}
+%TODO: moj pomysl
+% zastosowane
+% ta techinka wpływa mocno na wyniki
+% listingi z kodem?
 One of the biggest challanges in TE computation is estimation of the probabilities of the transition states, since their real probability is unknown (\cite{genccaga2018transfer};\cite{rozo2021benchmarking};\cite{lee2012transfer}).
 
 There are numerous techniques that are being used for this purpose, each with its own benefits and drawbacks, thus the choice is not trivial.
