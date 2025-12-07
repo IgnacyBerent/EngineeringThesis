@@ -1,14 +1,6 @@
 \chapter{Theoretical Foundations}\label{ch:theoretical-fundations}
 
 \section{Baroreflex}\label{sec:baroreflex}
-%TODO: Czemu te sygnały, metody (z fizjologii) i co2?
-% feedfoward feedbackward - jako dwa rodzaje przenoszenia z abp na hp i co badamy
-% niska f oddechu powoduje zmniejszona aktywnosc sns i nie ma wtedy zmiennosci oddechu podczas pomiaru - kontrola warunku
-% modulowanie wspolczolnego oddechu, wykluczi
-% miecej metod mierzenia baroreflexu, (sekwencyjna, spektralna, kros korelacyjna)
-% nieinwazyjnosc jest z mierzenia abp
-% jak wolne oddychanie wiaze sie z zwiekszona aktywnoscia ukladu wspolczolnego.
-% Niska czestotliwosc oddechu wiaze sie z niska wartoscia etco2, wiec bez jego uwzglednienia mozemy dostac zle wyniki.
 
 \subsection{What is a Baroreflex?}
 The ANS is highly modulated by the baroreflex, a critical homeostatic mechanism.
@@ -38,12 +30,13 @@ While BRS is conceptually a measure of the neural feedback mechanism (SAP $\to$ 
 
 \subsection{The Influence of Respiration and CO$_2$}
 There are many factors influencing the baroreflex response, such as ventricular mechanoreceptors, chemoreceptors, and humoral substances. 
-Respiration is a particularly critical physiological factor, since it continously affects ANS and baroreflex by \textit{"respiratory gate"} phenomenon.
-It suggests that at every breath, respiratory sinus arrhythmia (RSA) is generated cauisng vagus nerve activity inhibition during inhale, shortering HP, and during expiration the opposite effect takes place [\cite{la1995baroreflex};\cite{russo2017physiological};\cite{la2008baroreflex}].
+Respiration is a particularly critical physiological factor, that continously affects ANS and baroreflex.
+This influence is often described in the literature as \textit{"respiratory gate"} phenomenon, which suggests that the vagus nerve activity is inhibited during inhalation, inducing respiratory sinus arrhythmia (RSA), which shorters HP, and the opposite effect takes place during expiration (\cite{la1995baroreflex};\cite{russo2017physiological};\cite{la2008baroreflex}).
 
 For measurement standarization and to minimize respiratory confounding effect, controlled breathing protocols are a common solution. 
-However such protocols carry the risk that too low, or too high level of CO$_2$ in subjects will be present, affecting chemoreceptors, which may alter BRS estimation result.
-Therefore, end-tidal CO$_2$ (ETCO$_2$) level monitoring is essential to assure the correctness of the analysis [\cite{debeck2010heart};\cite{Uryga_2024}].
+However such protocols, particularly those using paced breathing vastly different from neutral speed, carry the risk of inducing CO$_2$ levels in subjects, that deviate from the baseline. 
+These CO$_2$ fluctuations affect chemoreceptors, which can independently alter the sympathetic tone and therefore bias the BRS estimation result.
+Therefore, continous end-tidal CO$_2$ (ETCO$_2$) level monitoring is essential to assure the correctness of the analysis (\cite{debeck2010heart};\cite{Uryga_2024}).
 
 \subsection{BRS Measurement Methods}
 There are numerous ways of BRS measurement, each with its own benefits and drawbacks.
@@ -52,13 +45,14 @@ The oldest one, called also pharmacological method, involced injection of vasoco
 This forces cardiovascular system to operate over a wide range of pressures, allowing to obtain data points necessary to fit the complete baroreflex curve.
 While highly accurate, this method is highly invasive and not feasible for long-term monitoring or large-scale application \cite{la1995baroreflex}.
 
-Further studies were trying to asses the BRS in non-invasive way using classical time series analysis techniques from ABP and HP recordings.
+Further studies sought to asses the BRS in a non-invasive way using classical time series analysis techniques from ABP (SAP) and RR (HP) recordings.
 These techniuques included both time and spectral domain linear coupling quantivication from cross-corelation or coherence functions.
 Nonlinear coupling could be acquired by mutual information, but all of these methods were suffering from the presence of the bidirectional coupling between SAP and HP described in subsection \ref{subsec:brs} \cite{javorka2017causal}.
 
-Modern apporaches focus on accessing the directional effect.
-Two methods with their extensions are often cosidered - granger casuality (GC) and TE.
-Studies suggest that these methods are equivalent to each other, under gaussian assumptions, however in case of non-linear dependencies, TE is found to be superior [\cite{javorka2017causal};\cite{lee2012transfer};\cite{barnett2009granger}].
+Modern apporaches focus on accessing the directional effect to separate the neural and mechanical components of the closed loop.
+Two methods with their extensions are often cosidered: granger casuality and information-theory based TE.
+Studies suggest that these methods are equivalent to each other, under gaussian assumptions, however in case of non-linear dependencies, TE is found to be superior.
+This advantage makes TE an ideal choice for investigating the full closed-loop interaction between SAP and HP, while incorporating the modulatory influence of ETCO$_2$ (\cite{javorka2017causal};\cite{lee2012transfer};\cite{barnett2009granger}).
 
 
 \section{Information Theory}\label{sec:information-theory}
@@ -139,8 +133,9 @@ The relation between CE  and JE  can be expressed using the following chain rule
 The CE can be interpreted as a reduction of the uncertrainity of $X$ given $Y$, so the better $Y$ helps to predict $X$, the smaller $H(X|Y)$ is (\cite{Shannon1948};\cite{Cover2006}).
 
 \subsection{Transfer entropy}
-%TODO: DODAĆ KOD
 To measure to which extent information is transfered from individual components in a dynamic and non-determenistic systems, TE was introduced as a model-free tool (\cite{Schreiber2000};\cite{wen2023kendall}). 
+
+All of the following TE algorithms were implemented from scratch in \textit{python} programing language, with detailed description in section \ref{sec:te-implementation}.
 
 The dynamical structure is needed for TE calculation, rather than static probabilities, as it had place in the previous formulas.
 This effect can be achived with the introduction of transition probabilities from Markov process.
@@ -201,27 +196,22 @@ CJTE can be also used in the way, where the same signal is being used twice - as
 \end{equation}
 
 \subsection{Probability Estimation Techniques}
-%TODO: moj pomysl
-% zastosowane
-% ta techinka wpływa mocno na wyniki
-% listingi z kodem?
-One of the biggest challanges in TE computation is estimation of the probabilities of the transition states, since their real probability is unknown (\cite{genccaga2018transfer};\cite{rozo2021benchmarking};\cite{lee2012transfer}).
+One of the biggest challanges in TE computation is estimation of the probabilities of the transition states, since their real probability is unknown. 
+The choice of the probability estimation technique is a crucial detail, as it not only dictates how data is handeled inside TE, but also very result of the calculation. (\cite{genccaga2018transfer};\cite{rozo2021benchmarking};\cite{lee2012transfer}).
 
 There are numerous techniques that are being used for this purpose, each with its own benefits and drawbacks, thus the choice is not trivial.
-However, Darbelly-Vajda Partitioning (DVP) algorithm seems to be a reliable solution, with no tunning needed (\cite{lee2012transfer};\cite{rozo2021benchmarking}).
+For this paper I have decided to implement from scratch the Darbelly-Vajda Partitioning (DVP) algorithm for its reliability, and parameter free approach (implementation in section \ref{sec:dvp-implementation})  (\cite{lee2012transfer};\cite{rozo2021benchmarking};\cite{dvp}).
 
-DVP performs adaptive, non-uniform partition of the space defined by time series of the observations.
-Taking TE as an example firstly we create embedded vectors $x_t$, $x_{t-1}$, $y_{t-1}$ from $X$ and $Y$, then we rank transform them into $u_t$, $u_{t-1}$, $v_{t-1}$ respectively, keeping the original length $N$ of the signals.
-This results in $d=3$ standing for three-dimensional space for DVP calculation.
-Inside the algorithm, firstly we divide the space into $2^d=8$ $d$-dimensional, equal cubes, with boundarues at the mid-points.
-The chia test then is performed to test whether the distribution of the data points across all the created cubes is uniform.
-If the null hypothesis is rejected, then algorithm runs in recursion in each of the boxes, else the current boxes are takes as one partition.
+The idea behind DVP is to divide space adaptivly in a non-uniform way.
+It does so by running in a recursion, taking any $d$-dimensional ordinaly ranked data of length $N$, and dividing the given space defined by the input data equaly into $2^d$ $d$-dimensional boxes, with boundaries at the mid-points.
+Then it performs chia test to check whether the distribution of the data points across all the created cubes is uniform.
+If the null hypothesis is rejected, then algorithm enters each of the boxes, and the process repeats, else the current boxes are takes as one partition, stopping recursion to go deeper.
 As the result, each box contains positive number of points, and by counting ammount of points within boundaries and dividinng it by $N$, the joint probability is estimated \cite{dvp}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{figs/dvp.png}
-    \caption{DVP example}
+    \includegraphics[width=0.8\linewidth]{figs/dvp.png}
+    \caption{DVP example for 3-dimensional data of length 200}
     \label{fig:dvp-example}
 \end{figure}
 
