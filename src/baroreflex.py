@@ -14,8 +14,10 @@ processed_data = data_processor.process_all(raw_data)
 results_generator = BaroreflexResultsGenerator(processed_data)
 
 # %%
-sap_hp = results_generator.add_te_dv('hp', 'sap')
-hp_sap = results_generator.add_te_dv('sap', 'hp')
+
+# %%
+sap_hp = results_generator.add_te('hp', 'sap')
+hp_sap = results_generator.add_te('sap', 'hp')
 cte = results_generator.add_cte('hp', 'sap', 'etco2')
 
 # %%
