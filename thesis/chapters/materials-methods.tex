@@ -19,7 +19,7 @@ For the BRS estimation mentioned in section \ref{sec:baroreflex}, two raw signal
 
 Measurements were made at room temperature with minimal external stimuli as in Figure \ref{fig:experiment-setup} and were carried out in four stages lasting 5 minutes each and performed one after another. 
 In stage 1 subjects were breathing at their resting rate, and in stages 2,3,4 they were performing controlled breathing guided by metromone, respectively, at rates 6,10 and 15 breaths per minute (bpm).
-Each epoch was performed with a 5 minute long break.
+Each epoch was performed with a 5 minute long break, and the signals were sampled at $200 Hz$.
 All the data was gathered into separate \textit{csv} format files, for each patient and breathing stage.
 
 \begin{figure}[H]
@@ -102,6 +102,96 @@ class BaroreflexDataProcessor(DataProcessor):
         return {'sap': sap, 'hp': hp, 'etco2': etco2_shortened}
 \end{minted}
 
+The end goal of the \textit{DataProcessor} is to produce the final signals for TE alghorithms that are used for the BRS estimation - SAP, HP, ETCO$_2$.
+The crucial obstacle at this step is to find realiable way of peaks estimation in the signal.
+For this purpose \textit{neurokit2 python} package is leveraged, since it has a collection of ready to use professional alghorithms for physiological data processing \cite{neurokit2}.
+
+\begin{minted}{python}
+_DEFAULT_MIN_DELAY = 0.3
+_DEFAULT_FIND_PEAKS_METHOD = 'elgendi'
+
+
+class PeaksMode(Enum):
+    UP = 'up'
+    DOWN = 'down'
+    BOTH = 'both'
+
+
+def get_peaks(
+    signal: NDArray[np.floating],
+    mode: PeaksMode = PeaksMode.UP,
+    sampling_rate: int = SAMPLING_FREQUENCY,
+    method: str = _DEFAULT_FIND_PEAKS_METHOD,
+    mindelay: float = _DEFAULT_MIN_DELAY,
+) -> NDArray[np.floating]:
+    filled_signal = nk.signal_fillmissing(signal)
+    cleaned_signal = cast(
+        NDArray[np.floating], nk.ppg_clean(filled_signal, sampling_rate=sampling_rate, method=method)
+    )
+
+    peaks_up: NDArray[np.floating] | None = None
+    peaks_down: NDArray[np.floating] | None = None
+
+    if mode in (PeaksMode.UP, PeaksMode.BOTH):
+        peaks_up = _find_peaks(
+            cleaned_signal,
+            sampling_rate=sampling_rate,
+            method=method,
+            mindelay=mindelay,
+        )
+    if mode in (PeaksMode.DOWN, PeaksMode.BOTH):
+        peaks_down = _find_peaks(
+            cleaned_signal * -1,
+            sampling_rate=sampling_rate,
+            method=method,
+            mindelay=mindelay,
+        )
+
+    if peaks_up is not None and peaks_down is not None:
+        return np.sort(np.concatenate((peaks_up, peaks_down)))
+    if peaks_up is not None:
+        return peaks_up
+    return cast(NDArray[np.floating], peaks_down)
+
+
+def _find_peaks(
+    cleaned_signal: NDArray[np.floating],
+    sampling_rate: int = SAMPLING_FREQUENCY,
+    method: str = _DEFAULT_FIND_PEAKS_METHOD,
+    mindelay: float = _DEFAULT_MIN_DELAY,
+) -> NDArray[np.floating]:
+    peaks = nk.ppg_findpeaks(
+        cleaned_signal,
+        sampling_rate=sampling_rate,
+        method=method,
+        mindelay=mindelay,
+    )['PPG_Peaks']
+    return cast(NDArray[np.floating], peaks)
+\end{minted}
+
+%TODO: Teoretycznie jest to do PPG sygnałów, ale czy musze opisac czemu dla abp tez stosuje?
+There are 3 functions in total used from \textit{neurokit2} to get signal peaks in form of array of indecies at which peaks occur, using \textit{"elgendi"} peak detection method by a default \cite{elgendi2013systolic}.
+\begin{enumerate}
+  \item \textit{nk.signal\_fillmissing()} - fills missing values in signal (what does nothing for this study use case, since missing values were already filled at the preprocessing step).
+  \item \textit{nk.ppg\_clean()} - performs low-pass butterworth filtering
+  \item \textit{nk.ppg\_findpeaks()} - squares positive values of the cleaned signal to amplify the systolic peak energy, then applies a dynamic threshold derived from short- and long-term moving averages to identify segments containing a potential beat. 
+    Within these high-energy segments, the most prominent local maximum in the original signal is selected as the final systolic peak.
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figs/Cleaned ABP signal.png}
+    \caption{Cleaned ABP signal using \textit{nk.ppg\_clean()}}
+    \label{fig:nk-cleaned_signal}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figs/ABP signal with detected peaks.png}
+    \caption{ABP signal with detected peaks using \textit{nk.ppg\_findpeaks()}}
+    \label{fig:nk-found_peaks}
+\end{figure}
+
 \begin{equation}\label{eq:sap_from_abp}
     SAP(i) = ABP(peak(i))\text{ } [mm/Hg]
 \end{equation}
@@ -112,7 +202,6 @@ class BaroreflexDataProcessor(DataProcessor):
     HP(i) = \frac{1}{RR(i)} \text{ } [s]
 \end{equation}
 
-Where $fs$ is a sampling frequency and $peak(i)$ is the index of the i-th peak in the abp signal found using the \textit{ppg\_clean} function in the neurokit2 python library \cite{neurokit2}. 
 Visualization of how it works is shown in the Figure \ref{fig:peaks-finding}.
 \begin{figure}[H]
     \centering
@@ -120,9 +209,6 @@ Visualization of how it works is shown in the Figure \ref{fig:peaks-finding}.
     \caption{Method of calculating SAP and HP from ABP signal}
     \label{fig:peaks-finding}
 \end{figure}
-
-%TODO: Opisać że dane byly wyczyszczone
-%TODO: Opisać jak neurokit znajduje peaki + przykłady
 
 \section{TE Implementation}\label{sec:te-implementation}
 

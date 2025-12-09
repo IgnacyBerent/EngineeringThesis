@@ -26,9 +26,7 @@ def get_peaks(
     mindelay: float = _DEFAULT_MIN_DELAY,
 ) -> NDArray[np.floating]:
     filled_signal = nk.signal_fillmissing(signal)
-    cleaned_signal = cast(
-        NDArray[np.floating], nk.ppg_clean(filled_signal, sampling_rate=sampling_rate, method='elgendi')
-    )
+    cleaned_signal = cast(NDArray[np.floating], nk.ppg_clean(filled_signal, sampling_rate=sampling_rate, method=method))
 
     peaks_up: NDArray[np.floating] | None = None
     peaks_down: NDArray[np.floating] | None = None
