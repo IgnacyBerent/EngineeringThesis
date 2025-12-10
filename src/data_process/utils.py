@@ -24,12 +24,12 @@ def get_peaks(
     sampling_rate: int = SAMPLING_FREQUENCY,
     method: str = _DEFAULT_FIND_PEAKS_METHOD,
     mindelay: float = _DEFAULT_MIN_DELAY,
-) -> NDArray[np.floating]:
+) -> NDArray[np.integer]:
     filled_signal = nk.signal_fillmissing(signal)
     cleaned_signal = cast(NDArray[np.floating], nk.ppg_clean(filled_signal, sampling_rate=sampling_rate, method=method))
 
-    peaks_up: NDArray[np.floating] | None = None
-    peaks_down: NDArray[np.floating] | None = None
+    peaks_up: NDArray[np.integer] | None = None
+    peaks_down: NDArray[np.integer] | None = None
 
     if mode in (PeaksMode.UP, PeaksMode.BOTH):
         peaks_up = _find_peaks(
@@ -50,7 +50,7 @@ def get_peaks(
         return np.sort(np.concatenate((peaks_up, peaks_down)))
     if peaks_up is not None:
         return peaks_up
-    return cast(NDArray[np.floating], peaks_down)
+    return cast(NDArray[np.integer], peaks_down)
 
 
 def _find_peaks(
@@ -58,34 +58,42 @@ def _find_peaks(
     sampling_rate: int = SAMPLING_FREQUENCY,
     method: str = _DEFAULT_FIND_PEAKS_METHOD,
     mindelay: float = _DEFAULT_MIN_DELAY,
-) -> NDArray[np.floating]:
+) -> NDArray[np.integer]:
     peaks = nk.ppg_findpeaks(
         cleaned_signal,
         sampling_rate=sampling_rate,
         method=method,
         mindelay=mindelay,
     )['PPG_Peaks']
-    return cast(NDArray[np.floating], peaks)
+    return cast(NDArray[np.integer], peaks)
 
 
-def get_hp_from_peaks(peaks: NDArray[np.floating], sampling_rate: int = SAMPLING_FREQUENCY) -> NDArray[np.floating]:
+def get_hp(peaks: NDArray[np.integer], sampling_rate: int = SAMPLING_FREQUENCY) -> NDArray[np.floating]:
+    """
+    Return Heart Perios (HP) (i.e. RR interval) signal from peak indecies
+    Converts the unit into miliseconds, based on the sampling frequency of a reference signal.
+    """
     sampling_period = 1 / sampling_rate * 1000
     return np.diff(peaks) * sampling_period
 
 
-def get_hp_from_abp(abp: NDArray[np.floating], sampling_rate: int = SAMPLING_FREQUENCY) -> NDArray[np.floating]:
-    peaks = get_peaks(abp, PeaksMode.UP, sampling_rate)
-    return get_hp_from_peaks(peaks)
-
-
-def get_sap(abp: NDArray[np.floating]) -> NDArray[np.floating]:
+def get_sap(abp: NDArray[np.floating], peaks: NDArray[np.integer]) -> NDArray[np.floating]:
     """
     Calculate Systolic Amplitude Peaks (SAP) from abp signal and its peak indices.
         It is assumed that the peaks are upward peaks.
         SAP(i) equals the value of the signal at the peak index.
     """
-    peaks = get_peaks(abp, PeaksMode.UP)
     return np.array([abp[peak] for peak in peaks])[1:]  # skip first peak to match length of hp
+
+
+def adjust_etco2(etco2: NDArray[np.floating], peaks: NDArray[np.integer]) -> NDArray[np.floating]:
+    """
+    Slashes ETCO_2 signal into windows determined by the indexes of the peaks found in a reference signal.
+    Returns array of mean values of these windows.
+    """
+    if len(etco2) < peaks[-1]:
+        raise ValueError('ETCO_2 signal is shorter than peaks!')
+    return np.array([np.mean(etco2[peak - 1 : peak]) for i, peak in enumerate(peaks) if i != 0])
 
 
 def get_map(abp: NDArray[np.floating]) -> NDArray[np.floating]:

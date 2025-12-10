@@ -19,12 +19,12 @@ For the BRS estimation mentioned in section \ref{sec:baroreflex}, two raw signal
 
 Measurements were made at room temperature with minimal external stimuli as in Figure \ref{fig:experiment-setup} and were carried out in four stages lasting 5 minutes each and performed one after another. 
 In stage 1 subjects were breathing at their resting rate, and in stages 2,3,4 they were performing controlled breathing guided by metromone, respectively, at rates 6,10 and 15 breaths per minute (bpm).
-Each epoch was performed with a 5 minute long break, and the signals were sampled at $200 Hz$.
+Each epoch was performed with a 5 minute long break, and the signals were sampled at $f_s=200 Hz$.
 All the data was gathered into separate \textit{csv} format files, for each patient and breathing stage.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{figs/experiment_setup.jpg}
+    \includegraphics[width=0.5\linewidth]{figs/materials-methods/physiological/experiment_setup.jpg}
     \caption{The experiment setup}
     \label{fig:experiment-setup}
 \end{figure}
@@ -52,7 +52,7 @@ Minimal preprocessing was already performed on the received data, which included
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figs/Preprocessed raw signals.png}
+    \includegraphics[width=\linewidth]{figs/materials-methods/physiological/Preprocessed raw signals.png}
     \caption{Sample of preprocessed raw signals for breathing at rest}
     \label{fig:raw-data}
 \end{figure}
@@ -96,13 +96,14 @@ class BaroreflexDataProcessor(DataProcessor):
         if abp is None or etco2 is None:
             raise ValueError
 
-        sap = get_sap(abp)
-        hp = get_hp_from_abp(abp)
-        etco2_shortened = self._average_to_length(etco2, len(sap))
-        return {'sap': sap, 'hp': hp, 'etco2': etco2_shortened}
+        peaks = get_peaks(abp)
+        sap = get_sap(abp, peaks)
+        hp = get_hp(peaks)
+        etco2_adjusted = adjust_etco2(etco2, peaks)
+        return {'sap': sap, 'hp': hp, 'etco2': etco2_adjusted}
 \end{minted}
 
-The end goal of the \textit{DataProcessor} is to produce the final signals for TE alghorithms that are used for the BRS estimation - SAP, HP, ETCO$_2$.
+The end goal of the \textit{DataProcessor} is to produce the final signals for TE alghorithms that are used for the BRS estimation - SAP, HP, ETCO$_2$, using abstracted \textit{process()} method.
 The crucial obstacle at this step is to find realiable way of peaks estimation in the signal.
 For this purpose \textit{neurokit2 python} package is leveraged, since it has a collection of ready to use professional alghorithms for physiological data processing \cite{neurokit2}.
 
@@ -123,14 +124,12 @@ def get_peaks(
     sampling_rate: int = SAMPLING_FREQUENCY,
     method: str = _DEFAULT_FIND_PEAKS_METHOD,
     mindelay: float = _DEFAULT_MIN_DELAY,
-) -> NDArray[np.floating]:
+) -> NDArray[np.integer]:
     filled_signal = nk.signal_fillmissing(signal)
-    cleaned_signal = cast(
-        NDArray[np.floating], nk.ppg_clean(filled_signal, sampling_rate=sampling_rate, method=method)
-    )
+    cleaned_signal = cast(NDArray[np.floating], nk.ppg_clean(filled_signal, sampling_rate=sampling_rate, method=method))
 
-    peaks_up: NDArray[np.floating] | None = None
-    peaks_down: NDArray[np.floating] | None = None
+    peaks_up: NDArray[np.integer] | None = None
+    peaks_down: NDArray[np.integer] | None = None
 
     if mode in (PeaksMode.UP, PeaksMode.BOTH):
         peaks_up = _find_peaks(
@@ -151,7 +150,7 @@ def get_peaks(
         return np.sort(np.concatenate((peaks_up, peaks_down)))
     if peaks_up is not None:
         return peaks_up
-    return cast(NDArray[np.floating], peaks_down)
+    return cast(NDArray[np.integer], peaks_down)
 
 
 def _find_peaks(
@@ -159,14 +158,14 @@ def _find_peaks(
     sampling_rate: int = SAMPLING_FREQUENCY,
     method: str = _DEFAULT_FIND_PEAKS_METHOD,
     mindelay: float = _DEFAULT_MIN_DELAY,
-) -> NDArray[np.floating]:
+) -> NDArray[np.integer]:
     peaks = nk.ppg_findpeaks(
         cleaned_signal,
         sampling_rate=sampling_rate,
         method=method,
         mindelay=mindelay,
     )['PPG_Peaks']
-    return cast(NDArray[np.floating], peaks)
+    return cast(NDArray[np.integer], peaks)
 \end{minted}
 
 %TODO: Teoretycznie jest to do PPG sygnałów, ale czy musze opisac czemu dla abp tez stosuje?
@@ -180,37 +179,64 @@ There are 3 functions in total used from \textit{neurokit2} to get signal peaks 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{figs/Cleaned ABP signal.png}
+    \includegraphics[width=\linewidth]{figs/materials-methods/physiological/Cleaned ABP signal.png}
     \caption{Cleaned ABP signal using \textit{nk.ppg\_clean()}}
     \label{fig:nk-cleaned_signal}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{figs/ABP signal with detected peaks.png}
+    \includegraphics[width=\linewidth]{figs/materials-methods/physiological/ABP signal with detected peaks.png}
     \caption{ABP signal with detected peaks using \textit{nk.ppg\_findpeaks()}}
     \label{fig:nk-found_peaks}
 \end{figure}
 
+Having found peaks in the ABP signal the SAP, HP, and adjusted ETCO$_2$ for each $i$-th $peak$ - which represent indecies in the ABP where they happen, can be calculated using the following formulas:
+
+\begin{equation}
+  \text{peaks} = [peak_0, peak_1, \dots, peak_i, \dots]
+\end{equation}
 \begin{equation}\label{eq:sap_from_abp}
-    SAP(i) = ABP(peak(i))\text{ } [mm/Hg]
+  \text{SAP}_i = \text{ABP}_{peak_i} \text{ } [mmHg]
 \end{equation}
 \begin{equation}\label{eq:rr_from_abp}
-    RR(i) = \frac{peak(i+1) - peak(i)}{fs}\text{ } [s]
+  \text{HP}_i = \text{RR}_i = \frac{peak_i - peak_{i-1}}{f_s} \cdot 1000 \text{ } [ms]
 \end{equation}
 \begin{equation}
-    HP(i) = \frac{1}{RR(i)} \text{ } [s]
+  \text{ETCO}_2_i = \text{mean}(\text{ETCO}_2_{peak_{i-1}}, \dots, \text{ETCO}_2_{peak_i}) 
 \end{equation}
 
-Visualization of how it works is shown in the Figure \ref{fig:peaks-finding}.
+\begin{minted}{python}
+def get_hp(peaks: NDArray[np.integer], sampling_rate: int = SAMPLING_FREQUENCY) -> NDArray[np.floating]:
+    sampling_period = 1 / sampling_rate * 1000
+    return np.diff(peaks) * sampling_period
+
+
+def get_sap(abp: NDArray[np.floating], peaks: NDArray[np.integer]) -> NDArray[np.floating]:
+    return np.array([abp[peak] for peak in peaks])[1:]  # skip first peak to match length of hp
+
+
+def adjust_etco2(etco2: NDArray[np.floating], peaks: NDArray[np.integer]) -> NDArray[np.floating]:
+    if len(etco2) < peaks[-1]:
+        raise ValueError('ETCO_2 signal is shorter than peaks!')
+    return np.array([np.mean(etco2[peak - 1 : peak]) for i, peak in enumerate(peaks) if i != 0])
+\end{minted}
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{figs/peaks_finding.png}
-    \caption{Method of calculating SAP and HP from ABP signal}
-    \label{fig:peaks-finding}
+    \includegraphics[width=\linewidth]{figs/materials-methods/physiological/Preprocessed raw signals, with annotations.png}
+    \caption{Processing signals with \textit{BaroreflexDataProcessor}}
+    \label{fig:processing_signals}
 \end{figure}
 
-\section{TE Implementation}\label{sec:te-implementation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figs/materials-methods/physiological/processed signals.png}
+    \caption{Processed signals with \textit{BaroreflexDataProcessor}}
+    \label{fig:processed_signals}
+\end{figure}
 
-\section{DVP Implementation}\label{sec:dvp-implementation}
+
+\section{TE and DVP Implementation}\label{sec:te_dvp-implementation}
+
 

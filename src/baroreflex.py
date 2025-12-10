@@ -1,7 +1,11 @@
+import matplotlib
+
 from src.data_process.loaders.baroreflex_data_loader import BaroreflexDataLoader
 from src.data_process.processors.baroreflex_data_processor import BaroreflexDataProcessor
 from src.data_process.results_generators.baroreflex_results_generator import BaroreflexResultsGenerator
 from src.statistics.anova import StatisticsAnalyzer
+
+matplotlib.use('Agg')
 
 # %%
 data_loader = BaroreflexDataLoader()

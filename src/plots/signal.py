@@ -34,7 +34,7 @@ def plot_single_signal(signal: FloatArray, ylabel: str, title: str, time_unit: T
 
 
 def plot_single_signal_with_peaks(
-    signal: FloatArray, peaks: NDArray[np.floating], ylabel: str, title: str, time_unit: TimeUnit | None
+    signal: FloatArray, peaks: NDArray[np.integer], ylabel: str, title: str, time_unit: TimeUnit | None
 ) -> None:
     plt.figure(figsize=RECTANGLE_FIG_SIZE)
     indices = _get_indices(signal)
@@ -62,35 +62,48 @@ def plot_single_signal_with_peaks(
     plt.show()
 
 
-def plot_two_signals_shared_x(
-    signal_top: FloatArray, ylabel_top: str, signal_bottom: FloatArray, ylabel_bottom: str, title: str
+def plot_multiple_signals_shared_x(
+    signals: list[FloatArray], labels: list[str], title: str, time_unit: TimeUnit | None
 ) -> None:
-    assert len(signal_top) == len(signal_bottom), ValueError('Signals have to be the same length')
+    N = len(signals)
+    assert N > 0, ValueError('The list of signals cannot be empty.')
+    assert len(labels) == N, ValueError('The number of signals must equal the number of labels.')
 
-    indices = _get_indices(signal_top)
-    x_data = _indices_to_time(indices, TimeUnit.S)
-    fig, (ax1, ax2) = plt.subplots(
-        nrows=2,
+    # Check if all signals are the same length
+    first_signal_len = len(signals[0])
+    for signal in signals:
+        assert len(signal) == first_signal_len, ValueError('All signals must have the same length.')
+
+    indices = _get_indices(signal)
+    x_data = _indices_to_time(indices, time_unit) if time_unit else indices
+    x_label = _get_x_label(time_unit)
+
+    fig, axes = plt.subplots(
+        nrows=N,
         sharex=True,
         figsize=RECTANGLE_FIG_SIZE,
     )
 
-    ax1.plot(
-        x_data,
-        signal_top,
-        linestyle='-',
-        color=DEFAULT_SIGNAL_COLOR,
-    )
-    ax1.set_ylabel(ylabel_top)
-    ax1.set_title(title)
-    ax2.plot(
-        x_data,
-        signal_bottom,
-        linestyle='-',
-        color=DEFAULT_SIGNAL_COLOR,
-    )
-    ax2.set_ylabel(ylabel_bottom)
-    ax2.set_xlabel('Time [s]')
+    if N == 1:
+        axes = [axes]
+
+    for i, (ax, signal, ylabel) in enumerate(zip(axes, signals, labels, strict=False)):
+        # Plot the signal
+        ax.plot(
+            x_data,
+            signal,
+            linestyle='-',
+            color=DEFAULT_SIGNAL_COLOR,
+        )
+
+        ax.set_ylabel(ylabel)
+
+        if i == 0:
+            ax.set_title(title)
+
+        if i == N - 1:
+            ax.set_xlabel(x_label)
+
     plt.tight_layout()
     fig.savefig(f'{title}.png')
     plt.show()

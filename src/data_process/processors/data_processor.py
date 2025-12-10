@@ -1,10 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import cast
 
-import numpy as np
-
 from src.common.logger import logger
-from src.common.mytypes import ArrayDataDict, FloatArray, PatientData
+from src.common.mytypes import ArrayDataDict, PatientData
 
 
 class DataProcessor(ABC):
@@ -31,11 +29,3 @@ class DataProcessor(ABC):
             }
         except ValueError:
             logger.error(f'Missmatching field names for patient: {patient_raw_data["id"]}')
-
-    @staticmethod
-    def _average_to_length(signal_to_shorten: FloatArray, target_length: int) -> FloatArray:
-        """
-        shortens signal to a given length by spliting it to windows and averaging them out
-        """
-        signal_windowed = np.array_split(signal_to_shorten, target_length)
-        return np.array([np.mean(window) for window in signal_windowed])

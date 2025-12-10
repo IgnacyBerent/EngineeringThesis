@@ -21,7 +21,7 @@ This index represents the neural gain of the ANS's rapid control system for main
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\linewidth]{figs/Fitting-different-Boltzmann-sigmoidal-functions-to-real-cardiac-baroreflex-data.png}
+    \includegraphics[width=0.9\linewidth]{figs/theoretical-fundations/Fitting-different-Boltzmann-sigmoidal-functions-to-real-cardiac-baroreflex-data.png}
     \caption{Baroreflex curve in a healthy subject \cite{baroreflexcurve}}
     \label{fig:baroreflexcurve}
 \end{figure}
@@ -135,7 +135,7 @@ The CE can be interpreted as a reduction of the uncertrainity of $X$ given $Y$, 
 \subsection{Transfer entropy}
 To measure to which extent information is transfered from individual components in a dynamic and non-determenistic systems, TE was introduced as a model-free tool (\cite{Schreiber2000};\cite{wen2023kendall}). 
 
-All of the following TE algorithms were implemented from scratch in \textit{python} programing language, with detailed description in section \ref{sec:te-implementation}.
+All of the following TE algorithms were implemented from scratch in \textit{python} programing language, with detailed description in section \ref{sec:te_dvp-implementation}.
 
 The dynamical structure is needed for TE calculation, rather than static probabilities, as it had place in the previous formulas.
 This effect can be achived with the introduction of transition probabilities from Markov process.
@@ -200,7 +200,7 @@ One of the biggest challanges in TE computation is estimation of the probabiliti
 The choice of the probability estimation technique is a crucial detail, as it not only dictates how data is handeled inside TE, but also very result of the calculation. (\cite{genccaga2018transfer};\cite{rozo2021benchmarking};\cite{lee2012transfer}).
 
 There are numerous techniques that are being used for this purpose, each with its own benefits and drawbacks, thus the choice is not trivial.
-For this paper I have decided to implement from scratch the Darbelly-Vajda Partitioning (DVP) algorithm for its reliability, and parameter free approach (implementation in section \ref{sec:dvp-implementation})  (\cite{lee2012transfer};\cite{rozo2021benchmarking};\cite{dvp}).
+For this paper I have decided to implement from scratch the Darbelly-Vajda Partitioning (DVP) algorithm for its reliability, and parameter free approach (implementation in section \ref{sec:te_dvp-implementation})  (\cite{lee2012transfer};\cite{rozo2021benchmarking};\cite{dvp}).
 
 The idea behind DVP is to divide space adaptivly in a non-uniform way.
 It does so by running in a recursion, taking any $d$-dimensional ordinaly ranked data of length $N$, and dividing the given space defined by the input data equaly into $2^d$ $d$-dimensional boxes, with boundaries at the mid-points.
@@ -210,7 +210,7 @@ As the result, each box contains positive number of points, and by counting ammo
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{figs/dvp.png}
+    \includegraphics[width=0.8\linewidth]{figs/theoretical-fundations/dvp.png}
     \caption{DVP example for 3-dimensional data of length 200}
     \label{fig:dvp-example}
 \end{figure}
