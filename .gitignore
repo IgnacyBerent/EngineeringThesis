@@ -22,4 +22,3 @@ __pycache__
 *.lot
 *.synctex.gz
 */_minted
-*/figs

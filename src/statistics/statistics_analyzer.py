@@ -4,7 +4,7 @@ import pandas as pd
 import pingouin as pg
 
 from src.common.constants import CB_FILE_TYPE, CONDITION_FIELD, ID_FIELD
-from src.plots.boxplots import plot_boxplot, plot_boxplot_w_posthoc
+from src.plots.box_plots import plot_boxplot, plot_boxplot_w_posthoc
 
 _P_ADJUST = 'bonf'
 

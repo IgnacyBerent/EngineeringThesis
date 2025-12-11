@@ -18,15 +18,18 @@ _SIZE = 10
 
 _LABEL = 'Data (ranked)'
 _COLOR_LABEL = 'N'
-_XLABEL = 'X (Ranked)'
-_YLABEL = 'Y (Ranked)'
-_ZLABEL = 'Z (Ranked)'
 
 _TITLE = 'Darbellay-Vajda Adaptive Partitioning'
 
 
 def plot_3d_partitions(
-    partitions: list[DVPartition], X: NDArray[np.integer], Y: NDArray[np.integer], Z: NDArray[np.integer]
+    partitions: list[DVPartition],
+    X: NDArray[np.integer],
+    Y: NDArray[np.integer],
+    Z: NDArray[np.integer],
+    xlabel: str,
+    ylabel: str,
+    zlabel: str,
 ) -> None:
     """
     Plot the 3D partitioning of the data.
@@ -70,17 +73,20 @@ def plot_3d_partitions(
     sm.set_array([])
     fig.colorbar(sm, ax=ax, label=_COLOR_LABEL)
 
-    ax.set_xlabel(_XLABEL)
-    ax.set_ylabel(_YLABEL)
-    ax.set_zlabel(_ZLABEL)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_zlabel(zlabel)
     ax.set_title(f'{_TITLE} (3D)')
     ax.legend()
     ax.grid(True)
     ax.set_box_aspect([1, 1, 1])
+    plt.savefig(f'{_TITLE} (3D).png')
     plt.show()
 
 
-def plot_2d_partitions(partitions: list[DVPartition], X: NDArray[np.integer], Y: NDArray[np.integer]) -> None:
+def plot_2d_partitions(
+    partitions: list[DVPartition], X: NDArray[np.integer], Y: NDArray[np.integer], xlabel: str, ylabel: str
+) -> None:
     fig, ax = plt.subplots(figsize=SQUARE_FIG_SIZE, dpi=DPI)
     ax.scatter(X, Y, s=_SIZE, alpha=_ALPHA, label=_LABEL)
 
@@ -108,10 +114,11 @@ def plot_2d_partitions(partitions: list[DVPartition], X: NDArray[np.integer], Y:
     sm.set_array([])
     fig.colorbar(sm, ax=ax, label=_COLOR_LABEL)
 
-    ax.set_xlabel(_XLABEL)
-    ax.set_ylabel(_YLABEL)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
     ax.set_title(f'{_TITLE} (2D)')
     ax.legend()
     plt.grid(True)
     plt.axis('equal')
+    plt.savefig(f'{_TITLE} (2D).png')
     plt.show()

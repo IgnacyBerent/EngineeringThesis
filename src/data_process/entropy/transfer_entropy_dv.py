@@ -3,8 +3,8 @@ from numpy.typing import NDArray
 
 from src.common.constants import DEFAULT_EMBEDDING_DIMENSION, DEFAULT_SIGNIFICANCE_LEVEL, DEFAULT_TIME_DELAY
 from src.common.logger import logger
-from src.data_process.entropy.helpers import (
-    dv_partition_nd,
+from src.data_process.entropy.dvp import dv_partition_nd
+from src.data_process.entropy.utils import (
     get_future_vector,
     get_past_vectors,
     get_points_from_range,

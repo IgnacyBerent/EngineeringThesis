@@ -236,7 +236,333 @@ def adjust_etco2(etco2: NDArray[np.floating], peaks: NDArray[np.integer]) -> NDA
     \label{fig:processed_signals}
 \end{figure}
 
+Processed signals like this can be easly then be used for TE calculations using the \textit{BaroreflexResultsGenerator} that just like classes above have abstracted methods for data processing for all the subjects.
+\begin{minted}{python}
+class BaroreflexResultsGenerator(ResultsGenerator):
+    def __init__(self, patients_processed_data: list[PatientData]) -> None:
+        super().__init__(patients_processed_data)
+
+    def add_te(
+        self,
+        x_name: str,
+        y_name: str,
+    ) -> str:
+        field_name = f'te_{y_name}->{x_name}'
+        for patient_id, cb_data_type, cb_data in self.iterate_cb_data():
+            x, y = (self._get_signal(cb_data, sig_name, cb_data_type, patient_id) for sig_name in [x_name, y_name])
+            if x is not None and y is not None:
+                self._add_result(
+                    cb_data_type=cb_data_type,
+                    patient_id=patient_id,
+                    field_name=field_name,
+                    value=te_dv(x, y),
+                )
+        return field_name
+\end{minted}
+
+The end goal of this class is to generate \textit{csv} file with results for the statistical analysis, with usage of \textit{generate\_results\_csv()}.
+The analysis then are handled by the \textit{StatisticsAnalyzer} class.
 
 \section{TE and DVP Implementation}\label{sec:te_dvp-implementation}
+This section is the most crucial part of this thesis, since it describes all the details concerning TE implementation with DVP for propability estimation.
 
+Since TE is the most fundametal comparing to JTE, CTE, and CJTE (which, in fact, require only slight modification in the implementation), the TE workthrough in the following subsections will be used as an example.
+
+\begin{minted}{python}
+def te_dv(
+    signalX: NDArray[np.floating],
+    signalY: NDArray[np.floating],
+    time_delay: int = DEFAULT_TIME_DELAY,
+    embedding_dimension: int = DEFAULT_EMBEDDING_DIMENSION,
+    dvp_alpha=DEFAULT_SIGNIFICANCE_LEVEL,
+) -> float:
+    """
+    Calculates the transfer entropy of TE_{Y->X}
+    """
+    if len(signalX) != len(signalY):
+        logger.error(
+            f"""Signals should have the same legth, instead have: \n
+            X:{len(signalX)}, Y:{len(signalY)}"""
+        )
+        raise ValueError('time series entries need to have same length')
+
+    futureX = get_future_vector(signalX, d=embedding_dimension, tau=time_delay)
+    pastX, pastY = (get_past_vectors(signal, d=embedding_dimension, tau=time_delay) for signal in [signalX, signalY])
+
+    a = np.column_stack([futureX, pastX, pastY])
+    b = np.column_stack([pastX])
+    c = np.column_stack([futureX, pastX])
+    d = np.column_stack([pastX, pastY])
+
+    dv_result = dv_partition_nd(a, alpha=dvp_alpha)
+    dimensions = a.shape[1]
+    n_total = a.shape[0]
+
+    futureX_start, futureX_end = 0, 1
+    pastX_start, pastX_end = futureX_end, embedding_dimension + 1
+    pastY_end = dimensions
+
+    te: float = 0
+    for dv_part in dv_result:
+        na = dv_part['N']
+        nb = get_points_from_range(b, dv_part, ranges=((pastX_start, pastX_end),))
+        nc = get_points_from_range(c, dv_part, ranges=((futureX_start, pastX_end),))
+        nd = get_points_from_range(d, dv_part, ranges=((pastX_start, pastY_end),))
+
+        te += na / n_total * (np.log2(na * nb) - np.log2(nc * nd))
+
+    return te
+\end{minted}
+
+\subsection{Initial Step}
+
+Firstly, let`s take two signals for TE computation - $X$ = HP, and $Y$ = SAP, where both of them have to be of length $N=200$.
+Also lets use the default time delay $\tau=1$ and embedding dimension $d=1$
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figs/materials-methods/te/Initial Signals.png}
+    \caption{Initial Signals}
+    \label{fig:initial_signals}
+\end{figure}
+
+\subsection{Embedding Signals}
+
+Then we need ordinaly ranked embedding vectors representing future states of $X$ and the past states of both $X$ and $Y$, using equation \ref{eq:embedding-vector}.
+These operations are represented by the following functions:
+
+\begin{minted}{python}
+def get_past_vectors(signal: FloatArray, d: int, tau: int) -> NDArray[np.integer]:
+    embedded = get_deleyed_vector(signal, d=d, tau=tau)
+    return np.apply_along_axis(lambda x: rank_transform(x), axis=0, arr=embedded)
+
+
+def get_deleyed_vector(x: NDArray, d: int, tau: int) -> NDArray:
+    n = len(x) - d * tau
+    if n <= 0:
+        raise ValueError('Time series too short for given embedding.')
+    return np.column_stack([x[i - (tau - 1) : i + n - (tau - 1)] for i in range(d * tau - 1, -1, -tau)])
+
+
+def get_future_vector(signal: NDArray, d: int, tau: int) -> NDArray:
+    return rank_transform(signal[d * tau :])
+
+
+def rank_transform(x: NDArray[np.floating]) -> NDArray[np.integer]:
+    return rankdata(x, method=_DEFAULT_RANKING_METHOD)
+\end{minted}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figs/materials-methods/te/Embedded Signals.png}
+    \caption{Embedded Signals, with $tau=1, d=1$}
+\end{figure}
+
+Tweaking $\tau$ parameter to be equal to $2$ results in lagg between future and past embeddings is equal to $2$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figs/materials-methods/te/Embedded Signals, tau=2.png}
+    \caption{Embedded Signals, with $tau=2, d=1$}
+\end{figure}
+
+Increasing $d$ increases number of embedding dimensions, each lagged by one $\tau$  more.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figs/materials-methods/te/Embedded Signals, d=2.png}
+    \caption{Embedded Signals, with $tau=1, d=2$}
+\end{figure}
+
+To finish step two, embedding vectors have to be transfered using ordinary ranking:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figs/materials-methods/te/Ordinary Rank Transformed Signals.png}
+    \caption{Ordinary Rank Transformed Vectors}
+\end{figure}
+
+\subsection{Propabilities Substitution}
+Since we are using DVP alghorithm we have to replace state joint propabilities $p$ from the formula \ref{eq:te-simplified} with propabilities of finding points in given subspaces $a_i,b_i,c_i,d_i$ for $i$-th DVP's space partition. 
+\begin{equation}\label{eq:te-substitution}
+  TE_{Y\to X}^{d} = \sum p(a_i) \cdot log(\frac{p(a_i)p(b_i)}{p(c_i)p(d_i)})
+\end{equation}
+where:
+$$ p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)}) \to p(a_i) $$
+$$ p(x_{t-1}^{(d)}) \to p(b_i) $$
+$$ p(x_t,x_{t-1}^{(d)}) \to p(c_i) $$
+$$ p(x_{t-1}^{(d)},y_{t-1}^{(d)}) \to p(d_i) $$
+
+In fact here the biggest difference between TE,JTE,CTE, and CJTE lies, since each of them will have different subspace assigment for the incoming signals.
+Here is the example for CJTE:
+\begin{equation}\label{eq:cjte-substitution}
+  CJTE_{(X,Y)\to Z|W}^{d} = \sum p(a_i) \cdot log(\frac{p(a_i)p(b_i)}{p(c_i)p(d_i)})
+\end{equation}
+where:
+$$ p(z_t,z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)},w_{t-1}^{(d)}) \to p(a_i) $$
+$$ p(z_{t-1}^{(d)},w_{t-1}^{(d)}) \to p(b_i) $$
+$$ p(z_t,z_{t-1}^{(d)},w_{t-1}^{(d)}) \to p(c_i) $$
+$$ p(z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)},w_{t-1}^{(d)}) \to p(d_i) $$
+
+\subsection{Appling DVP}
+The fourth step is to calculate the DVP space partitioning, for the space, with dimensions defined by the future of $X$ and past of $X$ and $Y$ (which for all transfer entropies is always defined already by $a$). 
+\begin{minted}{python}
+class DVPartition(TypedDict):
+    mins: NDArray[np.integer]
+    maxs: NDArray[np.integer]
+    N: int
+
+def dv_partition_nd(
+    data: NDArray[np.integer],
+    mins: NDArray[np.integer] | None = None,
+    maxs: NDArray[np.integer] | None = None,
+    alpha: float = DEFAULT_SIGNIFICANCE_LEVEL,
+) -> list[DVPartition]:
+    if mins is None or maxs is None:
+        mins = cast(NDArray[np.integer], np.min(data, axis=0))
+        maxs = cast(NDArray[np.integer], np.max(data, axis=0))
+    dimensions = len(mins)
+
+    current_box_data = _get_current_box_data(data, mins, maxs)
+    n = len(current_box_data)
+    if n == 0:
+        return []
+
+    children, counts = _get_children_with_counts(current_box_data, mins, maxs)
+
+    is_uniform = _is_uniform(dimensions, counts=counts, alpha=alpha)
+    if is_uniform is None:
+        return []
+
+    parts = []
+    if (not is_uniform) and np.any(maxs - mins):
+        for child_mins, child_maxs in (child for child in children if child is not None):
+            parts.extend(dv_partition_nd(data, child_mins, child_maxs, alpha))
+
+        return parts
+
+    # else this box is a leaf
+    return [{'mins': mins.copy(), 'maxs': maxs.copy(), 'N': int(n)}]
+\end{minted}
+
+The first thing that happens into mine DVP implementation is assigment of the initial borders defined by mins and maxs, if it is the first iteration of the recursion.
+Then current (hyper) box data is cutted out of data based on borders.
+\begin{minted}{python}
+def _get_current_box_data(
+    data: NDArray[np.integer],
+    mins: NDArray[np.integer],
+    maxs: NDArray[np.integer],
+) -> NDArray[np.integer]:
+    """
+    Selects the subset of data points that fall within the current hyper-box.
+    """
+    inside = np.all((data >= mins) & (data <= maxs), axis=1)
+    return data[inside]
+\end{minted}
+Then the safety check is done if the current box has any points.
+If current hyper box contains any points the equal space division along midpoints is performed resulting in children hyper boxes and counts of points inside of them.
+\begin{minted}{python}
+def _get_children_with_counts(
+    current_box_data: NDArray[np.integer],
+    mins: NDArray[np.integer],
+    maxs: NDArray[np.integer],
+) -> tuple[list[tuple[NDArray[np.integer], NDArray[np.integer]] | None], NDArray[np.integer]]:
+    midpoints: NDArray[np.integer] = (mins + maxs) // 2
+    dimensions = len(mins)
+
+    children = []
+    counts = []
+    for bits in product([0, 1], repeat=dimensions):
+        child_mins, child_maxs = _get_child_box_bounds(bits, mins, maxs, midpoints)
+        count = np.all((current_box_data >= child_mins) & (current_box_data <= child_maxs), axis=1).sum()
+        counts.append(count)
+        if count == 0:
+            children.append(None)
+        else:
+            children.append((child_mins, child_maxs))
+
+    return children, np.asarray(counts)
+
+
+def _get_child_box_bounds(
+    bits: tuple[int, ...], mins: NDArray[np.integer], maxs: NDArray[np.integer], midpoints: NDArray[np.integer]
+) -> tuple[NDArray[np.integer], NDArray[np.integer]]:
+    """Calculates mins and maxs for bounds of a child box."""
+    # If bit is 0, use mins/midpoints; if bit is 1, use midpoints+1/maxs
+    bits_array = np.array(bits)
+    child_mins = np.where(bits_array == 0, mins, midpoints + 1)
+    child_maxs = np.where(bits_array == 0, midpoints, maxs)
+    return child_mins, child_maxs  
+\end{minted}
+
+Finally, if the space division results in non-uniform points distribution among children, the recursion enters each of the children, else the whole current hyper box is treated as one partition and is returned.
+
+\begin{minted}{python}
+def _is_uniform(d: int, counts: NDArray, alpha: float) -> None | bool:
+    mean = counts.mean()
+    if mean == 0:
+        return None
+    T = np.sum((mean - counts) ** 2 / mean)
+    crit = chi2.ppf(1 - alpha, df=(2**d) - 1)
+    return crit >= T
+\end{minted}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figs/materials-methods/te/Darbellay-Vajda Adaptive Partitioning (3D).png}
+    \caption{Final partition of the space}
+    \label{fig:dvp-example-implementation}
+\end{figure}
+
+\subsection{Summation}
+The final step in TE calculation is to count for each $i$-th space partition from DVP alghorithm the partial TE sum.
+To get the ammount of points in given subspace the following function is being used:
+\begin{minted}{python}
+def get_points_from_range(
+    points: NDArray[np.integer], dv_part: DVPartition, ranges: tuple[tuple[int, int], ...]
+) -> int:
+    mins: NDArray[np.integer] | None = None
+    maxs: NDArray[np.integer] | None = None
+
+    for start, stop in ranges:
+        part_mins, part_maxs = _get_min_max(dv_part, start, stop)
+
+        # Initialize on first loop
+        if mins is None or maxs is None:
+            mins = part_mins
+            maxs = part_maxs
+        else:
+            mins = np.hstack([mins, part_mins])
+            maxs = np.hstack([maxs, part_maxs])
+
+    mins, maxs = cast(NDArray[np.integer], mins), cast(NDArray[np.integer], maxs)
+    return np.all((points >= mins) & (points <= maxs), axis=1).sum()
+\end{minted}
+
+\section{Complete Workflow}
+This section demonstrates code snippet that executes the whole code written for this thesis - from loading data from csv files through processing signals, and calculating TE,CTE,JTE,CJTE, to generating plots with results and statistical analysis.
+\begin{minted}{python}
+RESULTS_CSV_FILE_NAME = 'results.csv'
+data_loader = BaroreflexDataLoader()
+data_processor = BaroreflexDataProcessor()
+
+raw_data = data_loader.load_all_patient_raw_data()
+processed_data = data_processor.process_all(raw_data)
+
+results_generator = BaroreflexResultsGenerator(processed_data)
+
+sap_hp = results_generator.add_te('hp', 'sap')
+hp_sap = results_generator.add_te('sap', 'hp')
+cte_sap_hp = results_generator.add_cte('hp', 'sap', 'etco2')
+cte_hp_sap = results_generator.add_cte('sap', 'hp', 'etco2')
+jte_sap_etco2 = results_generator.add_jte('sap', 'etco2', 'hp')
+jte_hp_etco2 = results_generator.add_jte('hp', 'etco2', 'hp')
+cjte_sap = results_generator.add_cjte('sap', 'etco2', 'hp', 'etco2')
+cjte_hp = results_generator.add_cjte('hp', 'etco2', 'sap', 'etco2')
+
+results_generator.generate_results_csv(RESULTS_CSV_FILE_NAME)
+analyzer = StatisticsAnalyzer(RESULTS_CSV_FILE_NAME)
+[
+    analyzer.do_rm_anova_test(field)
+    for field in [sap_hp, hp_sap, cte_sap_hp, cte_hp_sap, jte_sap_etco2, jte_hp_etco2, cjte_sap, cjte_hp]
+]
+\end{minted}
 

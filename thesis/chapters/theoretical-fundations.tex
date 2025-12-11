@@ -153,11 +153,13 @@ To introduce the time delay $\tau$ the following embedding vector of the past st
 \end{equation}
 
 However $\tau$ called also embedding delay in the most cases is set to be equal to 1, therefore is not used in the notation.
-The order of markov process noted in equation \ref{eq:embedding-vector} as $k$ is often called embedding dimensions \cite{lee2012transfer}.
+The order of markov process noted in equation \ref{eq:embedding-vector} as $k$ is often called embedding dimension.
+In the literature symbol for the embedding dimension for the other signal is often represented by $l$, but my implementation assumes that $k=l$, what is not an uncommon practice. 
+My notation will use symbol $d$ for embedding dimensions (\cite{Schreiber2000};\cite{lee2012transfer}).
 
-Finally $TE_{Y\to X}$ from random process $Y$  to random process $X$, with the corenspoding states $y_t$, $x_t$ and embedding dimensions $l$, $k$ is defined as:
+Finally $TE_{Y\to X}$ from random process $Y$ to random process $X$, with the corenspoding states $y_t$, $x_t$ and embedding dimension $d$ is defined as:
 \begin{equation}\label{eq:te}
-  TE_{Y\to X}^{k,l} = \sum p(x_t,x_{t-1}^{(k)},y_{t-1}^{(l)}) \cdot log(\frac{p(x_t|x_{t-1}^{(k)},y_{t-1}^{(l)})}{p(x_t|x_{t-1}^{(k)})})
+  TE_{Y\to X}^{d} = \sum p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)}) \cdot log(\frac{p(x_t|x_{t-1}^{(d)},y_{t-1}^{(d)})}{p(x_t|x_{t-1}^{(d)})})
 \end{equation}
 
 Usually the following property is being used to simplify TE formula:
@@ -167,20 +169,19 @@ Usually the following property is being used to simplify TE formula:
 
 So \ref{eq:te} can be also represented as:
 \begin{equation}\label{eq:te-simplified}
-  TE_{Y\to X}^{k,l} = \sum p(x_t,x_{t-1}^{(k)},y_{t-1}^{(l)}) \cdot log(\frac{p(x_t,x_{t-1}^{(k)},y_{t-1}^{(l)})p(x_{t-1}^{(k)})}{p(x_t,x_{t-1}^{(k)})p(x_{t-1}^{(k)},y_{t-1}^{(l)})})
+  TE_{Y\to X}^{d} = \sum p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)}) \cdot log(\frac{p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)})p(x_{t-1}^{(d)})}{p(x_t,x_{t-1}^{(d)})p(x_{t-1}^{(d)},y_{t-1}^{(d)})})
 \end{equation}
 
-This way the calculation comes down to calculating only the joint probabilities.
-From the original paper and other scientific publications the embedding dimensions $l$ and $k$ are usually set as $l=k=1$ (\cite{Schreiber2000};\cite{lee2012transfer}).
+This way the calculation comes down to calculating only the joint probabilities, what is a big simplification for a practical implementation.
 
-\subsection{Conditional Transfer Entropy and Conditional Joint Transfer Entropy}
+\subsection{Conditional Joint Transfer Entropy}
 Unfortunatly TE is often under or over estimated due to presense of the hidden interactions that rule the very nature of the analysed casuality.
 Due to that conditioning has been proven as a necessary mean to achive the best accuracy in accessing the dynamics.
 This effect is achived in Conditional Transfer Entropy (CTE) by introducing a third variable $Z$ (\cite{mehta2018directional}\cite{shahsavari2020estimating}).
 
 Similarly to the definition \ref{eq:te} $CTE_{Y\to X|Z}$ is equal to:
 \begin{equation}\label{eq:cte}
-  CTE_{Y\to X|Z}^{k} = \sum p(x_t,x_{t-1}^{(k)},y_{t-1}^{(l)},z_{t-1}^{(k)}) \cdot log(\frac{p(x_t|x_{t-1}^{(k)},y_{t-1}^{(k)},z_{t-1}^{(k)})}{p(x_t|x_{t-1}^{(k)},z_{t-1}^{(k)})})
+  CTE_{Y\to X|Z}^{d} = \sum p(x_t,x_{t-1}^{(d)},y_{t-1}^{(l)},z_{t-1}^{(d)}) \cdot log(\frac{p(x_t|x_{t-1}^{(d)},y_{t-1}^{(d)},z_{t-1}^{(d)})}{p(x_t|x_{t-1}^{(d)},z_{t-1}^{(d)})})
 \end{equation}
 
 There are scenarios where accessing the information transfer from two, or more, sources is needed.
@@ -188,11 +189,11 @@ In such cases, Joint Transfer Entropy (JTE) is the solution, or to include also 
 CJTE can be also used in the way, where the same signal is being used twice - as source and as condition ($Y=W$) - resulting in synergic impact of $X$ and $Y$ on $Z$, excluding past of $Y$ \cite{porta2015disentangling}.
 
 \begin{equation}\label{eq:jte}
-  JTE_{(X,Y)\to Z}^{k} = \sum p(z_t,z_{t-1}^{(k)},x_{t-1}^{(l)},y_{t-1}^{(k)}) \cdot log(\frac{p(z_t|z_{t-1}^{(k)},x_{t-1}^{(k)},y_{t-1}^{(k)})}{p(z_t|z_{t-1}^{(k)})})
+  JTE_{(X,Y)\to Z}^{d} = \sum p(z_t,z_{t-1}^{(d)},x_{t-1}^{(l)},y_{t-1}^{(d)}) \cdot log(\frac{p(z_t|z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)})}{p(z_t|z_{t-1}^{(d)})})
 \end{equation}
 
 \begin{equation}\label{eq:cjte}
-  CJTE_{(X,Y)\to Z|W}^{k} = \sum p(z_t,z_{t-1}^{(k)},x_{t-1}^{(k)},y_{t-1}^{(k)},w_{t-1}^{(k)}) \cdot log(\frac{p(z_t|z_{t-1}^{(k)},x_{t-1}^{(k)},y_{t-1}^{(k)},w_{t-1}^{(k)})}{p(z_t|z_{t-1}^{(k)},w_{t-1}^{(k)})})
+  CJTE_{(X,Y)\to Z|W}^{d} = \sum p(z_t,z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)},w_{t-1}^{(d)}) \cdot log(\frac{p(z_t|z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)},w_{t-1}^{(d)})}{p(z_t|z_{t-1}^{(d)},w_{t-1}^{(d)})})
 \end{equation}
 
 \subsection{Probability Estimation Techniques}
