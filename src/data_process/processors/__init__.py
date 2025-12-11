@@ -1,1 +1,1 @@
-from baroreflex_data_processor import BaroreflexDataProcessor
+from .baroreflex_data_processor import BaroreflexDataProcessor

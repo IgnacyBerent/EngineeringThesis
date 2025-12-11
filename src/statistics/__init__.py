@@ -1,1 +1,1 @@
-from statistics_analyzer import StatisticsAnalyzer
+from .statistics_analyzer import StatisticsAnalyzer

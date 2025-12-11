@@ -338,6 +338,7 @@ dependencies = [
     { name = "pandas" },
     { name = "pingouin" },
     { name = "scipy" },
+    { name = "seaborn" },
 ]
 
 [package.dev-dependencies]
@@ -360,6 +361,7 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.3.3" },
     { name = "pingouin", specifier = ">=0.5.5" },
     { name = "scipy", specifier = ">=1.16.2" },
+    { name = "seaborn", specifier = ">=0.13.2" },
 ]
 
 [package.metadata.requires-dev]

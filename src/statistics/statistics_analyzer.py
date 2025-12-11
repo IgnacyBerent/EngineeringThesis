@@ -4,7 +4,7 @@ import pandas as pd
 import pingouin as pg
 
 from src.common.constants import CB_FILE_TYPE, CONDITION_FIELD, ID_FIELD
-from src.plots.box_plots import plot_boxplot, plot_boxplot_w_posthoc
+from src.plots import plot_boxplot_w_posthoc, plot_paired_boxplot
 
 _P_ADJUST = 'bonf'
 
@@ -30,6 +30,9 @@ class StatisticsAnalyzer:
 
         plot_data = self.data.groupby(CONDITION_FIELD, sort=True)[field].apply(list).to_dict()
         plot_boxplot_w_posthoc(data=plot_data, title=field, y_label=field, posthoc=posthoc)
+        plot_paired_boxplot(
+            data=self.data, field=field, within=CONDITION_FIELD, subject=ID_FIELD, order=self._data_order
+        )
 
     def post_hoc(self, field: str) -> pd.DataFrame:
         return pg.pairwise_tests(data=self.data, dv=field, within=CONDITION_FIELD, subject=ID_FIELD, padjust=_P_ADJUST)

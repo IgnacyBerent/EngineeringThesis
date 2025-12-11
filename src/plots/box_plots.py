@@ -1,8 +1,10 @@
 import matplotlib.pyplot as plt
+import seaborn as sns
+import pingouin as pg
 import pandas as pd
 from numpy.typing import NDArray
 
-from src.plots.constatns import AXIS_LABEL_FONT_SIZE, AXIS_TICKS_FONT_SIZE, DPI, SQUARE_FIG_SIZE, TITLE_FONT_SIZE
+from src.plots.constatns import DPI, SQUARE_FIG_SIZE
 
 
 def plot_boxplot(data: dict[str, NDArray], title: str, y_label: str) -> None:
@@ -10,10 +12,8 @@ def plot_boxplot(data: dict[str, NDArray], title: str, y_label: str) -> None:
     values = list(data.values())
     plt.figure(figsize=SQUARE_FIG_SIZE, dpi=DPI)
     plt.boxplot(values, label=labels, tick_labels=labels)
-    plt.title(title, size=TITLE_FONT_SIZE)
-    plt.xticks(size=AXIS_TICKS_FONT_SIZE)
-    plt.yticks(size=AXIS_TICKS_FONT_SIZE)
-    plt.ylabel(y_label, size=AXIS_LABEL_FONT_SIZE)
+    plt.title(title)
+    plt.ylabel(y_label + ' [bits]')
     plt.savefig(f'{title}.png')
     plt.show()
 
@@ -25,10 +25,10 @@ def plot_boxplot_w_posthoc(data: dict[str, NDArray], title: str, y_label: str, p
     _, ax = plt.subplots(figsize=SQUARE_FIG_SIZE, dpi=DPI)
     _ = ax.boxplot(values, patch_artist=True, label=labels, tick_labels=labels)
 
-    ax.set_title(title, size=TITLE_FONT_SIZE)
-    ax.set_ylabel(y_label, size=AXIS_LABEL_FONT_SIZE)
-    ax.tick_params(axis='x', labelsize=AXIS_TICKS_FONT_SIZE)
-    ax.tick_params(axis='y', labelsize=AXIS_TICKS_FONT_SIZE)
+    ax.set_title(title)
+    ax.set_ylabel(y_label + ' [bits]')
+    ax.tick_params(axis='x')
+    ax.tick_params(axis='y')
 
     y_max = max([max(v) for v in values])
     h = 0.05 * y_max
@@ -51,4 +51,21 @@ def plot_boxplot_w_posthoc(data: dict[str, NDArray], title: str, y_label: str, p
             num += 1
 
     plt.savefig(f'{title}.png')
+    plt.show()
+
+
+def plot_paired_boxplot(data: pd.DataFrame, field: str, within: str, subject: str, order: list[str]) -> None:
+    plt.figure(figsize=SQUARE_FIG_SIZE, dpi=DPI)
+    pg.plot_paired(
+        data=data,
+        dv=field,
+        within=within,
+        subject=subject,
+        boxplot=True,
+        orient='v',
+        order=order,
+    )
+    plt.title(f'{field}')
+    plt.ylabel(f'{field} [bits]')
+    plt.savefig(f'{field} paired')
     plt.show()

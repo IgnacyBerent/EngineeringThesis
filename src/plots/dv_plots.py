@@ -8,7 +8,7 @@ from matplotlib.patches import Rectangle
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from numpy.typing import NDArray
 
-from src.data_process.entropy.helpers import DVPartition
+from src.data_process.entropy import DVPartition
 from src.plots.constatns import DPI, SQUARE_FIG_SIZE
 
 _COLOR_MAP = 'viridis'

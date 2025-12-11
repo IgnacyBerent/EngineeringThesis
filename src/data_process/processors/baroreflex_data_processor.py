@@ -2,7 +2,7 @@ from typing import override
 
 from src.common.mytypes import ArrayDataDict
 from src.data_process.processors.data_processor import DataProcessor
-from src.data_process.utils import adjust_etco2, get_hp, get_peaks, get_sap
+from src.data_process.processors.utils import adjust_etco2, get_hp, get_peaks, get_sap
 
 
 class BaroreflexDataProcessor(DataProcessor):

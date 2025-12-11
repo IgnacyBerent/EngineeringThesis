@@ -1,1 +1,1 @@
-from baroreflex_results_generator import BaroreflexResultsGenerator
+from .baroreflex_results_generator import BaroreflexResultsGenerator
