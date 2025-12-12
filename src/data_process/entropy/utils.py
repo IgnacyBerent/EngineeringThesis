@@ -7,7 +7,7 @@ from scipy.stats import rankdata
 from src.common.mytypes import FloatArray
 from src.data_process.entropy.dvp import DVPartition
 
-_DEFAULT_RANKING_METHOD = 'ordinal'
+_DEFAULT_RANKING_METHOD = 'average'
 
 
 def get_points_from_range(

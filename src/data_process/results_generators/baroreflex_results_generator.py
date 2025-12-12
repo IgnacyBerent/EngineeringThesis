@@ -62,6 +62,7 @@ class BaroreflexResultsGenerator(ResultsGenerator):
                 for sig_name in [x_name, y_name, z_name, w_name]
             )
             if x is not None and y is not None and z is not None and w is not None:
+                w = w if w_name != y_name else None
                 self._add_result(
                     cb_data_type=cb_data_type,
                     patient_id=patient_id,
