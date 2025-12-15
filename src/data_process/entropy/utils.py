@@ -7,6 +7,7 @@ from scipy.stats import rankdata
 from src.common.mytypes import FloatArray
 from src.data_process.entropy.dvp import DVPartition
 
+MINIMAL_VALID_NUMBER_OF_DV_PARTITONS = 5
 _DEFAULT_RANKING_METHOD = 'average'
 
 

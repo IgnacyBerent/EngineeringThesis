@@ -7,7 +7,7 @@ from src.common.mytypes import ArrayDataDict, PatientData
 
 class DataProcessor(ABC):
     @abstractmethod
-    def _process_single_cb(self, cb_raw_data: ArrayDataDict) -> ArrayDataDict:
+    def _process_single_cb(self, raw_data: ArrayDataDict) -> ArrayDataDict:
         pass
 
     def process_all(self, patients_raw_data: list[PatientData]) -> list[PatientData]:

@@ -5,6 +5,7 @@ from src.common.constants import DEFAULT_EMBEDDING_DIMENSION, DEFAULT_SIGNIFICAN
 from src.common.logger import logger
 from src.data_process.entropy.dvp import dv_partition_nd
 from src.data_process.entropy.utils import (
+    MINIMAL_VALID_NUMBER_OF_DV_PARTITONS,
     get_future_vector,
     get_past_vectors,
     get_points_from_range,
@@ -40,6 +41,10 @@ def cte_dv(
     d = np.column_stack([pastX, pastY, pastZ])
 
     dv_result = dv_partition_nd(a, alpha=dvp_alpha)
+    if len(dv_result) < MINIMAL_VALID_NUMBER_OF_DV_PARTITONS:
+        raise ValueError(
+            f'Number of detected bins below minimum: {MINIMAL_VALID_NUMBER_OF_DV_PARTITONS} > {len(dv_result)}'
+        )
     dimensions = a.shape[1]
     n_total = a.shape[0]
 

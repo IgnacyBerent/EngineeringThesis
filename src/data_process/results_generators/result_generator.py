@@ -14,7 +14,7 @@ from src.common.mytypes import ArrayDataDict, FloatArray, PatientData
 class ResultsGenerator:
     def __init__(self, patients_processed_data: list[PatientData]) -> None:
         self.patients_processed_data = patients_processed_data
-        self._results: dict[str, dict[int, dict[str, float]]] = defaultdict(
+        self._results: dict[str, dict[int, dict[str, float | None]]] = defaultdict(
             lambda: defaultdict(lambda: defaultdict(float))
         )
         self._fieldnames: list[str] = [ID_FIELD, CONDITION_FIELD]
@@ -46,7 +46,7 @@ class ResultsGenerator:
         for patient_id, cb_data_type, cb_data in self.iterate_cb_data(patinets_data):
             for field_name, field_value in cast(ArrayDataDict, cb_data).items():
                 self._add_result(
-                    cb_data_type=cb_data_type,
+                    condition=cb_data_type,
                     patient_id=patient_id,
                     field_name=f'{field_name}_mean',
                     value=float(np.mean(field_value)),
@@ -73,8 +73,8 @@ class ResultsGenerator:
             return None
         return patient_id
 
-    def _add_result(self, cb_data_type: str, patient_id: int, field_name: str, value: float) -> None:
-        self._results[cb_data_type][patient_id][field_name] = value
+    def _add_result(self, condition: str, patient_id: int, field_name: str, value: float | None) -> None:
+        self._results[condition][patient_id][field_name] = value
         if field_name not in self._fieldnames:
             self._fieldnames.append(field_name)
 
