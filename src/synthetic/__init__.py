@@ -1,4 +1,4 @@
-from src.synthetic.generate_linear_closedloop import LINEAR_CLOSEDLOOP_DATA_A12
+from src.synthetic.generate_linear_closedloop import LINEAR_CLOSEDLOOP_DATA_A21
 from src.synthetic.generate_linear_openloop import (
     LINEAR_OPENLOOP_DATA_A,
     LINEAR_OPENLOOP_DATA_E,

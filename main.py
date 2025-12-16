@@ -8,7 +8,7 @@ from src.data_process.processors import BaroreflexDataProcessor
 from src.data_process.results_generators import BaroreflexResultsGenerator
 from src.statistics import StatisticsAnalyzer
 from src.synthetic import (
-    LINEAR_CLOSEDLOOP_DATA_A12,
+    LINEAR_CLOSEDLOOP_DATA_A21,
     LINEAR_OPENLOOP_DATA_A,
     LINEAR_OPENLOOP_DATA_E,
     LINEAR_OPENLOOP_DATA_L,
@@ -46,7 +46,7 @@ def analyse_synthetic_bivaraite() -> None:
     rg_linear_openloop_l = BaroreflexResultsGenerator(LINEAR_OPENLOOP_DATA_L)
     rg_linear_openloop_e = BaroreflexResultsGenerator(LINEAR_OPENLOOP_DATA_E)
     rg_linear_openloop_a = BaroreflexResultsGenerator(LINEAR_OPENLOOP_DATA_A)
-    rg_closed_loop = BaroreflexResultsGenerator(LINEAR_CLOSEDLOOP_DATA_A12)
+    rg_closed_loop = BaroreflexResultsGenerator(LINEAR_CLOSEDLOOP_DATA_A21)
     rg_nonlinear = BaroreflexResultsGenerator(NONLINEAR_CLOSEDLOOP_DATA)
     titles = [
         'linear_openloop_l',
@@ -86,5 +86,5 @@ def analyse_synthetic_trivaraite() -> None:
 
 if __name__ == '__main__':
     # analyse_physiological_data()
-    # analyse_synthetic_bivaraite()
-    analyse_synthetic_trivaraite()
+    analyse_synthetic_bivaraite()
+    # analyse_synthetic_trivaraite()

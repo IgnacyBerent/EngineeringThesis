@@ -1,7 +1,6 @@
 \chapter{Materials \& Methods}\label{ch:matmeth}
 
 \section{Synthetic signals}
-
 To validate correctness of my TE implementation, appropiate benchmark with usage of synthetic signals is needed.
 The following factors have to be tested:
 \begin{itemize}
@@ -20,7 +19,7 @@ For this purpose the following alghorithms were used:
   \item Trivariate AR(1) process, modeling mediated causality.
 \end{itemize}
 
-Each testing scenario described below were run 50 times, , to provide a statistical significance, with default signal length euqal to $200$.
+Each testing scenario described below were run 50 times, to provide a statistical significance, with default signal length euqal to $200$.
 \subsection{Unidirectional AR(1) models}
 From its simplicity AR(1) model is a perfect candidate to test whether TE is available to decet any information flow in the simplest case, where linear interaction is taken into account.
 Additionally it was used to benchmark effect of noise, and signal length on the TE result.
@@ -47,6 +46,32 @@ The bidirectionality is achived by introducing a third variable $a_12$, that sym
   X_t = a_{11} \cdot X_{t-1} + a_{12} \cdot Y_{t-1} + \epsilon_{Xt}
 \end{equation}
 $$ Y_t = a_{22} * Y_{t-1} + a_{21} \cdot X_{t-1} + \epsilon_{Yt} $$
+
+Experiment with different $a_{21}$ equal to $0, 0.1, 0.15, 0.2$ and $a_{11}=a_{22}=0.7$, $\epsilon = 0.3$, and $a_{12} = 0.15$ was conducted.
+
+\subsection{Coupled Hénon Map models}
+Coupled Hénon Map model was used to achive a nonlinear coupling from $X$ to $Y$.
+It has a following mathematical representation:
+\begin{equation}
+  fx_t = 1.0 - a \cdot X_{t-1}^2 + b \cdot X_{t-2}
+\end{equation}
+$$ fy_t = 1.0 - a \cdot Y_{t-1}^2 + b \cdot Y_{t-2} $$
+$$ X_t = fx $$
+$$ Y_t = (1.0 - \gamma) \cdot fy_t + \gamma \cdot fx_t $$
+$$ X_t = fx_t $$
+
+To achive stable process $a=1.4$ and $0.3$ was set, and $\gamma$ parameter responsible for coupling strength was set to $0, 0.05, 0.1, 0.2$
+
+\subsection{Trivariate AR(1) models}
+To compare TE performance with CJTE where confounding variable is present the trivariate AR(1) model is the simplest approach.
+This model is a extension of above described AR(1) models with the following formula:
+\begin{equation}
+  Z_t = a_z \cdot Z_{t-1} + \epsilon_{Zt}
+\end{equation}
+$$ X_t = a_x * X_{t-1} + a_{xz} * Z_{t-1} + \epsilon_{Xt} $$
+$$ Y_t = a_y * Y_{t-1} + a_{yx} * X_{t-1} + a_{yz} * Z_{t-1} + \epsilon_{Yt} $$
+
+%TODO: Describe parameters
 
 \section{Physiological signals}\label{sec:physsig}
 \subsection{Research group}\label{subsec:researchgr}

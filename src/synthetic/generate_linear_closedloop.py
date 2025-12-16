@@ -7,16 +7,17 @@ _DEFAULT_SIGNAL_LENGTH = 200
 _DEFAULT_EPSILON = 0.3
 _DEFAULT_A11 = 0.6
 _DEFAULT_A22 = 0.6
+_DEFAULT_A12 = 0.15
 
-couplings = [0, 0.05, 0.1, 0.15]
-casualities_ytox = [(_DEFAULT_A11, _DEFAULT_A22, coupling, coupling) for coupling in couplings]
-LINEAR_CLOSEDLOOP_DATA_A12: list[PatientData] = []
+couplings = [0, 0.1, 0.15, 0.2]
+casualities_ytox = [(_DEFAULT_A11, _DEFAULT_A22, _DEFAULT_A12, coupling) for coupling in couplings]
+LINEAR_CLOSEDLOOP_DATA_A21: list[PatientData] = []
 for i in range(_REPETITIONS):
-    LINEAR_CLOSEDLOOP_DATA_A12.append(
+    LINEAR_CLOSEDLOOP_DATA_A21.append(
         {
             'id': i,
             **{
-                f'coupling={a_tuple[2]}': generate_bivariate_ar_closed_loop(
+                f'a21={a_tuple[-1]}': generate_bivariate_ar_closed_loop(
                     _DEFAULT_SIGNAL_LENGTH, a_tuple, _DEFAULT_EPSILON
                 )
                 for a_tuple in casualities_ytox
