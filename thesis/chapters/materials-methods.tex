@@ -25,10 +25,10 @@ From its simplicity AR(1) model is a perfect candidate to test whether TE is ava
 Additionally it was used to benchmark effect of noise, and signal length on the TE result.
 
 Unidirectional AR(1) process between $X$ and $Y$ can be expressed in the following form:
-\begin{equation}
+\begin{equation}\label{eq:ar-unidir}
   X_t = a_{11} \cdot X_{t-1} + \epsilon_{Xt}
 \end{equation}
-$$ Y_t = a_{22} * Y_{t-1} + a_{21} \cdot X_{t-1} + \epsilon_{Yt} $$
+$$ Y_t = a_{22} \cdot Y_{t-1} + a_{21} \cdot X_{t-1} + \epsilon_{Yt} $$
 
 Variables $a_{11}$ and $a_{11}$ symbolize autoregression strength, $a_{21}$ is determing the coupling strength, and $\epsilon_X$, $\epsilon_X$ are respective gaussian noise of $X$ and $Y$.
 
@@ -42,10 +42,10 @@ Experiments with following parameters changed were run:
 
 \subsection{Bidirectional AR(1) models}
 The bidirectionality is achived by introducing a third variable $a_12$, that symbolizes coupling strength from $Y$ to $X$:
-\begin{equation}
+\begin{equation}\label{eq:ar-bidir}
   X_t = a_{11} \cdot X_{t-1} + a_{12} \cdot Y_{t-1} + \epsilon_{Xt}
 \end{equation}
-$$ Y_t = a_{22} * Y_{t-1} + a_{21} \cdot X_{t-1} + \epsilon_{Yt} $$
+$$ Y_t = a_{22} \cdot Y_{t-1} + a_{21} \cdot X_{t-1} + \epsilon_{Yt} $$
 
 Experiment with different $a_{21}$ equal to $0, 0.1, 0.15, 0.2$ and $a_{11}=a_{22}=0.7$, $\epsilon = 0.3$, and $a_{12} = 0.15$ was conducted.
 
@@ -68,10 +68,11 @@ This model is a extension of above described AR(1) models with the following for
 \begin{equation}
   Z_t = a_z \cdot Z_{t-1} + \epsilon_{Zt}
 \end{equation}
-$$ X_t = a_x * X_{t-1} + a_{xz} * Z_{t-1} + \epsilon_{Xt} $$
-$$ Y_t = a_y * Y_{t-1} + a_{yx} * X_{t-1} + a_{yz} * Z_{t-1} + \epsilon_{Yt} $$
+$$ X_t = a_x \cdot X_{t-1} + a_{xz} \cdot Z_{t-1} + \epsilon_{Xt} $$
+$$ Y_t = a_y \cdot Y_{t-1} + a_{yx} \cdot X_{t-1} + a_{yz} \cdot Z_{t-1} + \epsilon_{Yt} $$
 
-%TODO: Describe parameters
+In this model the $a_x=0.6, a_y=0.6, a_z=0.6$ are standing for autoregression strength, coupling from $X$ to $Y$ is symbolized by $a_{yx}$, and the causality mediation from $Z$ to $X$ and $Y$ was achived by $a_{yz}=a_{xz}$ that was set on $0, 0.05, 0.1, 0.2$. 
+The $\epsilon$ is standing for the noise of the corresponding signal like in equations \ref{eq:ar-unidir} and \ref{eq:ar-bidir}.
 
 \section{Physiological signals}\label{sec:physsig}
 \subsection{Research group}\label{subsec:researchgr}
@@ -89,7 +90,7 @@ For the BRS estimation mentioned in section \ref{sec:baroreflex}, two raw signal
 
 Measurements were made at room temperature with minimal external stimuli as in Figure \ref{fig:experiment-setup} and were carried out in four stages lasting 5 minutes each and performed one after another. 
 In stage 1 subjects were breathing at their resting rate, and in stages 2,3,4 they were performing controlled breathing guided by metromone, respectively, at rates 6,10 and 15 breaths per minute (bpm).
-Each epoch was performed with a 5 minute long break, and the signals were sampled at $f_s=200 Hz$.
+Each epoch was performed with a 5 minute long break, the ABP was sampled at $f_s=200 Hz$, and ETCO$_2$ was upsampled to match it.
 All the data was gathered into separate \textit{csv} format files, for each patient and breathing stage.
 
 \begin{figure}[H]
@@ -578,7 +579,7 @@ def _is_uniform(d: int, counts: NDArray, alpha: float) -> None | bool:
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/materials-methods/te/Darbellay-Vajda Adaptive Partitioning (3D).png}
-    \caption{Final partition of the space}
+    \caption{The final space partition, implemented from scratch}
     \label{fig:dvp-example-implementation}
 \end{figure}
 
