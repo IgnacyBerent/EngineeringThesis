@@ -8,10 +8,10 @@ _DEFAULT_EPSILON = 0.3
 _DEFAULT_AX = 0.6
 _DEFAULT_AY = 0.6
 _DEFAULT_AZ = 0.6
-_DEFAULT_AYX = 0.1
+_DEFAULT_AYX = 0.5
 
 
-z_coupling_strengths = [0.00, 0.05, 0.1, 0.2]
+z_coupling_strengths = [0.00, 0.25, 0.5, 1]
 a_tuples = [
     (_DEFAULT_AX, _DEFAULT_AY, _DEFAULT_AZ, z_coupling, z_coupling, _DEFAULT_AYX) for z_coupling in z_coupling_strengths
 ]

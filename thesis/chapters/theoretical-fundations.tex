@@ -68,12 +68,12 @@ Shannon proposed his own definition of Entropy (called also Shannon Entropy), di
 
 In Information Theory, The Entropy $H(X)$ of a discreate random variable $X$ and propability mass function $p(x) = Pr\{X = x\}, x \in X$ is defined as:
 \begin{equation}\label{eq:entropy}
-    H(X) = -\sum_{x\in X} p(x) \cdot log(p(x))
+  H(X) = -\sum_{x\in X} p(x) \cdot \text{log}(p(x))
 \end{equation}
-For convenience $p(x)$ notation is used instead of $p_X(x)$, and $log$ over $log_2$.
+For convenience $p(x)$ notation is used instead of $p_X(x)$, and log over log$_2$.
 Thus, $p(x)$ and $p(y)$ refer to two different random variables and are equivalent to $p_X(x)$ and $p_Y(y)$.
 
-The base of $log$ in the formula denotes the unit in which Entropy is calculated, where base 2 stands for bits. 
+The base of log in the formula denotes the unit in which Entropy is calculated, where base 2 stands for bits. 
 The resulting number can be interpreted in different ways, based on the use case.
 From the information transfer perspective $H(X)$ will mean the maximum theoretical compression of $X$, where in the biological field it will rather be interpreted as total uncertrainity, ammount of information, or complexity of system $X$ (\cite{Cover2006};\cite{Shannon1948};\cite{lossofcomplexity}).
 
@@ -81,7 +81,7 @@ As an example, we can take tossing a fair coin 3 times, denoting its result as $
 In Table \ref{tab:cointossing} we observe that we can have 8 possible outcomes $x$, each of equal probability $p(x)$ equal to $\frac{1}{8}$.
 After putting this into formula \ref{eq:entropy} we have:
 \begin{equation}
-  H(X) = -\sum_{x=1}^{8} p(x) \cdot log(p(x)) = 3\text{ [bits]}
+  H(X) = -\sum_{x=1}^{8} p(x) \cdot \text{log}(p(x)) = 3\text{ [bits]}
 \end{equation}
 
 \begin{table}[H]
@@ -112,7 +112,7 @@ The natural extension of Entropy will be calculating it for a pair of random var
 
 The Joint Entropy (JE) $H(X,Y)$ of a pair of discrete random variables ($X$, $Y$) with a joint distribution $p(x,y)$ is defined as:
 \begin{equation}\label{eq:joint-entropy}
-    H(X,Y) = -\sum p(x,y) \cdot log(p(x,y))
+  H(X,Y) = -\sum p(x,y) \cdot \text{log}(p(x,y))
 \end{equation}
 
 For the simplification, the following notation was shorthanded with signle $\sum$ notation: $\sum_{x\in X}\sum_{y\in Y}$ and will be kept for the remaining definitions.
@@ -121,7 +121,7 @@ Instead of calculating Entropy for the joint propability distribution, we can de
 
 The Conditional Entropy (CE) $H(X|Y)$ if ($X$,$Y$) $\sim$ $p(x,y)$ is:
 \begin{equation}\label{eq:conditional-entropy}
-    H(X|Y) = -\sum p(x,y) \cdot log(p(x|y))
+  H(X|Y) = -\sum p(x,y) \cdot \text{log}(p(x|y))
 \end{equation}
 
 The relation between CE  and JE  can be expressed using the following chain rule:
@@ -159,7 +159,7 @@ My notation will use symbol $d$ for embedding dimensions (\cite{Schreiber2000};\
 
 Finally $TE_{Y\to X}$ from random process $Y$ to random process $X$, with the corenspoding states $y_t$, $x_t$ and embedding dimension $d$ is defined as:
 \begin{equation}\label{eq:te}
-  TE_{Y\to X}^{d} = \sum p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)}) \cdot log(\frac{p(x_t|x_{t-1}^{(d)},y_{t-1}^{(d)})}{p(x_t|x_{t-1}^{(d)})})
+  TE_{Y\to X}^{d} = \sum p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)}) \cdot \text{log}(\frac{p(x_t|x_{t-1}^{(d)},y_{t-1}^{(d)})}{p(x_t|x_{t-1}^{(d)})})
 \end{equation}
 
 Usually the following property is being used to simplify TE formula:
@@ -169,7 +169,7 @@ Usually the following property is being used to simplify TE formula:
 
 So \ref{eq:te} can be also represented as:
 \begin{equation}\label{eq:te-simplified}
-  TE_{Y\to X}^{d} = \sum p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)}) \cdot log(\frac{p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)})p(x_{t-1}^{(d)})}{p(x_t,x_{t-1}^{(d)})p(x_{t-1}^{(d)},y_{t-1}^{(d)})})
+  TE_{Y\to X}^{d} = \sum p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)}) \cdot \text{log}(\frac{p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)})p(x_{t-1}^{(d)})}{p(x_t,x_{t-1}^{(d)})p(x_{t-1}^{(d)},y_{t-1}^{(d)})})
 \end{equation}
 
 This way the calculation comes down to calculating only the joint probabilities, what is a big simplification for a practical implementation.
@@ -181,7 +181,7 @@ This effect is achived in Conditional Transfer Entropy (CTE) by introducing a th
 
 Similarly to the definition \ref{eq:te} $CTE_{Y\to X|Z}$ is equal to:
 \begin{equation}\label{eq:cte}
-  CTE_{Y\to X|Z}^{d} = \sum p(x_t,x_{t-1}^{(d)},y_{t-1}^{(l)},z_{t-1}^{(d)}) \cdot log(\frac{p(x_t|x_{t-1}^{(d)},y_{t-1}^{(d)},z_{t-1}^{(d)})}{p(x_t|x_{t-1}^{(d)},z_{t-1}^{(d)})})
+  CTE_{Y\to X|Z}^{d} = \sum p(x_t,x_{t-1}^{(d)},y_{t-1}^{(l)},z_{t-1}^{(d)}) \cdot \text{log}(\frac{p(x_t|x_{t-1}^{(d)},y_{t-1}^{(d)},z_{t-1}^{(d)})}{p(x_t|x_{t-1}^{(d)},z_{t-1}^{(d)})})
 \end{equation}
 
 There are scenarios where accessing the information transfer from two, or more, sources is needed.
@@ -189,11 +189,11 @@ In such cases, Joint Transfer Entropy (JTE) is the solution, or to include also 
 CJTE can be also used in the way, where the same signal is being used twice - as source and as condition ($Y=W$) - resulting in synergic impact of $X$ and $Y$ on $Z$, excluding past of $Y$ \cite{porta2015disentangling}.
 
 \begin{equation}\label{eq:jte}
-  JTE_{(X,Y)\to Z}^{d} = \sum p(z_t,z_{t-1}^{(d)},x_{t-1}^{(l)},y_{t-1}^{(d)}) \cdot log(\frac{p(z_t|z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)})}{p(z_t|z_{t-1}^{(d)})})
+  JTE_{(X,Y)\to Z}^{d} = \sum p(z_t,z_{t-1}^{(d)},x_{t-1}^{(l)},y_{t-1}^{(d)}) \cdot \text{log}(\frac{p(z_t|z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)})}{p(z_t|z_{t-1}^{(d)})})
 \end{equation}
 
 \begin{equation}\label{eq:cjte}
-  CJTE_{(X,Y)\to Z|W}^{d} = \sum p(z_t,z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)},w_{t-1}^{(d)}) \cdot log(\frac{p(z_t|z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)},w_{t-1}^{(d)})}{p(z_t|z_{t-1}^{(d)},w_{t-1}^{(d)})})
+  CJTE_{(X,Y)\to Z|W}^{d} = \sum p(z_t,z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)},w_{t-1}^{(d)}) \cdot \text{log}(\frac{p(z_t|z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)},w_{t-1}^{(d)})}{p(z_t|z_{t-1}^{(d)},w_{t-1}^{(d)})})
 \end{equation}
 
 \subsection{Probability Estimation Techniques}
@@ -201,18 +201,18 @@ One of the biggest challanges in TE computation is estimation of the probabiliti
 The choice of the probability estimation technique is a crucial detail, as it not only dictates how data is handeled inside TE, but also very result of the calculation. (\cite{genccaga2018transfer};\cite{rozo2021benchmarking};\cite{lee2012transfer}).
 
 There are numerous techniques that are being used for this purpose, each with its own benefits and drawbacks, thus the choice is not trivial.
-For this paper I have decided to implement from scratch the Darbelly-Vajda Partitioning (DVP) algorithm for its reliability, and parameter free approach (implementation in section \ref{sec:te_dvp-implementation})  (\cite{lee2012transfer};\cite{rozo2021benchmarking};\cite{dvp}).
+For this paper I have decided to implement from scratch the Darbelly-Vajda Partitioning (DVP) algorithm for its reliability, and parameter free approach (detailed implementation in section \ref{sec:te_dvp-implementation})  (\cite{lee2012transfer};\cite{rozo2021benchmarking};\cite{dvp}).
 
 The idea behind DVP is to divide space adaptivly in a non-uniform way.
 It does so by running in a recursion, taking any $d$-dimensional ordinaly ranked data of length $N$, and dividing the given space defined by the input data equaly into $2^d$ $d$-dimensional boxes, with boundaries at the mid-points.
 Then it performs chia test to check whether the distribution of the data points across all the created cubes is uniform.
 If the null hypothesis is rejected, then algorithm enters each of the boxes, and the process repeats, else the current boxes are takes as one partition, stopping recursion to go deeper.
-As the result, each box contains positive number of points, and by counting ammount of points within boundaries and dividinng it by $N$, the joint probability is estimated \cite{dvp}.
+As the result, each box contains positive number of points (as presented on 2D example in fig \ref{fig:dvp-example}), and by counting ammount of points within boundaries and dividinng it by $N$, the joint probability is estimated \cite{dvp}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{figs/theoretical-fundations/dvp.png}
-    \caption{DVP visualization for noise, implemented from scratch}
+    \includegraphics[width=0.8\linewidth]{figs/theoretical-fundations/dvp2d.png}
+    \caption{2D DVP visualization example, implemented from scratch}
     \label{fig:dvp-example}
 \end{figure}
 

@@ -61,12 +61,15 @@ def analyse_synthetic_bivaraite() -> None:
         titles,
         strict=True,
     ):
+        order = None
+        if title == 'linear_openloop_l':
+            order = ['length=100', 'length=200', 'length=500', 'length=1000']
         yx = rg.add_te('x', 'y')
         xy = rg.add_te('y', 'x')
         with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.csv') as tmp:
             temp_file_path = tmp.name
             rg.generate_results_csv(temp_file_path)
-            analyzer = StatisticsAnalyzer(temp_file_path)
+            analyzer = StatisticsAnalyzer(temp_file_path, order=order)
             [analyzer.do_rm_anova_test(field, title=f'{title} {field}') for field in [yx, xy]]
 
 
@@ -85,6 +88,6 @@ def analyse_synthetic_trivaraite() -> None:
 
 
 if __name__ == '__main__':
-    # analyse_physiological_data()
+    analyse_physiological_data()
     analyse_synthetic_bivaraite()
-    # analyse_synthetic_trivaraite()
+    analyse_synthetic_trivaraite()

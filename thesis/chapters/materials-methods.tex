@@ -1,4 +1,5 @@
-\chapter{Materials \& Methods}\label{ch:matmeth}
+\chapter{Materials \& Methods}
+The \textit{python} implementations of the alghorithms in this study were developed with usage of \textit{numpy} library, with \textit{pandas}, and \textit{matplotlib} for data read, write operations, and plotting (\cite{numpy};\cite{pandas};\cite{matplotlib}).
 
 \section{Synthetic signals}
 To validate correctness of my TE implementation, appropiate benchmark with usage of synthetic signals is needed.
@@ -74,14 +75,14 @@ $$ Y_t = a_y \cdot Y_{t-1} + a_{yx} \cdot X_{t-1} + a_{yz} \cdot Z_{t-1} + \epsi
 In this model the $a_x=0.6, a_y=0.6, a_z=0.6$ are standing for autoregression strength, coupling from $X$ to $Y$ is symbolized by $a_{yx}$, and the causality mediation from $Z$ to $X$ and $Y$ was achived by $a_{yz}=a_{xz}$ that was set on $0, 0.05, 0.1, 0.2$. 
 The $\epsilon$ is standing for the noise of the corresponding signal like in equations \ref{eq:ar-unidir} and \ref{eq:ar-bidir}.
 
-\section{Physiological signals}\label{sec:physsig}
-\subsection{Research group}\label{subsec:researchgr}
+\section{Physiological signals}
+\subsection{Research group}
 The data set with the physiological signals come from the study conducted for the \textit{AUTOMATIC} project conducted at Wrocaw University of Wroclaw and Technology (WUST). 
 It consists of 37 young healthy volunteers (21 males, 16 males, median age: 22 years, range 18-31 years). 
 Everyone was instructed not to consume alcohol and caffeine 12 hours before the study and declared to be free of medication. 
 Measurements were taken under the supervision of a profesional physician and were approved by the Comission of Bioethics (KB-179/2023/N) \citep{Uryga_2024}.
 
-\subsection{Data acquisition}\label{subsec:dataacq}
+\subsection{Data acquisition}
 For the BRS estimation mentioned in section \ref{sec:baroreflex}, two raw signals were used among others for the calculations:
 \begin{itemize}
   \item ABP recorded noninvasively using a photoplethysmograph (Finometer MIDI)
@@ -100,7 +101,7 @@ All the data was gathered into separate \textit{csv} format files, for each pati
     \label{fig:experiment-setup}
 \end{figure}
 
-\subsection{Preprocessing}\label{sec:preprocessing}
+\subsection{Preprocessing}
 Minimal preprocessing was already performed on the received data, which included:
 \begin{enumerate}
     \item \textbf{Filtering:}
@@ -121,14 +122,16 @@ Minimal preprocessing was already performed on the received data, which included
     \end{itemize}
 \end{enumerate}
 
-\begin{figure}
+As the result, signals provided for this study were resembling the following sample in figure \ref{fig:raw-data}.
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/materials-methods/physiological/Preprocessed raw signals.png}
     \caption{Sample of preprocessed raw signals for breathing at rest}
     \label{fig:raw-data}
 \end{figure}
 
-\subsection{Signals Processing}\label{sec:processing}
+\subsection{Signals Processing}
 Firstly data is loaded using \textit{BaroreflexDataLoader} that is child of \textit{DataLoader} class.
 \begin{minted}{python}
 class BaroreflexDataLoader(DataLoader):
@@ -243,9 +246,9 @@ def _find_peaks(
 There are 3 functions in total used from \textit{neurokit2} to get signal peaks in form of array of indecies at which peaks occur, using \textit{"elgendi"} peak detection method by a default \cite{elgendi2013systolic}.
 \begin{enumerate}
   \item \textit{nk.signal\_fillmissing()} - fills missing values in signal (what does nothing for this study use case, since missing values were already filled at the preprocessing step).
-  \item \textit{nk.ppg\_clean()} - performs low-pass butterworth filtering
+  \item \textit{nk.ppg\_clean()} - performs low-pass butterworth filtering (result in figure \ref{fig:nk-cleaned_signal})
   \item \textit{nk.ppg\_findpeaks()} - squares positive values of the cleaned signal to amplify the systolic peak energy, then applies a dynamic threshold derived from short- and long-term moving averages to identify segments containing a potential beat. 
-    Within these high-energy segments, the most prominent local maximum in the original signal is selected as the final systolic peak.
+    Within these high-energy segments, the most prominent local maximum in the original signal is selected as the final systolic peak (result in figure \ref{fig:nk-found_peaks}).
 \end{enumerate}
 
 \begin{figure}[H]
@@ -267,15 +270,17 @@ Having found peaks in the ABP signal the SAP, HP, and adjusted ETCO$_2$ for each
 \begin{equation}
   \text{peaks} = [peak_0, peak_1, \dots, peak_i, \dots]
 \end{equation}
-\begin{equation}\label{eq:sap_from_abp}
+\begin{equation}
   \text{SAP}_i = \text{ABP}_{peak_i} \text{ } [mmHg]
 \end{equation}
-\begin{equation}\label{eq:rr_from_abp}
-  \text{HP}_i = \text{RR}_i = \frac{peak_i - peak_{i-1}}{f_s} \cdot 1000 \text{ } [ms]
+\begin{equation}
+  \text{HP}_i = \frac{peak_i - peak_{i-1}}{f_s} \cdot 1000 \text{ } [ms]
 \end{equation}
 \begin{equation}
   \text{ETCO}_2_i = \text{mean}(\text{ETCO}_2_{peak_{i-1}}, \dots, \text{ETCO}_2_{peak_i}) 
 \end{equation}
+
+The above equations correspond to the following code, and are ilustrated at figure \ref{fig:processing_signals}.
 
 \begin{minted}{python}
 def get_hp(peaks: NDArray[np.integer], sampling_rate: int = SAMPLING_FREQUENCY) -> NDArray[np.floating]:
@@ -307,7 +312,7 @@ def adjust_etco2(etco2: NDArray[np.floating], peaks: NDArray[np.integer]) -> NDA
     \label{fig:processed_signals}
 \end{figure}
 
-Processed signals like this can be easly then be used for TE calculations using the \textit{BaroreflexResultsGenerator} that just like classes above have abstracted methods for data processing for all the subjects.
+Processed signals like in the figure \ref{fig:processed_signals} can be easly then be used for TE calculations using the \textit{BaroreflexResultsGenerator} that just like classes above have abstracted methods for data processing for all the subjects.
 \begin{minted}{python}
 class BaroreflexResultsGenerator(ResultsGenerator):
     def __init__(self, patients_processed_data: list[PatientData]) -> None:
@@ -387,7 +392,7 @@ def te_dv(
 
 \subsection{Initial Step}
 
-Firstly, let`s take two signals for TE computation - $X$ = HP, and $Y$ = SAP, where both of them have to be of length $N=200$.
+Firstly, let`s take two signals (like in the figure \ref{fig:initial_signals}) for TE computation - $X$ = HP, and $Y$ = SAP, where both of them have to be of length $N=200$.
 Also lets use the default time delay $\tau=1$ and embedding dimension $d=1$
 \begin{figure}[H]
     \centering
@@ -453,8 +458,8 @@ To finish step two, embedding vectors have to be transfered using ordinary ranki
 
 \subsection{Propabilities Substitution}
 Since we are using DVP alghorithm we have to replace state joint propabilities $p$ from the formula \ref{eq:te-simplified} with propabilities of finding points in given subspaces $a_i,b_i,c_i,d_i$ for $i$-th DVP's space partition. 
-\begin{equation}\label{eq:te-substitution}
-  TE_{Y\to X}^{d} = \sum p(a_i) \cdot log(\frac{p(a_i)p(b_i)}{p(c_i)p(d_i)})
+\begin{equation}
+  TE_{Y\to X}^{d} = \sum p(a_i) \cdot \text{log}(\frac{p(a_i)p(b_i)}{p(c_i)p(d_i)})
 \end{equation}
 where:
 $$ p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)}) \to p(a_i) $$
@@ -464,8 +469,8 @@ $$ p(x_{t-1}^{(d)},y_{t-1}^{(d)}) \to p(d_i) $$
 
 In fact here the biggest difference between TE,JTE,CTE, and CJTE lies, since each of them will have different subspace assigment for the incoming signals.
 Here is the example for CJTE:
-\begin{equation}\label{eq:cjte-substitution}
-  CJTE_{(X,Y)\to Z|W}^{d} = \sum p(a_i) \cdot log(\frac{p(a_i)p(b_i)}{p(c_i)p(d_i)})
+\begin{equation}
+  CJTE_{(X,Y)\to Z|W}^{d} = \sum p(a_i) \cdot \text{log}(\frac{p(a_i)p(b_i)}{p(c_i)p(d_i)})
 \end{equation}
 where:
 $$ p(z_t,z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)},w_{t-1}^{(d)}) \to p(a_i) $$
@@ -576,6 +581,8 @@ def _is_uniform(d: int, counts: NDArray, alpha: float) -> None | bool:
     return crit >= T
 \end{minted}
 
+After all the recursion instances are resolved, the division of space can be plotted as in the figure \ref{fig:dvp-example-implementation}.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/materials-methods/te/Darbellay-Vajda Adaptive Partitioning (3D).png}
@@ -621,19 +628,13 @@ processed_data = data_processor.process_all(raw_data)
 results_generator = BaroreflexResultsGenerator(processed_data)
 
 sap_hp = results_generator.add_te('hp', 'sap')
-hp_sap = results_generator.add_te('sap', 'hp')
-cte_sap_hp = results_generator.add_cte('hp', 'sap', 'etco2')
-cte_hp_sap = results_generator.add_cte('sap', 'hp', 'etco2')
-jte_sap_etco2 = results_generator.add_jte('sap', 'etco2', 'hp')
-jte_hp_etco2 = results_generator.add_jte('hp', 'etco2', 'sap')
 cjte_sap = results_generator.add_cjte('sap', 'etco2', 'hp', 'etco2')
-cjte_hp = results_generator.add_cjte('hp', 'etco2', 'sap', 'etco2')
 
 results_generator.generate_results_csv(RESULTS_CSV_FILE_NAME)
 analyzer = StatisticsAnalyzer(RESULTS_CSV_FILE_NAME)
 [
     analyzer.do_rm_anova_test(field)
-    for field in [sap_hp, hp_sap, cte_sap_hp, cte_hp_sap, jte_sap_etco2, jte_hp_etco2, cjte_sap, cjte_hp]
+    for field in [sap_hp, cjte_sap]
 ]
 \end{minted}
 

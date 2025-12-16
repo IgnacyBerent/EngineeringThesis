@@ -1,12 +1,13 @@
 from pathlib import Path
 from typing import cast
 
+import numpy as np
 import pandas as pd
 import pingouin as pg
 
-from src.common.constants import CB_FILE_TYPE, CONDITION_FIELD, ID_FIELD
+from src.common.constants import CONDITION_FIELD, ID_FIELD
 from src.common.logger import logger
-from src.plots import plot_boxplot_w_posthoc, plot_paired_boxplot
+from src.plots import plot_boxplot_w_posthoc
 
 _P_ADJUST = 'bonf'
 
@@ -38,6 +39,8 @@ class StatisticsAnalyzer:
             subject=ID_FIELD,
         )
         posthoc = self.post_hoc(field)
+        self._save_latex_table(rm, title)
+        self._save_latex_table(posthoc, title + '_posthoc')
 
         plot_data = self.data.groupby(CONDITION_FIELD, sort=True)[field].apply(list).to_dict()
         plot_boxplot_w_posthoc(data=plot_data, title=title, y_label=field, posthoc=posthoc)
@@ -47,3 +50,56 @@ class StatisticsAnalyzer:
 
     def post_hoc(self, field: str) -> pd.DataFrame:
         return pg.pairwise_tests(data=self.data, dv=field, within=CONDITION_FIELD, subject=ID_FIELD, padjust=_P_ADJUST)
+
+    def _save_latex_table(self, result: pd.DataFrame, title: str) -> None:
+        columns_to_remove = [
+            'Contrast',
+            'Source',
+            'Paired',
+            'Parametric',
+            'alternative',
+            'BF10',
+            'hedges',
+            'p-adjust',
+            'p-GG-corr',
+            'sphericity',
+            'W-spher',
+            'p-spher',
+        ]
+        result_filtered = result.drop(columns=columns_to_remove, axis=1, errors='ignore')
+
+        dof_cols = [col for col in result_filtered.columns if 'dof' in col.lower()]
+        for col in dof_cols:
+            if col in result_filtered.columns:
+                dof_values = cast(pd.Series, pd.to_numeric(result_filtered[col], errors='coerce'))
+                dof_values = dof_values.astype(int).astype(str)
+                result_filtered[col] = '$' + dof_values + '$'
+
+        p_value_cols = [col for col in result_filtered.columns if col in ['p-unc', 'p-corr', 'p-value']]
+        for col in p_value_cols:
+            if col in result_filtered.columns:
+                p_values = cast(pd.Series, pd.to_numeric(result_filtered[col], errors='coerce'))
+                result_filtered[col] = p_values.apply(self._format_p_value)
+
+        numeric_cols = result_filtered.select_dtypes(include=np.number).columns.tolist()
+        for col in numeric_cols:
+            result_filtered[col] = result_filtered[col].round(3)
+            result_filtered[col] = '$' + result_filtered[col].astype(str) + '$'
+
+        result_filtered = result_filtered.astype(str).replace('_', ' ', regex=True)
+
+        latex_table_content = result_filtered.to_latex(index=False)
+        with open(f'{title}.txt', 'w') as file:
+            file.write('\\begin{table}\n')
+            file.write('\\centering\n')
+            file.write('\\caption{}\n')
+            file.write(latex_table_content)
+            file.write('\\end{table}\n')
+
+    @staticmethod
+    def _format_p_value(p: np.number) -> str:
+        if p < 0.001:
+            return r'$< 0.001$'
+        if p < 0.01:
+            return r'$< 0.01$'
+        return f'${p:.3f}$'
