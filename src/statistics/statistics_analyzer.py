@@ -14,15 +14,14 @@ _P_ADJUST = 'bonf'
 
 class StatisticsAnalyzer:
     def __init__(self, csv_file_path: str | Path, order: list[str] | None = None) -> None:
-        self._data_order = order
-        self.data = self._load_data(csv_file_path)
+        self.categories: list[str] = []
+        self.data = self._load_data(csv_file_path, order)
         self._remove_patients_with_nans()
 
-    def _load_data(self, csv_file_path: str | Path) -> pd.DataFrame:
+    def _load_data(self, csv_file_path: str | Path, order: list[str] | None) -> pd.DataFrame:
         data = pd.read_csv(csv_file_path)
-        if self._data_order is None:
-            self._data_orderorder = data[CONDITION_FIELD].unique()
-        data[CONDITION_FIELD] = pd.Categorical(data[CONDITION_FIELD], categories=self._data_order, ordered=True)
+        self.categories = list(data[CONDITION_FIELD].unique()) if order is None else order
+        data[CONDITION_FIELD] = pd.Categorical(data[CONDITION_FIELD], categories=self.categories, ordered=True)
         return data
 
     def _remove_patients_with_nans(self) -> None:
@@ -50,6 +49,25 @@ class StatisticsAnalyzer:
 
     def post_hoc(self, field: str) -> pd.DataFrame:
         return pg.pairwise_tests(data=self.data, dv=field, within=CONDITION_FIELD, subject=ID_FIELD, padjust=_P_ADJUST)
+
+    def compare(self, field1: str, field2: str) -> None:
+        results = []
+        for condition_value, subset in self.data.groupby(CONDITION_FIELD):
+            subset = subset.copy()
+            stats = subset[[field1, field2]].agg(['mean']).T
+            ttest = pg.ttest(subset[field1], subset[field2], paired=True)
+            summary_row = {
+                'Condition': condition_value,
+                f'Mean {field1}': stats.loc[field1, 'mean'],
+                f'Mean {field2}': stats.loc[field2, 'mean'],
+                'T': ttest.at['T-test', 'T'],
+                'p-unc': ttest.at['T-test', 'p-val'],
+            }
+            results.append(summary_row)
+
+        final_summary = pd.DataFrame(results)
+        title = f'comparison_{field1}_vs_{field2}'
+        self._save_latex_table(final_summary, title)
 
     def _save_latex_table(self, result: pd.DataFrame, title: str) -> None:
         columns_to_remove = [
@@ -89,12 +107,8 @@ class StatisticsAnalyzer:
         result_filtered = result_filtered.astype(str).replace('_', ' ', regex=True)
 
         latex_table_content = result_filtered.to_latex(index=False)
-        with open(f'{title}.txt', 'w') as file:
-            file.write('\\begin{table}\n')
-            file.write('\\centering\n')
-            file.write('\\caption{}\n')
+        with open(f'results/{title}.txt', 'w') as file:
             file.write(latex_table_content)
-            file.write('\\end{table}\n')
 
     @staticmethod
     def _format_p_value(p: np.number) -> str:

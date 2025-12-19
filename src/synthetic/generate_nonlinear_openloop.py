@@ -1,16 +1,14 @@
 from src.common.mytypes import PatientData
-from src.synthetic.functions.henon_map import generate_coupled_henon_map
+from src.synthetic.common import DEFAULT_SIGNAL_LENGTH, REPETITIONS
+from src.synthetic.functions.nonlinear import generate_nonlinear_bivariate_process
 
-_REPETITIONS = 50
-_DEFAULT_SIGNAL_LENGTH = 200
-
-gammas = [0, 0.05, 0.1, 0.2]
+bs = [0, 0.1, 0.25, 0.5]
 
 NONLINEAR_CLOSEDLOOP_DATA: list[PatientData] = []
-for i in range(_REPETITIONS):
+for i in range(REPETITIONS):
     NONLINEAR_CLOSEDLOOP_DATA.append(
         {
             'id': i,
-            **{f'gamma={gamma}': generate_coupled_henon_map(_DEFAULT_SIGNAL_LENGTH, gamma=gamma) for gamma in gammas},
+            **{f'b={b}': generate_nonlinear_bivariate_process(DEFAULT_SIGNAL_LENGTH, b=b, seed=i) for b in bs},
         }
     )

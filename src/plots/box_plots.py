@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
-import seaborn as sns
-import pingouin as pg
+import numpy as np
 import pandas as pd
+import pingouin as pg
 from numpy.typing import NDArray
 
 from src.plots.constatns import DPI, SQUARE_FIG_SIZE
@@ -21,6 +21,7 @@ def plot_boxplot(data: dict[str, NDArray], title: str, y_label: str) -> None:
 def plot_boxplot_w_posthoc(data: dict[str, NDArray], title: str, y_label: str, posthoc: pd.DataFrame) -> None:
     labels = list(data.keys())
     values = list(data.values())
+    [print(f'{label}: {np.mean(value):.3f} +- {np.std(value):.3f}') for label, value in list(data.items())]
 
     _, ax = plt.subplots(figsize=SQUARE_FIG_SIZE, dpi=DPI)
     _ = ax.boxplot(values, patch_artist=True, label=labels, tick_labels=labels)
@@ -35,22 +36,23 @@ def plot_boxplot_w_posthoc(data: dict[str, NDArray], title: str, y_label: str, p
     num = 1
 
     for _, row in posthoc.iterrows():
-        if row['p-corr'] < 0.05:
+        p_corr = row.get('p-corr')
+        if p_corr is not None and p_corr < 0.05:
             i = labels.index(row['A'])  # type: ignore
             j = labels.index(row['B'])  # type: ignore
             x1, x2 = i + 1, j + 1
             y = y_max + h * num
             ax.plot([x1, x1, x2, x2], [y, y + h, y + h, y], lw=1.5, c='k')
-            if row['p-corr'] < 0.001:
+            if p_corr < 0.001:
                 stars = '***'
-            elif row['p-corr'] < 0.01:
+            elif p_corr < 0.01:
                 stars = '**'
             else:
                 stars = '*'
             ax.text((x1 + x2) / 2, y + h, stars, ha='center', va='bottom', color='k')
             num += 1
 
-    plt.savefig(f'{title}.png')
+    plt.savefig(f'results/{title}.png')
     plt.show()
 
 

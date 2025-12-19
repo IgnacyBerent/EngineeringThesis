@@ -3,77 +3,76 @@ The \textit{python} implementations of the alghorithms in this study were develo
 
 \section{Synthetic signals}
 To validate correctness of my TE implementation, appropiate benchmark with usage of synthetic signals is needed.
-The following factors have to be tested:
+The following factors have been tested:
 \begin{itemize}
-  \item Detection of unidirectional information transfer
-  \item Effect of noise 
-  \item Effect of signal length
-  \item Detection of information transfer in nonlinear relationships
-  \item Effect of confounding variable on TE and it's influecnce detection by CJTE
+  \item Effect of a linear coupling strength
+  \item Effect of a signal length
+  \item Effect of a noise
+  \item Effect of a nonlinear coupling strength
+  \item Effect of a confounding variable
 \end{itemize}
 
-For this purpose the following alghorithms were used:
+For this purpose the following models were used:
 \begin{itemize}
-  \item Bivariate first oder autoregressive (AR(1)) model with unidirectional (open-loop) causality: $X \to Y$.
-  \item Bivariate AR(1) model with bidirectional (closed-loop) causality: $X \leftrightarrow Y$.
-  \item Bivariate, bounded, unidirectionally coupled Hénon map ($X \to Y$), using canonical diffusive coupling.
-  \item Trivariate AR(1) process, modeling mediated causality.
+  \item Bivariate linear model
+  \item Bivariate nonlinear model
+  \item Trivariate linear model
 \end{itemize}
 
-Each testing scenario described below were run 50 times, to provide a statistical significance, with default signal length euqal to $200$.
-\subsection{Unidirectional AR(1) models}
-From its simplicity AR(1) model is a perfect candidate to test whether TE is available to decet any information flow in the simplest case, where linear interaction is taken into account.
-Additionally it was used to benchmark effect of noise, and signal length on the TE result.
+Each synthetic dataset was created using $100$ repetitions of given model generation with given parameters.
+For reproducibility of the results and to eliminate the effect of randomnes (inherited in each of the synthetic signal generation), within given repetition with different parameters, one seed is used equal to the repetition number (i.e. generating AR(1) signal at repetition 1 for varying $a$, result in the equal $\epsilon$ for each of them).
+The default signal length was set to $200$ to match lengths of physiological signals used for this study, 
+To mitigate transient effects and ensure the models reached a steady state, an initial burn-in period of 3,000 samples was generated and subsequently discarded for each synthetic signal creation.
 
-Unidirectional AR(1) process between $X$ and $Y$ can be expressed in the following form:
-\begin{equation}\label{eq:ar-unidir}
-  X_t = a_{11} \cdot X_{t-1} + \epsilon_{Xt}
-\end{equation}
-$$ Y_t = a_{22} \cdot Y_{t-1} + a_{21} \cdot X_{t-1} + \epsilon_{Yt} $$
-
-Variables $a_{11}$ and $a_{11}$ symbolize autoregression strength, $a_{21}$ is determing the coupling strength, and $\epsilon_X$, $\epsilon_X$ are respective gaussian noise of $X$ and $Y$.
-
-By default $a_{11}=a_{22}=0.7$ were used, $\epsilon = 0.3$, and $a_{21} = 0.5$
-Experiments with following parameters changed were run:
-\begin{itemize}
-  \item length equal $100, 200, 500, 1000$
-  \item epsilon equal $0.05, 0.25, 0.5, 1$
-  \item $a_{21}$ equal $0.05, 0.25, 0.5, 1$
-\end{itemize}
-
-\subsection{Bidirectional AR(1) models}
-The bidirectionality is achived by introducing a third variable $a_12$, that symbolizes coupling strength from $Y$ to $X$:
-\begin{equation}\label{eq:ar-bidir}
-  X_t = a_{11} \cdot X_{t-1} + a_{12} \cdot Y_{t-1} + \epsilon_{Xt}
-\end{equation}
-$$ Y_t = a_{22} \cdot Y_{t-1} + a_{21} \cdot X_{t-1} + \epsilon_{Yt} $$
-
-Experiment with different $a_{21}$ equal to $0, 0.1, 0.15, 0.2$ and $a_{11}=a_{22}=0.7$, $\epsilon = 0.3$, and $a_{12} = 0.15$ was conducted.
-
-\subsection{Coupled Hénon Map models}
-Coupled Hénon Map model was used to achive a nonlinear coupling from $X$ to $Y$.
-It has a following mathematical representation:
+\subsection{Bivariate Linear Model}
+For modeling linear coupling $X \to Y$, an $i$-th order autoregressive model (AR(i)) is usually the most natural choice.
+Based on the literature the following formula was used for my AR(1) model (\cite{rozo2021benchmarking};\cite{faes2015information}):
 \begin{equation}
-  fx_t = 1.0 - a \cdot X_{t-1}^2 + b \cdot X_{t-2}
+\begin{split}
+  x_n &= -0.5 \cdot X_{n-1} + \epsilon_{x_n} \\
+  x_n &= -0.5 \cdot x_{n-1} + a \cdot x_{n-1} + \epsilon_{y_n}
+\end{split}
 \end{equation}
-$$ fy_t = 1.0 - a \cdot Y_{t-1}^2 + b \cdot Y_{t-2} $$
-$$ X_t = fx $$
-$$ Y_t = (1.0 - \gamma) \cdot fy_t + \gamma \cdot fx_t $$
-$$ X_t = fx_t $$
 
-To achive stable process $a=1.4$ and $0.3$ was set, and $\gamma$ parameter responsible for coupling strength was set to $0, 0.05, 0.1, 0.2$
+Variable $a$ drives the $X \to Y$ causality, while both $\epsilon_{Y_t}, \epsilon_{X_t}$ are Gaussian white noise processes (mean$=0$, var$=1$).
 
-\subsection{Trivariate AR(1) models}
-To compare TE performance with CJTE where confounding variable is present the trivariate AR(1) model is the simplest approach.
-This model is a extension of above described AR(1) models with the following formula:
+By default $a$ was set to $0.5$, and the following parametrization was applied: 
+\begin{itemize}
+  \item $a$ equal: $0, 0.1, 0.25, 0.5$ - to test the effect of a linear coupling strength
+  \item Length equal: $100, 200, 500, 1000$ - to test the effect of a signal length
+  \item SNR (Signal to Noise Ratio) equal: $\text{None}, 30, 20, 10$ - to test the effect a of noise, where None means noise free
+\end{itemize}
+
+\subsection{Bivariate Nonlinear Model}
+To verify effectivnes of TE against nonlinear interactions the following model of order 1 from the literature has ben implemented (\cite{rozo2021benchmarking};\cite{lee2012transfer}):
 \begin{equation}
-  Z_t = a_z \cdot Z_{t-1} + \epsilon_{Zt}
+\begin{split}
+  x_n &= s_{x_n} + \mathcal{L}_{x_n} \\
+  y_n &= (bx_{n-1})^2 + \mathcal{L}_{y_n}
+\end{split}
 \end{equation}
-$$ X_t = a_x \cdot X_{t-1} + a_{xz} \cdot Z_{t-1} + \epsilon_{Xt} $$
-$$ Y_t = a_y \cdot Y_{t-1} + a_{yx} \cdot X_{t-1} + a_{yz} \cdot Z_{t-1} + \epsilon_{Yt} $$
 
-In this model the $a_x=0.6, a_y=0.6, a_z=0.6$ are standing for autoregression strength, coupling from $X$ to $Y$ is symbolized by $a_{yx}$, and the causality mediation from $Z$ to $X$ and $Y$ was achived by $a_{yz}=a_{xz}$ that was set on $0, 0.05, 0.1, 0.2$. 
-The $\epsilon$ is standing for the noise of the corresponding signal like in equations \ref{eq:ar-unidir} and \ref{eq:ar-bidir}.
+Variable $b$ drives the $X \to Y$ causality, $\mathcal{L}$ is a noise from Laplace distribution (location$=0$, scale$=1$), and s normally distributed noise (mean$=0$, var$=1$).
+
+To verify the effect of different nonlinear strengths, $b$ was set to $0, 0.1, 0.25, 0.5$.
+
+\subsection{Trivariate Linear Model}
+To introduce the confounding variable, a following arbitrary linear trivariate AR(1) model is proposed:
+\begin{equation}
+\begin{split}
+  z_n &= 0.8 \cdot z_{n-1} + \epsilon_{z,n} \\
+  x_n &= 0.5 \cdot x_{n-1} + a_z \cdot z_{n-1} + \epsilon_{x,n} \\
+  y_n &= 0.5 \cdot y_{n-1} + a_x \cdot x_{n-1} + a_z \cdot z_{n-1} + \epsilon_{y,n}
+\end{split}
+\end{equation}
+
+In this implementation, the parameter $a_z$ is a common driver of both $X,Y$, $a_x$ is responsible for coupling strength of $X \to Y$, and $\epsilon$ values are adequate Gaussian noices for $X, Y, Z$ (mean$=0$, var$=1$).
+
+To verify the effect of a confounding variable the following parametrization was tested:
+\begin{itemize}
+  \item $a_z$ set to: $0, 0.1, 0.25, 0.5$ and $a_x=0.3$
+  \item $a_x$ set to: $0, 0.1, 0.25, 0.5$ and $a_z=0.4$
+\end{itemize}
 
 \section{Physiological signals}
 \subsection{Research group}
@@ -83,7 +82,7 @@ Everyone was instructed not to consume alcohol and caffeine 12 hours before the 
 Measurements were taken under the supervision of a profesional physician and were approved by the Comission of Bioethics (KB-179/2023/N) \citep{Uryga_2024}.
 
 \subsection{Data acquisition}
-For the BRS estimation mentioned in section \ref{sec:baroreflex}, two raw signals were used among others for the calculations:
+For the BRS estimation, mentioned in section \ref{sec:baroreflex}, two raw signals were used among others for the calculations:
 \begin{itemize}
   \item ABP recorded noninvasively using a photoplethysmograph (Finometer MIDI)
   \item ETCO$_{2}$ recorded using a capnograph
@@ -277,7 +276,7 @@ Having found peaks in the ABP signal the SAP, HP, and adjusted ETCO$_2$ for each
   \text{HP}_i = \frac{peak_i - peak_{i-1}}{f_s} \cdot 1000 \text{ } [ms]
 \end{equation}
 \begin{equation}
-  \text{ETCO}_2_i = \text{mean}(\text{ETCO}_2_{peak_{i-1}}, \dots, \text{ETCO}_2_{peak_i}) 
+  \text{ETCO}_{2i} = \text{mean}(\text{ETCO}_{2peak_{i-1}},\text{ETCO}_{2peak_{i-1}+1}, \dots, \text{ETCO}_{2peak_i}) 
 \end{equation}
 
 The above equations correspond to the following code, and are ilustrated at figure \ref{fig:processing_signals}.

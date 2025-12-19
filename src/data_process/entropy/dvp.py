@@ -40,7 +40,9 @@ def dv_partition_nd(
         - 'maxs': (d,) int array, upper bounds of the partition box.
         - 'N': int, number of points in this partition box.
     """
+    is_initial = False
     if mins is None or maxs is None:
+        is_initial = True
         mins = cast(NDArray[np.integer], np.min(data, axis=0))
         maxs = cast(NDArray[np.integer], np.max(data, axis=0))
     dimensions = len(mins)
@@ -57,7 +59,7 @@ def dv_partition_nd(
         return []
 
     parts = []
-    if (not is_uniform) and np.any(maxs - mins):
+    if is_initial or ((not is_uniform) and np.any(maxs - mins)):
         for child_mins, child_maxs in (child for child in children if child is not None):
             parts.extend(dv_partition_nd(data, child_mins, child_maxs, alpha))
 
@@ -84,7 +86,7 @@ def _get_children_with_counts(
     mins: NDArray[np.integer],
     maxs: NDArray[np.integer],
 ) -> tuple[list[tuple[NDArray[np.integer], NDArray[np.integer]] | None], NDArray[np.integer]]:
-    midpoints: NDArray[np.integer] = (mins + maxs) // 2
+    midpoints: NDArray[np.integer] = (mins + maxs) / 2  # type: ignore
     dimensions = len(mins)
 
     children = []
