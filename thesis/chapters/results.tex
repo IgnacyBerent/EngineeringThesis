@@ -19,7 +19,7 @@ The following acronyms are used in the results tables, which are composed of the
 
 \section{Synthetic Signals}
 
-\subsection{Effect of Linear Coupling Strength} 
+\subsection{Effect of Linear Coupling Strength}\label{subsec:effect_of_linear_coupling_strength}
 
 \subsubsection{Effect on $TE_{X \to Y}$}
 Acording to Figure \ref{fig:openloop-linear-a-along} and results of statistical analysis in the Table \ref{tab:openloop-linear-a-along} there is significant increase in TE accompanying increasing $a$.
@@ -95,7 +95,7 @@ a=0.25 & a=0.5 & $-1.699$ & $99$ & $0.092$ & $0.554$ \\
 \label{tab:openloop-linear-a-against}
 \end{table}
 
-\subsection{Effect of Signal Length}
+\subsection{Effect of Signal Length}\label{subsec:effect_of_signal_length}
 
 \subsubsection{Effect on $TE_{X \to Y}$}
 Post hoc analysis present in Table \ref{tab:openloop-linear-l-along} show that length of the signal has a statistically significant impact on TE evaluation in the direction of the coupling.
@@ -171,7 +171,7 @@ Length=500 & Length=1000 & $-2.566$ & $99$ & $0.012$ & $0.071$ \\
 \label{tab:openloop-linear-l-against}
 \end{table}
 
-\subsection{Effect of Noise}
+\subsection{Effect of Noise}\label{subsec:effect_of_noise}
 
 \subsubsection{Effect on $TE_{X \to Y}$}
 The results for the TE measured along the true causal direction ($X \to Y$) are presented in Figure \ref{fig:openloop-linear-e-along} and Table \ref{tab:openloop-linear-e-along}.
@@ -246,7 +246,7 @@ SNR=20 & SNR=10 & $3.71$ & $99$ & $< 0.001$ & $< 0.01$ \\
 % \label{tab:openloop-linear-e-against}
 % \end{table}
 
-\subsection{Effect of Nonlinear Coupling Strength}
+\subsection{Effect of Nonlinear Coupling Strength}\label{subsec:effect_of_nonlinear_coupling_strength}
 
 \subsubsection{Effect on $TE_{X \to Y}$}
 Results from Table \ref{tab:openloop-nonlinear-gamma-along}, present on Figure \ref{fig:openloop-nonlinear-gamma-along} show significant steep increase of TE with increasing nonlinear coupling strength $b$ for any combination of groups.
@@ -320,7 +320,7 @@ b=0.25 & b=0.5 & $-0.77$ & $99$ & $0.443$ & $1.000$ \\
 \label{tab:openloop-nonlinear-gamma-against}
 \end{table}
 
-\subsection{Effect of a Confounding Variable}
+\subsection{Effect of a Confounding Variable}\label{subsec:effect_of_confounding_variable}
 
 \subsubsection{Effect on $TE_{X \to Y}$}
 Results from Tables \ref{tab:trivariate-te-x-y-az}, \ref{tab:trivariate-te-x-y-ax} visible on Figures \ref{fig:trivariate-te-x-y-az}, \ref{fig:trivariate-te-x-y-ax} show that both $a_z$, and $a_x$ impact TE results.
@@ -460,7 +460,7 @@ ax=0.25 & ax=0.5 & $-0.721$ & $99$ & $0.473$ & $1.000$ \\
 \label{tab:trivariate-te-y-x-ax}
 \end{table}
 
-\subsubsection{Effect on $TE_{Z \to X}$ and $TE_{Z \to Y}$}
+\subsubsection{Effect on $TE_{Z \to X}$ and $TE_{Z \to Y}$}\label{subsubsubsec:drive_detection}
 There is visible on Figures \ref{fig:trivariate-combined-te-az}, \ref{fig:trivariate-combined-te-ax} a simillar statistically significant effect of driving force $a_z$ on TE, and no effect of caused by the $a_x$.
 
 \begin{figure}[H]
@@ -679,7 +679,7 @@ ax=0.25 & ax=0.5 & $1.722$ & $99$ & $0.088$ & $0.529$ \\
 \label{tab:trivariate-cjte-yx-combined}
 \end{table}
 
-\subsubsection{Comparison of $TE_{X->Y}$ with $CJTE_{(X,Z)->Y|Z}$}
+\subsubsection{Comparison of $TE_{X->Y}$ with $CJTE_{(X,Z)->Y|Z}$}\label{subsubsubsec:synthetic_comparison_cjte-te}
 For non existing direct coupling from $X \to Y$ ($a_x=0$) CJTE yield statistically significant bigger mean value, but for stronger couplings ($a_x=0.25$, $a_x=0.5$) CJTE is significantly smaller than TE.
 
 \begin{table}[H]
@@ -700,7 +700,7 @@ ax=0.5 & $0.31$ & $0.247$ & $10.025$ & $< 0.001$ \\
 
 \section{Physiological Signals}
 
-\subsection{BRS Estimation Using TE}
+\subsection{BRS Estimation Using TE}\label{subsec:phys-te-result}
 Figure \ref{fig:phys-te-results} shows that TE is the biggest for $6$ breaths/min, and is statistically different from baseline (i.e. breathing at rest) and $15$ breaths/min.
 Additionally post hoc analysis from Table \ref{tab:phys-te-results} suggest significant difference between baseline and $10$ breath/min, and between $10$ and $15$ breaths/min.
 
@@ -737,7 +737,7 @@ CB 10 & CB 15 & $3.32$ & $31$ & $< 0.01$ & $0.014$ \\
 \label{tab:phys-te-results}
 \end{table}
 
-\subsection{Information Flow From ETCO$_2$}
+\subsection{Information Flow From ETCO$_2$}\label{subsec:phys-etco-effect}
 Combined results for both ETCO$_2$$\to$HP, and ETCO$_2$$\to$SAP in Figure \ref{fig:phys-etco2-combined}, and Table \ref{tab:phys-etco2-results} suggest that information conducted from ETCO$_2$ stays stable at non-zero level among all the groups.
 The only statistically significant difference is only for flow to HP between baseline and $6$ breaths/min.
 
@@ -795,7 +795,7 @@ te\_etco2->hp & CB 10 & CB 15 & $0.253$ & $31$ & $0.802$ & $1.000$ \\
 \end{table}
 
 
-\subsection{BRS Estimation Using CJTE}
+\subsection{BRS Estimation Using CJTE}\label{subsec:phys-cjte-results}
 The results are agregated in Table \ref{tab:phys-cjte-results} and plotted on Figure \ref{fig:phys-cjte-results}.
 The only significant difference is between paced breathing at $6$ breaths/min and $15$ breaths/min, with shape simillar to one in Figure \ref{fig:phys-te-results}.
 
@@ -832,7 +832,7 @@ CB 10 & CB 15 & $2.466$ & $31$ & $0.019$ & $0.116$ \\
 \label{tab:phys-cjte-results}
 \end{table}
 
-\subsection{Comparison of TE and CJTE in BRS estimation}
+\subsection{Comparison of TE and CJTE in BRS estimation}\label{subsec:phys-comparison-results}
 The final result from Table \ref{tab:phys-comparison-results} in this thesis, contains comparison of the mean values of TE and CJTE.
 From pairwise comparisons it is shown that CJTE is significantly bigger for baseline, $10$ breaths/min, and $15$ breaths/min.
 

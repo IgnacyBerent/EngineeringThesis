@@ -1,1 +1,40 @@
 \chapter{Discussion}
+The implementation of TE and CJTE using the DVP estimator was rigorously evaluated across five synthetic scenarios and validated through the physiological phenomenon of the baroreflex. 
+While the synthetic signals were not intended to replicate biological data exactly, they successfully demonstrated the general dynamics and robustness of the DVP-based information-theoretic approach.
+
+\section{Sensitivity to Coupling Strength and Nonlinearity}
+The most critical requirement for any information flow estimator is the ability to detect varying degrees of coupling. 
+The results in Subsection \ref{subsec:effect_of_linear_coupling_strength} confirm that TE accurately captures linear interactions within an AR(1) framework. 
+Notably, as shown in Subsection \ref{subsec:effect_of_nonlinear_coupling_strength}, TE identifies increasing information flow in nonlinear systems without requiring prior model assumptions. 
+This "model-free" nature is a significant advantage over traditional methods like Granger causality.
+
+Furthermore, Subsubsection \ref{subsubsubsec:drive_detection} demonstrates that the strength of a common driving factor can be equally distinguished on both signals $X$ and $Y$. 
+Crucially, TE remained statistically insignificant in directions opposing the natural flow. 
+The residual low values observed in these counter-examples are attributed to the non-negativity constraint of the DVP estimator; since it estimates probability densities via partitioning, the resulting entropy values are inherently positive even in the absence of a true causal link.
+
+\section{The Impact of Signal Length and Noise}
+The analysis of signal length (Subsection \ref{subsec:effect_of_signal_length}) suggests that DVP accuracy improves with larger datasets. 
+The findings indicate that while the physiological segments used in this thesis provided stable results, future studies could benefit from longer recording windows to minimize the estimation bias inherent in data-partitioning methods.
+
+Regarding signal quality, Subsection \ref{subsec:effect_of_noise} demonstrates that the DVP-based TE is remarkably robust to stochastic interference. 
+Significant degradation in information flow detection only occurred at an SNR of 10 or lower, suggesting that the method is well-suited for clinical environments where physiological signals (like ECG or blood pressure) are often contaminated by high-frequency noise.
+
+\section{The Confounding Effect of Common Drivers}
+
+The synthetic model of trivariate system with a common driver $Z$ was designed to share characteristics of the impact of $ETCO_2$ on the baroreflex. 
+Results in Subsection \ref{subsec:effect_of_confounding_variable} reveal that CJTE does not completely neutralize the confounding factor. 
+Both TE and CJTE values increased alongside the driving strength $a_z$, suggesting an "information leakage".
+
+As observed in Subsubsection \ref{subsubsubsec:synthetic_comparison_cjte-te}, this leakage is most prominent when the direct coupling between $X$ and $Y$ is weak. 
+In such cases, CJTE erroneously exceeded TE, whereas theoretical conditioning should ideally reduce the estimated information transfer. 
+This implies that in high-dimensional spaces, the DVP estimator may struggle to fully "partition out" the shared information, leading to an overestimation of the conditional flow.
+
+\section{Physiological Interpretation and BRS}
+The physiological application confirmed several established cardiovascular phenomena. 
+The peak in Baroreflex Sensitivity (BRS) at 6 breaths/min aligns with the resonance effect between Respiratory Sinus Arrhythmia (RSA) and the baroreflex control loop. 
+Conversely, the attenuation at 15 breaths/min reflects the low-pass filtering characteristics of the Autonomic Nervous System (ANS), where the disparate response times of the sympathetic and parasympathetic branches lead to a dampening of the synergy \cite{heartmetronome}.
+
+
+In the context of $ETCO_2$ (Subsection \ref{subsec:phys-etco-effect}), TE results suggest that ETCO$_2$ exerts a relatively constant influence on both Systolic Arterial Pressure (SAP) and Heart Period (HP). 
+When comparing these results in Subsection \ref{subsec:phys-comparison-results}, it becomes evident that the common driving force of $ETCO_2$ is substantial. 
+Given the leakage observed in the synthetic models, it is highly likely that current CJTE estimations in physiological data include a non-trivial amount of shared information from $ETCO_2$ that the algorithm cannot fully isolate.
