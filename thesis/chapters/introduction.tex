@@ -1,26 +1,10 @@
-\chapter{Introduction}\label{ch:intro}
+\chapter{Introduction}
 
-\section{Aim}\label{sec:aim}
-The aim of this work is to conduct a comparative analysis of algorithms for transfer entropy (TE) and conditional joint transfer entropy (CJTE), with consideration of a modulating variable. 
-The analysis will assess the impact of analytical parameters used in entropy estimation on the results of TE and CJTE in both simulated and physiological signals.
+This chapter introduces the fundamental concepts and the motivation behind this thesis. 
+It begins by discussing the complexity of human physiological regulation and the limitations of traditional analytical methods, emphasizing importance of developing more advanced solutions.
+Subsequently, the specific aims and the scope of the research are defined.
 
-
-
-\section{Scope}\label{sec:scope}
-\begin{enumerate}
-    \item Literature review and analysis of algorithms (methods) within the transfer entropy group, focusing on key aspects such as signal duration, calculation window, sampling rate, type of physiological signals, study protocol, and analytical parameters
-    \item Implementation of selected algorithms for transfer entropy (TE) and conditional joint transfer entropy (CJTE)
-    \item Analysis of the impact of analytical parameters on TE and CJTE results in simulated signals
-    \item Analysis of the impact of analytical parameters on TE and CJTE results in physiological signals
-    \item Statistical analysis of the results to evaluate the usefulness of TE and CJTE algorithms for assessing relationship between signals and parameters related to cerebral autoregulation and the autonomic nervous system, considering the modulating variable
-\end{enumerate}
-
-\section{Source Code}
-All the code implementations are open source, and are present at the GitHub repository under the following url: \\
-\url{https://github.com/IgnacyBerent/EngineeringThesis}
-
-\newpage
-\section{Motivation}\label{sec:motivation}
+\section{Motivation}
 A human body is an extremly complex biological machinery build from numerous mutually dependent mechanisms. 
 Their main objective is to maintain physiological homeostasis, which can be described using metrics such as pH, body temperature, or heart rate.
 To cope with a constantly changing environment, the organism must continously adjust its physiological parameters through leveraging mechanisms, that operate across multiple time scales - from miliseconds to minutes, hours, or even days \cite{heartmetronome}.
@@ -41,3 +25,21 @@ For this reason, baroreflex sensitivity (BRS) can be used as an alternative, off
 However, the simple time domain measurements, or spectral analysis techniques, which are based on linear mathematics, are not sufficient in assesing the complex nature of such nonlinear and dynamic systems (\cite{heartmetronome};\cite{lossofcomplexity}).
 Based on concepts of Information Theory by Shannon, new techniques of accessing casual relationships in complex systems have been introduced with big potential in analysis of the physiological data, such as covered in this work Transfer Entropy (TE) (\cite{Shannon1948}; \cite{Schreiber2000};
 \cite{genccaga2018transfer};\cite{wen2023kendall}).
+
+\section{Aim}
+The aim of this work is to conduct a comparative analysis of algorithms for transfer entropy (TE) and conditional joint transfer entropy (CJTE), with consideration of a modulating variable. 
+The analysis will assess the impact of analytical parameters used in entropy estimation on the results of TE and CJTE in both simulated and physiological signals.
+
+\section{Scope}
+The scope of this thesis encompasses the following tasks:
+\begin{enumerate}
+    \item Literature review and analysis of algorithms (methods) within the transfer entropy group, focusing on key aspects such as signal duration, calculation window, sampling rate, type of physiological signals, study protocol, and analytical parameters
+    \item Implementation of selected algorithms for transfer entropy (TE) and conditional joint transfer entropy (CJTE)
+    \item Analysis of the impact of analytical parameters on TE and CJTE results in simulated signals
+    \item Analysis of the impact of analytical parameters on TE and CJTE results in physiological signals
+    \item Statistical analysis of the results to evaluate the usefulness of TE and CJTE algorithms for assessing relationship between signals and parameters related to cerebral autoregulation and the autonomic nervous system, considering the modulating variable
+\end{enumerate}
+
+\section{Source Code}
+All the code implementations are open source, and are present at the GitHub repository under the following url: \\
+\url{https://github.com/IgnacyBerent/EngineeringThesis}

@@ -1,8 +1,13 @@
-\chapter{Theoretical Foundations}\label{ch:theoretical-fundations}
+\chapter{Theoretical Foundations}
+This chapter establishes the theoretical framework for the research by first introducing the biological context of the baroreflex mechanism in the human body. 
+It discusses the various physiological factors that modulate this system and the potential biases they can introduce during clinical or experimental assessment. 
+Finally, the chapter defines the principles of Information Theory and the Transfer Entropy (TE) framework, providing the mathematical basis used to quantify directional interactions in complex, nonlinear systems.
 
 \section{Baroreflex}\label{sec:baroreflex}
+The cardiovascular system relies on several regulatory loops to maintain homeostasis. 
+Among these, the baroreflex is the most significant for the short-term control of blood pressure \cite{heartmetronome}.
 
-\subsection{What is a Baroreflex?}
+\subsection{Physiological Mechanism}
 The ANS is highly modulated by the baroreflex, a critical homeostatic mechanism.
 The baroreflex is a negative feedback control system that maintains ABP despite fluctuations in the RR interval, i.e., the heart period (HP).
 Baroreceptors are the crucial component of this system, placed in the carotid sinuses and the aortic arch, as well as the chambers of the heart and vena cavae \cite{heartmetronome}.
@@ -43,20 +48,20 @@ Therefore, continous end-tidal CO$_2$ (ETCO$_2$) level monitoring is essential t
 There are numerous ways of BRS measurement, each with its own benefits and drawbacks.
 
 The oldest one, called also pharmacological method, involced injection of vasoconstrictive agent to induce ABP increase.
-This forces cardiovascular system to operate over a wide range of pressures, allowing to obtain data points necessary to fit the complete baroreflex curve.
+This forces cardiovascular system to operate over a wide range of pressures, allowing to obtain data points necessary to fit the complete baroreflex curve, as shown in Figure \ref{fig:baroreflexcurve}.
 While highly accurate, this method is highly invasive and not feasible for long-term monitoring or large-scale application \cite{la1995baroreflex}.
 
-Further studies sought to asses the BRS in a non-invasive way using classical time series analysis techniques from ABP (SAP) and RR (HP) recordings.
+Further studies sought to asses the BRS in a non-invasive way using classical time series analysis techniques from SAP, and HP recordings.
 These techniuques included both time and spectral domain linear coupling quantivication from cross-corelation or coherence functions.
 Nonlinear coupling could be acquired by mutual information, but all of these methods were suffering from the presence of the bidirectional coupling between SAP and HP described in subsection \ref{subsec:brs} \cite{javorka2017causal}.
 
 Modern apporaches focus on accessing the directional effect to separate the neural and mechanical components of the closed loop.
 Two methods with their extensions are often cosidered: granger casuality and information-theory based TE.
-Studies suggest that these methods are equivalent to each other, under gaussian assumptions, however in case of non-linear dependencies, TE is found to be superior.
+Studies suggest that these methods are equivalent to each other, under gaussian assumptions, however in case of nonlinear dependencies, TE is found to be superior.
 This advantage makes TE an ideal choice for investigating the full closed-loop interaction between SAP and HP, while incorporating the modulatory influence of ETCO$_2$ (\cite{javorka2017causal};\cite{lee2012transfer};\cite{barnett2009granger}).
 
 
-\section{Information Theory}\label{sec:information-theory}
+\section{Information Theory}
 In 1948 an article titled: \textit{"A Mathematical Theory of Communication"} was proposed by Shannon, giving raise to a new discipline called Information Theory \cite{Shannon1948}.
 
 Shannon's main objective was to establish a quantitative measure of information independent of its meaning.
@@ -127,18 +132,25 @@ The Conditional Entropy (CE) $H(X|Y)$ if ($X$,$Y$) $\sim$ $p(x,y)$ is:
 
 The relation between CE  and JE  can be expressed using the following chain rule:
 
-\begin{equation}\label{eq:conditional-entropy-chain}
+\begin{equation}
     H(X|Y) = H(X,Y) - H(Y)
 \end{equation}
 
 The CE can be interpreted as a reduction of the uncertrainity of $X$ given $Y$, so the better $Y$ helps to predict $X$, the smaller $H(X|Y)$ is (\cite{Shannon1948};\cite{Cover2006}).
 
-\subsection{Transfer entropy}
-To measure to which extent information is transfered from individual components in a dynamic and non-determenistic systems, TE was introduced as a model-free tool (\cite{Schreiber2000};\cite{wen2023kendall}). 
+\subsection{Mutual Information}
+To measure dependece of one variable with the other, mutual information (MI) has been defined as follows:
+\begin{equation}
+  I(X;Y) = H(X) - H(Y|X) = \sum p(x,y) \cdot \text{log}(\frac{p(x,y)}{p(x)p(y)})
+\end{equation}
 
-All of the following TE algorithms were implemented from scratch in \textit{python} programing language, with detailed description in section \ref{sec:te_dvp-implementation}.
+The value of MI is always positive, and equal to $0$ if both the random variables $X$, and $Y$ are independent of each other.
+The big limitation of this technique comes from the fact that it is symetric, so calculating directional dependence is imposible, and does not containt dynamics of the information, unless some modifications will be introduced (\cite{Cover2006};\cite{Schreiber2000}).
 
-The dynamical structure is needed for TE calculation, rather than static probabilities, as it had place in the previous formulas.
+\subsection{Transfer Entropy}
+To measure to which extent information is transfered from individual components in a dynamic and non-determenistic systems, TE was introduced as a model-free tool, as an alternative to MI (\cite{Schreiber2000};\cite{wen2023kendall}). 
+
+Firstly, the dynamical structure of the data, rather than static probabilities needs to be implemented.
 This effect can be achived with the introduction of transition probabilities from Markov process.
 The Markov random process $X$ of order $k$ has a property, that conditional probability of finding it in state $x_{t}$ at time $t$, is independent of the state $x_{t-k-1}$.
 This fact can be expressed with the following equation:
@@ -147,18 +159,24 @@ This fact can be expressed with the following equation:
 \end{equation}
 
 In other words - the conditional probability of finding $X$ in state $x_t$ only depends on $k$ last states.
-The shorthand notation $x_t^{(k)} = (i_t, \dots, i_{t-k})$ from this point will be used.
-To introduce the time delay $\tau$ the following embedding vector of the past states is constructed:
+The shorthand notation $x_t^{(k)} = (x_t, \dots, x_{t-k})$ from this point will be used.
+
+To break symetricy in MI, the time lag $\tau$ has been introduced, defined by the following embedding vector:
 \begin{equation}\label{eq:embedding-vector}
   x_t^{k,\tau} = (x_t, x_{t-\tau}, x_{t-2\tau} \dots, x_{t-k\tau})
 \end{equation}
 
 However $\tau$ called also embedding delay in the most cases is set to be equal to 1, therefore is not used in the notation.
 The order of markov process noted in equation \ref{eq:embedding-vector} as $k$ is often called embedding dimension.
-In the literature symbol for the embedding dimension for the other signal is often represented by $l$, but my implementation assumes that $k=l$, what is not an uncommon practice. 
+In the literature symbol for the embedding dimension for the other signal is often represented by $l$, but many articles, including the original paper suggests $k=l$.
 My notation will use symbol $d$ for embedding dimensions (\cite{Schreiber2000};\cite{lee2012transfer}).
 
-Finally $TE_{Y\to X}$ from random process $Y$ to random process $X$, with the corenspoding states $y_t$, $x_t$ and embedding dimension $d$ is defined as:
+Finally asymetric conditional MI can be constructed, called TE that explicitly defines ammount of the information left in the system after reducing effect of knowing past of $Y$ and $X$ from effect of knowning just past $X$.
+\begin{equation}\label{eq:mi_te}
+  I(X_t;Y_{t-1}^d|X_{t-1}^d) = TE_{Y\to X}^{d} = H(X_t|X_{t-1}^d) - H(X_t|X_{t-1}^d,Y{t-1}^d)
+\end{equation}
+
+TE is also defined in terms of transition probabilities $y_t$, $x_t$ corenspoding to processes $Y$, and $X$ as follows:
 \begin{equation}\label{eq:te}
   TE_{Y\to X}^{d} = \sum p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)}) \cdot \text{log}(\frac{p(x_t|x_{t-1}^{(d)},y_{t-1}^{(d)})}{p(x_t|x_{t-1}^{(d)})})
 \end{equation}
@@ -176,21 +194,16 @@ So \ref{eq:te} can be also represented as:
 This way the calculation comes down to calculating only the joint probabilities, what is a big simplification for a practical implementation.
 
 \subsection{Conditional Joint Transfer Entropy}
-Unfortunatly TE is often under or over estimated due to presense of the hidden interactions that rule the very nature of the analysed casuality.
-Due to that conditioning has been proven as a necessary mean to achive the best accuracy in accessing the dynamics.
-This effect is achived in Conditional Transfer Entropy (CTE) by introducing a third variable $Z$ (\cite{mehta2018directional}\cite{shahsavari2020estimating}).
+The Equation \ref{eq:mi_te} can be extended in numerous ways, providing more powerfull tools such as Conditional Joint Transfer Entropy. 
+The main problem it solves is that TE is often under or over estimated due to presense of the hidden interactions that rule the very nature of the analysed casuality.
+Due to that conditioning has been proven as a necessary mean to achive the best accuracy in accessing the dynamics (\cite{mehta2018directional}\cite{shahsavari2020estimating}).
 
-Similarly to the definition \ref{eq:te} $CTE_{Y\to X|Z}$ is equal to:
-\begin{equation}\label{eq:cte}
-  CTE_{Y\to X|Z}^{d} = \sum p(x_t,x_{t-1}^{(d)},y_{t-1}^{(l)},z_{t-1}^{(d)}) \cdot \text{log}(\frac{p(x_t|x_{t-1}^{(d)},y_{t-1}^{(d)},z_{t-1}^{(d)})}{p(x_t|x_{t-1}^{(d)},z_{t-1}^{(d)})})
+The formula for CJTE can take two forms depending on the fact if whether we want to use the same variable for source and condition or not:
+\begin{equation}\label{eq:cjte-mi}
+    CJTE_{(X,Y)\to Z|W}^{d} = I(Z_t ; (X_{t-1}^{d}, Y_{t-1}^{d}) | Z_{t-1}^{d}, W_{t-1}^{d})
 \end{equation}
-
-There are scenarios where accessing the information transfer from two, or more, sources is needed.
-In such cases, Joint Transfer Entropy (JTE) is the solution, or to include also conditioning, Conditional Joint Transfer Entropy (CJTE).
-CJTE can be also used in the way, where the same signal is being used twice - as source and as condition ($Y=W$) - resulting in synergic impact of $X$ and $Y$ on $Z$, excluding past of $Y$ \cite{porta2015disentangling}.
-
-\begin{equation}\label{eq:jte}
-  JTE_{(X,Y)\to Z}^{d} = \sum p(z_t,z_{t-1}^{(d)},x_{t-1}^{(l)},y_{t-1}^{(d)}) \cdot \text{log}(\frac{p(z_t|z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)})}{p(z_t|z_{t-1}^{(d)})})
+\begin{equation}\label{eq:cte-mi}
+    CJTE_{(X,Y)\to Z|Y}^{d} = I(Z_t ; (X_{t-1}^{d}, Y_{t-1}^{d}) | Z_{t-1}^{d}, Y_{t-1}^{d})
 \end{equation}
 
 \begin{equation}\label{eq:cjte}
