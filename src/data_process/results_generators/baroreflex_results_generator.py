@@ -34,54 +34,6 @@ class BaroreflexResultsGenerator(ResultsGenerator):
                 )
         return field_name
 
-    def add_cte(self, x_name: str, y_name: str, z_name: str) -> str:
-        field_name = f'cte_{y_name}->{x_name}|{z_name}'
-        for subject_id, cb_data_type, cb_data in self.iterate_cb_data():
-            x, y, z = (
-                self._get_signal(cb_data, sig_name, cb_data_type, subject_id) for sig_name in [x_name, y_name, z_name]
-            )
-            if x is not None and y is not None and z is not None:
-                try:
-                    self._add_result(
-                        condition=cb_data_type,
-                        subject_id=subject_id,
-                        field_name=field_name,
-                        value=cte_dv(x, y, z),
-                    )
-                except ValueError as e:
-                    logger.error(f'CTE calculation error for P{subject_id} {cb_data_type} {e}')
-                    self._add_result(
-                        condition=cb_data_type,
-                        subject_id=subject_id,
-                        field_name=field_name,
-                        value=None,
-                    )
-        return field_name
-
-    def add_jte(self, x_name: str, y_name: str, z_name: str) -> str:
-        field_name = f'jte_({x_name},{y_name})->{z_name}'
-        for subject_id, cb_data_type, cb_data in self.iterate_cb_data():
-            x, y, z = (
-                self._get_signal(cb_data, sig_name, cb_data_type, subject_id) for sig_name in [x_name, y_name, z_name]
-            )
-            if x is not None and y is not None and z is not None:
-                try:
-                    self._add_result(
-                        condition=cb_data_type,
-                        subject_id=subject_id,
-                        field_name=field_name,
-                        value=jte_dv(x, y, z),
-                    )
-                except ValueError as e:
-                    logger.error(f'JTE calculation error for P{subject_id} {cb_data_type} {e}')
-                    self._add_result(
-                        condition=cb_data_type,
-                        subject_id=subject_id,
-                        field_name=field_name,
-                        value=None,
-                    )
-        return field_name
-
     def add_cjte(self, x_name: str, y_name: str, z_name: str, w_name: str) -> str:
         field_name = f'cjte_({x_name},{y_name})->{z_name}|{w_name}'
         for subject_id, cb_data_type, cb_data in self.iterate_cb_data():
