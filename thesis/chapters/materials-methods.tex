@@ -1,8 +1,17 @@
 \chapter{Materials \& Methods}
-The \textit{python} implementations of the alghorithms in this study were developed with usage of \textit{numpy} library, with \textit{pandas}, and \textit{matplotlib} for data read, write operations, and plotting (\cite{numpy};\cite{pandas};\cite{matplotlib}).
+The implementation was carried out fully in the Python programming language. 
+The following libraries were utilized to facilitate data processing and analysis:
+\begin{itemize}
+  \item \texttt{NumPy}: Used for high-performance numerical computations and multi-dimensional array operations \cite{numpy}.
+  \item \texttt{Pandas}: Employed for the manipulation and analysis of structured tabular datasets \cite{pandas}.
+  \item \texttt{Matplotlib}: Utilized for generating high-quality data visualizations and figures \cite{matplotlib}.
+  \item \texttt{NeuroKit2}: A specialized library used for the processing and feature extraction of physiological signals \cite{neurokit2}.
+  \item \texttt{Pingouin}: Leveraged for performing rigorous statistical tests and inference \cite{pingouin}.
+\item \texttt{SciPy}: Utilized for data ranking and Chi-squared distribution utilities \cite{scipy}.
+\end{itemize}
 
 \section{Synthetic signals}
-To validate correctness of my TE implementation, appropiate benchmark with usage of synthetic signals is needed.
+To validate correctness of my TE implementation, appropiate benchmark with usage of synthetic signals was performed.
 The following factors have been tested:
 \begin{itemize}
   \item Effect of a linear coupling strength
@@ -20,9 +29,9 @@ For this purpose the following models were used:
 \end{itemize}
 
 Each synthetic dataset was created using $100$ repetitions of given model generation with given parameters.
-For reproducibility of the results and to eliminate the effect of randomnes (inherited in each of the synthetic signal generation), within given repetition with different parameters, one seed is used equal to the repetition number (i.e. generating AR(1) signal at repetition 1 for varying $a$, result in the equal $\epsilon$ for each of them).
+For reproducibility of the results and to eliminate the effect of randomnes (inherited in each of the synthetic signal generation), within given repetition with different parameters, one seed is used, equal to the repetition number (i.e. generating AR(1) signal at repetition 1 for varying $a$, result in the equal $\epsilon$ for each of them).
 The default signal length was set to $200$ to match lengths of physiological signals used for this study, 
-To mitigate transient effects and ensure the models reached a steady state, an initial burn-in period of 3,000 samples was generated and subsequently discarded for each synthetic signal creation.
+To ensure the models reached a steady state, an initial burn-in period of $3,000$ samples was generated and subsequently discarded for each synthetic signal creation.
 
 \subsection{Bivariate Linear Model}
 For modeling linear coupling $X \to Y$, an $i$-th order autoregressive model (AR(i)) is usually the most natural choice.
