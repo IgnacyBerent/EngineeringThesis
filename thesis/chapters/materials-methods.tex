@@ -616,24 +616,10 @@ def get_points_from_range(
 
 \section{Complete Workflow}
 This section demonstrates code snippet that executes the whole code written for this thesis - from loading data from csv files through processing signals, and calculating TE,CTE,JTE,CJTE, to generating plots with results and statistical analysis.
-\begin{minted}{python}
-RESULTS_CSV_FILE_NAME = 'results.csv'
-data_loader = BaroreflexDataLoader()
-data_processor = BaroreflexDataProcessor()
-
-raw_data = data_loader.load_all_patient_raw_data()
-processed_data = data_processor.process_all(raw_data)
-
-results_generator = BaroreflexResultsGenerator(processed_data)
-
-sap_hp = results_generator.add_te('hp', 'sap')
-cjte_sap = results_generator.add_cjte('sap', 'etco2', 'hp', 'etco2')
-
-results_generator.generate_results_csv(RESULTS_CSV_FILE_NAME)
-analyzer = StatisticsAnalyzer(RESULTS_CSV_FILE_NAME)
-[
-    analyzer.do_rm_anova_test(field)
-    for field in [sap_hp, cjte_sap]
-]
-\end{minted}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figs/materials-methods/complete-workflow.png}
+    \caption{Complete workflow of the implemented code}
+    \label{fig:complete-workflow}
+\end{figure}
 
