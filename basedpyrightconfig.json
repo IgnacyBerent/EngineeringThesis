@@ -1,9 +1,0 @@
-{
-  "include": ["src"],
-  "exclude": [".venv", "tests", "build", "dist", "data", "thesis"],
-  "executionEnvironments": [
-    {
-      "root": "./src"
-    }
-  ]
-}

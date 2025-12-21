@@ -14,4 +14,4 @@ class FFT_Result:
 
 type FloatArray = NDArray[np.floating]
 type ArrayDataDict = dict[str, FloatArray]
-type PatientData = dict[str, int | ArrayDataDict]
+type SubjectData = dict[str, int | ArrayDataDict]

@@ -7,7 +7,7 @@ import pandas as pd
 from numpy.typing import NDArray
 
 from src.common.logger import logger
-from src.common.mytypes import ArrayDataDict, PatientData
+from src.common.mytypes import ArrayDataDict, SubjectData
 
 _DEFAULT_CSV_DECIMAL = ','
 _DEFAULT_CSV_SEPARATOR = ';'
@@ -37,39 +37,39 @@ class DataLoader(ABC):
         return _DEFAULT_CSV_DECIMAL
 
     @abstractmethod
-    def load_single_patient_raw_data(self, patient_directory: Path) -> PatientData:
+    def load_single_subject_raw_data(self, subject_directory: Path) -> SubjectData:
         pass
 
-    def load_all_patient_raw_data(self) -> list[PatientData]:
-        patients_raw_data_list: list[PatientData] = []
-        for patient_directory in self._data_directory.iterdir():
-            if not patient_directory.is_dir():
-                logger.debug(f'Skipping folder: {patient_directory}')
+    def load_all_raw_data(self) -> list[SubjectData]:
+        raw_data: list[SubjectData] = []
+        for subject_directory in self._data_directory.iterdir():
+            if not subject_directory.is_dir():
+                logger.debug(f'Skipping folder: {subject_directory}')
                 continue
             try:
-                patient_raw_data = self.load_single_patient_raw_data(patient_directory)
+                subject_raw_data = self.load_single_subject_raw_data(subject_directory)
             except CBFileError as e:
-                logger.warning(f'Failed to load all columns in {patient_directory}\n {e}')
+                logger.warning(f'Failed to load all columns in {subject_directory}\n {e}')
             except FileNotFoundError as e:
-                logger.warning(f'Failed to find all cb files in {patient_directory}\n {e}')
+                logger.warning(f'Failed to find all cb files in {subject_directory}\n {e}')
             except UnicodeDecodeError as e:
-                logger.warning(f'CSV decoding error in {patient_directory}\n {e}')
+                logger.warning(f'CSV decoding error in {subject_directory}\n {e}')
             except Exception as e:  # noqa: BLE001
-                logger.error(f'Unexpected exception for {patient_directory}\n {e}')
+                logger.error(f'Unexpected exception for {subject_directory}\n {e}')
 
-            if patient_raw_data is not None:
-                patients_raw_data_list.append(patient_raw_data)
+            if subject_raw_data is not None:
+                raw_data.append(subject_raw_data)
 
-        logger.info('Loaded all patients')
-        return patients_raw_data_list
+        logger.info('Loaded all subjects')
+        return raw_data
 
-    def load_single_cb_csv_file(self, cb_file_path: Path) -> ArrayDataDict:
+    def load_single_condition_csv_file(self, cb_file_path: Path) -> ArrayDataDict:
         if not cb_file_path.exists():
             raise FileNotFoundError(f'File: {cb_file_path}')
         try:
-            patient_df = pd.read_csv(cb_file_path, sep=self._csv_separator, decimal=self._csv_decimal)
+            subject_df = pd.read_csv(cb_file_path, sep=self._csv_separator, decimal=self._csv_decimal)
             return {
-                field_name: cast(NDArray[np.floating], patient_df[csv_column_name].values)
+                field_name: cast(NDArray[np.floating], subject_df[csv_column_name].values)
                 for field_name, csv_column_name in self._csv_columns.items()
             }
         except UnicodeDecodeError as e:
@@ -78,5 +78,5 @@ class DataLoader(ABC):
             raise CBFileError(f'File: {cb_file_path}\n{e}') from e
 
     @staticmethod
-    def _get_patient_id(patient_directory) -> int:
-        return int(str(patient_directory).split('_')[-1])
+    def _get_subject_id(subject_directory) -> int:
+        return int(str(subject_directory).split('_')[-1])

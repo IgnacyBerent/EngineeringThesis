@@ -19,7 +19,7 @@ def analyse_physiological_data() -> None:
     data_loader = BaroreflexDataLoader()
     data_processor = BaroreflexDataProcessor()
 
-    raw_data = data_loader.load_all_patient_raw_data()
+    raw_data = data_loader.load_all_raw_data()
     processed_data = data_processor.process_all(raw_data)
 
     rg = BaroreflexResultsGenerator(processed_data)

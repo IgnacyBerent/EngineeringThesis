@@ -1,4 +1,4 @@
-from src.common.mytypes import PatientData
+from src.common.mytypes import SubjectData
 from src.synthetic.common import DEFAULT_SIGNAL_LENGTH, REPETITIONS
 from src.synthetic.functions.linear import generate_trivariate_ar
 
@@ -6,7 +6,7 @@ _DEFAULT_AX = 0.3
 _DEFAULT_AZ = 0.4
 
 azs = [0, 0.1, 0.25, 0.5]
-LINEAR_TRIVARIATE_DATA_Z: list[PatientData] = []
+LINEAR_TRIVARIATE_DATA_Z: list[SubjectData] = []
 for i in range(REPETITIONS):
     LINEAR_TRIVARIATE_DATA_Z.append(
         {
@@ -16,7 +16,7 @@ for i in range(REPETITIONS):
     )
 
 axs = [0, 0.1, 0.25, 0.5]
-LINEAR_TRIVARIATE_DATA_YX: list[PatientData] = []
+LINEAR_TRIVARIATE_DATA_YX: list[SubjectData] = []
 for i in range(REPETITIONS):
     LINEAR_TRIVARIATE_DATA_YX.append(
         {

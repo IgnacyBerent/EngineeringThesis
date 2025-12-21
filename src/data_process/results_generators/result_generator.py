@@ -8,12 +8,12 @@ import numpy as np
 
 from src.common.constants import CONDITION_FIELD, ID_FIELD
 from src.common.logger import logger
-from src.common.mytypes import ArrayDataDict, FloatArray, PatientData
+from src.common.mytypes import ArrayDataDict, FloatArray, SubjectData
 
 
 class ResultsGenerator:
-    def __init__(self, patients_processed_data: list[PatientData]) -> None:
-        self.patients_processed_data = patients_processed_data
+    def __init__(self, processed_data: list[SubjectData]) -> None:
+        self.processed_data = processed_data
         self._results: dict[str, dict[int, dict[str, float | None]]] = defaultdict(
             lambda: defaultdict(lambda: defaultdict(float))
         )
@@ -42,44 +42,44 @@ class ResultsGenerator:
         else:
             logger.info(f'Sucesfully saved results to {file_path}')
 
-    def add_means(self, patinets_data: list[PatientData]) -> None:
-        for patient_id, cb_data_type, cb_data in self.iterate_cb_data(patinets_data):
+    def add_means(self, patinets_data: list[SubjectData]) -> None:
+        for subject_id, cb_data_type, cb_data in self.iterate_cb_data(patinets_data):
             for field_name, field_value in cast(ArrayDataDict, cb_data).items():
                 self._add_result(
                     condition=cb_data_type,
-                    patient_id=patient_id,
+                    subject_id=subject_id,
                     field_name=f'{field_name}_mean',
                     value=float(np.mean(field_value)),
                 )
 
     def iterate_cb_data(
-        self, patients_data: list[PatientData] | None = None
+        self, processed_data: list[SubjectData] | None = None
     ) -> Generator[tuple[int, str, ArrayDataDict]]:
-        if patients_data is None:
-            patients_data = self.patients_processed_data
-        for patient_data in patients_data:
-            patient_id = self._get_patient_id(patient_data)
-            if patient_id is None:
+        if processed_data is None:
+            processed_data = self.processed_data
+        for subject_data in processed_data:
+            subject_id = self._get_subject_id(subject_data)
+            if subject_id is None:
                 continue
-            for cb_data_type, cb_data in patient_data.items():
+            for cb_data_type, cb_data in subject_data.items():
                 if cb_data_type != 'id':
-                    yield patient_id, cb_data_type, cast(ArrayDataDict, cb_data)
+                    yield subject_id, cb_data_type, cast(ArrayDataDict, cb_data)
 
     @staticmethod
-    def _get_patient_id(patient_data: PatientData) -> int | None:
-        patient_id = patient_data.get('id')
-        if type(patient_id) is not int:
+    def _get_subject_id(subject_data: SubjectData) -> int | None:
+        subject_id = subject_data.get('id')
+        if type(subject_id) is not int:
             logger.warning('Missing ID')
             return None
-        return patient_id
+        return subject_id
 
-    def _add_result(self, condition: str, patient_id: int, field_name: str, value: float | None) -> None:
-        self._results[condition][patient_id][field_name] = value
+    def _add_result(self, condition: str, subject_id: int, field_name: str, value: float | None) -> None:
+        self._results[condition][subject_id][field_name] = value
         if field_name not in self._fieldnames:
             self._fieldnames.append(field_name)
 
     def _get_signal(self, cb_data: ArrayDataDict, name: str, cb_data_type: str, pid: int) -> FloatArray | None:
         signal = cb_data.get(name)
         if signal is None:
-            logger.error(f'Field {name} does not exist in {cb_data_type} for patient {pid}!')
+            logger.error(f'Field {name} does not exist in {cb_data_type} for subject {pid}!')
         return signal

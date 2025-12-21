@@ -16,7 +16,7 @@ class StatisticsAnalyzer:
     def __init__(self, csv_file_path: str | Path, order: list[str] | None = None) -> None:
         self.categories: list[str] = []
         self.data = self._load_data(csv_file_path, order)
-        self._remove_patients_with_nans()
+        self._remove_subjects_with_nans()
 
     def _load_data(self, csv_file_path: str | Path, order: list[str] | None) -> pd.DataFrame:
         data = pd.read_csv(csv_file_path)
@@ -24,7 +24,7 @@ class StatisticsAnalyzer:
         data[CONDITION_FIELD] = pd.Categorical(data[CONDITION_FIELD], categories=self.categories, ordered=True)
         return data
 
-    def _remove_patients_with_nans(self) -> None:
+    def _remove_subjects_with_nans(self) -> None:
         rows_with_nan = cast(pd.DataFrame, self.data[self.data.isnull().any(axis=1)])
         pids_to_remove = sorted(rows_with_nan['pid'].unique())
         logger.warning(f'PIDs that have a None/NaN value in at least one row: {pids_to_remove}')

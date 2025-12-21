@@ -1,11 +1,11 @@
-from src.common.mytypes import PatientData
+from src.common.mytypes import SubjectData
 from src.synthetic.common import DEFAULT_SIGNAL_LENGTH, REPETITIONS
 from src.synthetic.functions.linear import generate_bivariate_ar
 
 _DEFAULT_A = 0.5
 
 lengths = [100, 200, 500, 1000]
-LINEAR_BIVARIATE_DATA_L: list[PatientData] = []
+LINEAR_BIVARIATE_DATA_L: list[SubjectData] = []
 for i in range(REPETITIONS):
     LINEAR_BIVARIATE_DATA_L.append(
         {
@@ -18,7 +18,7 @@ for i in range(REPETITIONS):
     )
 
 snrs = [None, 30, 20, 10]
-LINEAR_BIVARIATE_DATA_E: list[PatientData] = []
+LINEAR_BIVARIATE_DATA_E: list[SubjectData] = []
 for i in range(REPETITIONS):
     LINEAR_BIVARIATE_DATA_E.append(
         {
@@ -33,7 +33,7 @@ for i in range(REPETITIONS):
     )
 
 a_ranges = [0, 0.1, 0.25, 0.5]
-LINEAR_BIVARIATE_DATA_A: list[PatientData] = []
+LINEAR_BIVARIATE_DATA_A: list[SubjectData] = []
 for i in range(REPETITIONS):
     LINEAR_BIVARIATE_DATA_A.append(
         {
