@@ -58,7 +58,7 @@ Nonlinear coupling could be acquired by mutual information, but all of these met
 Modern apporaches focus on accessing the directional effect to separate the neural and mechanical components of the closed loop.
 Two methods with their extensions are often cosidered: granger casuality and information-theory based TE.
 Studies suggest that these methods are equivalent to each other, under gaussian assumptions, however in case of nonlinear dependencies, TE is found to be superior.
-This advantage makes TE an ideal choice for investigating the full closed-loop interaction between SAP and HP, while incorporating the modulatory influence of ETCO$_2$ (\cite{javorka2017causal};\cite{lee2012transfer};\cite{barnett2009granger}).
+This advantage makes TE an ideal choice for investigating the full closed-loop interaction between SAP and HP, while incorporating the modulatory influence of ETCO$_2$ (\cite{javorka2017causal};\cite{lee2012transfer};\cite{barnett2009granger};\cite{wibral2011transfer};\cite{granger1969investigating}).
 
 
 \section{Information Theory}
@@ -182,7 +182,7 @@ TE is also defined in terms of transition probabilities $y_t$, $x_t$ corenspodin
 \end{equation}
 
 Usually the following property is being used to simplify TE formula:
-\begin{equation}
+\begin{equation}\label{eq:joint-conditional-probability-law}
   p(A|B) = \frac{p(A,B)}{p(B)}
 \end{equation}
 
@@ -191,23 +191,26 @@ So \ref{eq:te} can be also represented as:
   TE_{Y\to X}^{d} = \sum p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)}) \cdot \text{log}(\frac{p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)})p(x_{t-1}^{(d)})}{p(x_t,x_{t-1}^{(d)})p(x_{t-1}^{(d)},y_{t-1}^{(d)})})
 \end{equation}
 
-This way the calculation comes down to calculating only the joint probabilities, what is a big simplification for a practical implementation.
+This way, the calculation comes down to calculating only the joint probabilities, which simplifies the implementation, present in Section \ref{sec:te_dvp-implementation}.
 
 \subsection{Conditional Joint Transfer Entropy}
 The Equation \ref{eq:mi_te} can be extended in numerous ways, providing more powerfull tools such as Conditional Joint Transfer Entropy. 
 The main problem it solves is that TE is often under or over estimated due to presense of the hidden interactions that rule the very nature of the analysed casuality.
 Due to that conditioning has been proven as a necessary mean to achive the best accuracy in accessing the dynamics (\cite{mehta2018directional}\cite{shahsavari2020estimating}).
 
-The formula for CJTE can take two forms depending on the fact if whether we want to use the same variable for source and condition or not:
+The most general form for the CJTE would be as follows:
 \begin{equation}\label{eq:cjte-mi}
     CJTE_{(X,Y)\to Z|W}^{d} = I(Z_t ; (X_{t-1}^{d}, Y_{t-1}^{d}) | Z_{t-1}^{d}, W_{t-1}^{d})
 \end{equation}
-\begin{equation}\label{eq:cte-mi}
-    CJTE_{(X,Y)\to Z|Y}^{d} = I(Z_t ; (X_{t-1}^{d}, Y_{t-1}^{d}) | Z_{t-1}^{d}, Y_{t-1}^{d})
-\end{equation}
+In this notation, $X$ represents the main input signal, $Y$ the aditional signals that contribute to the information transfer, $Z$ the output signal, and $W$ the conditioning signals.
 
+But the most prominent notation in the literature is in form of $CJTE_{X_i,X_c /to Y|X_c}$, where $X_i$ symbolizes one input, $Y$ as one output, $X_c$ as the conditioning \cite{bari2017cerebrovascular}.
+But to avoid additional lower indexes in the notation the following form will be used, with it's expansion after appling Equation \ref{eq:joint-conditional-probability-law}:
 \begin{equation}\label{eq:cjte}
-  CJTE_{(X,Y)\to Z|W}^{d} = \sum p(z_t,z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)},w_{t-1}^{(d)}) \cdot \text{log}(\frac{p(z_t|z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)},w_{t-1}^{(d)})}{p(z_t|z_{t-1}^{(d)},w_{t-1}^{(d)})})
+\begin{split}
+  CJTE_{(X,Y)\to Z|Y}^{d} &= \sum p(z_t,z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)}) \\
+  &\cdot \log(\frac{p(z_t,z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)})p(z_{t-1}^{(d)},y_{t-1}^{(d)})}{p(z_t,z_{t-1}^{(d)},y_{t-1}^{(d)})p(z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)})})
+\end{split}
 \end{equation}
 
 \subsection{Probability Estimation Techniques}

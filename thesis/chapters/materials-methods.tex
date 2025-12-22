@@ -1,4 +1,8 @@
 \chapter{Materials \& Methods}
+This chapter details the computational environment, the synthetic datasets used for validation, and the physiological data acquisition protocol. 
+It further describes the preprocessing pipeline and the custom implementation of the TE framework using DVP.
+
+\section{Software Environment and Implementation}
 The implementation was carried out fully in the Python programming language. 
 The following libraries were utilized to facilitate data processing and analysis:
 \begin{itemize}
@@ -34,12 +38,12 @@ The default signal length was set to $200$ to match lengths of physiological sig
 To ensure the models reached a steady state, an initial burn-in period of $3,000$ samples was generated and subsequently discarded for each synthetic signal creation.
 
 \subsection{Bivariate Linear Model}
-For modeling linear coupling $X \to Y$, an $i$-th order autoregressive model (AR(i)) is usually the most natural choice.
-Based on the literature the following formula was used for my AR(1) model (\cite{rozo2021benchmarking};\cite{faes2015information}):
+For modeling linear coupling $X \to Y$, an $i$-th order autoregressive model (AR(i)) was employed. 
+Based on the literature (\cite{rozo2021benchmarking}; \cite{faes2015information}), the following AR(1) model was implemented:
 \begin{equation}
 \begin{split}
   x_n &= -0.5 \cdot X_{n-1} + \epsilon_{x_n} \\
-  x_n &= -0.5 \cdot x_{n-1} + a \cdot x_{n-1} + \epsilon_{y_n}
+  y_n &= -0.5 \cdot x_{n-1} + a \cdot x_{n-1} + \epsilon_{y_n}
 \end{split}
 \end{equation}
 
@@ -61,7 +65,7 @@ To verify effectivnes of TE against nonlinear interactions the following model o
 \end{split}
 \end{equation}
 
-Variable $b$ drives the $X \to Y$ causality, $\mathcal{L}$ is a noise from Laplace distribution (location$=0$, scale$=1$), and s normally distributed noise (mean$=0$, var$=1$).
+Variable $b$ drives the $X \to Y$ causality, $\mathcal{L}$ is a noise from Laplace distribution (location$=0$, scale$=1$), and s normally distributed noise (mean$=10$, var$=1$).
 
 To verify the effect of different nonlinear strengths, $b$ was set to $0, 0.1, 0.25, 0.5$.
 
@@ -75,7 +79,7 @@ To introduce the confounding variable, a following arbitrary linear trivariate A
 \end{split}
 \end{equation}
 
-In this implementation, the parameter $a_z$ is a common driver of both $X,Y$, $a_x$ is responsible for coupling strength of $X \to Y$, and $\epsilon$ values are adequate Gaussian noices for $X, Y, Z$ (mean$=0$, var$=1$).
+The parameter $a_z$ is strength of a common driver $Z$ on both $X,Y$, $a_x$ is responsible for direct coupling strength of $X \to Y$, and $\epsilon$ values are adequate Gaussian noises for $X, Y, Z$ (mean$=0$, var$=1$).
 
 To verify the effect of a confounding variable the following parametrization was tested:
 \begin{itemize}
@@ -86,7 +90,7 @@ To verify the effect of a confounding variable the following parametrization was
 \section{Physiological signals}
 \subsection{Research group}
 The data set with the physiological signals come from the study conducted for the \textit{AUTOMATIC} project conducted at Wrocaw University of Wroclaw and Technology (WUST). 
-It consists of 37 young healthy volunteers (21 males, 16 males, median age: 22 years, range 18-31 years). 
+It consists of $32$ young healthy volunteers ($14$ males, $18$ females, median age: $22$ years, range $18$-$31$ years). 
 Everyone was instructed not to consume alcohol and caffeine 12 hours before the study and declared to be free of medication. 
 Measurements were taken under the supervision of a profesional physician and were approved by the Comission of Bioethics (KB-179/2023/N) \citep{Uryga_2024}.
 
@@ -154,20 +158,20 @@ class BaroreflexDataLoader(DataLoader):
       return {'abp': SignalColumns.ABP, 'etco2': SignalColumns.ETCO2}
 
   @override
-  def load_single_patient_raw_data(self, patient_directory: Path) -> PatientData:
+  def load_single_subject_raw_data(self, subject_directory: Path) -> SubjectData:
       return {
-          'id': self._get_patient_id(patient_directory),
-          CB_FILE_TYPE.B6: self.load_single_cb_csv_file(patient_directory / CB_FILE_TYPE.B6.csv),
-          CB_FILE_TYPE.B10: self.load_single_cb_csv_file(patient_directory / CB_FILE_TYPE.B10.csv),
-          CB_FILE_TYPE.B15: self.load_single_cb_csv_file(patient_directory / CB_FILE_TYPE.B15.csv),
-          CB_FILE_TYPE.BASELINE: self.load_single_cb_csv_file(patient_directory / CB_FILE_TYPE.BASELINE.csv),
+          'id': self._get_subject_id(subject_directory),
+          CB_FILE_TYPE.B6: self.load_single_condition_csv_file(subject_directory / CB_FILE_TYPE.B6.csv),
+          CB_FILE_TYPE.B10: self.load_single_condition_csv_file(subject_directory / CB_FILE_TYPE.B10.csv),
+          CB_FILE_TYPE.B15: self.load_single_condition_csv_file(subject_directory / CB_FILE_TYPE.B15.csv),
+          CB_FILE_TYPE.BASELINE: self.load_single_condition_csv_file(subject_directory / CB_FILE_TYPE.BASELINE.csv),
       }
 \end{minted}
 
-The inherited \textit{load\_single\_patient\_raw\_data()} method handles the whole process of fetching the data from all the \textit{csv} files from declared \textit{\_data\_directory} using \textit{load\_single\_patient\_raw\_data()}.
-Resulting list of \textit{PatientData} with loaded ABP and ETCO$_2$ columns for each breathing stage is ready for the processing with usage of \textit{BaroreflexDataProcessor}.
+The inherited \texttt{load\_single\_subject\_raw\_data()} method handles the whole process of fetching the data from all the CSV files from declared \texttt{\_data\_directory} using \texttt{load\_single\_condition\_csv\_file()}.
+Resulting list of \texttt{SubjectData} with loaded ABP and ETCO$_2$ columns for each breathing stage is ready for the processing with usage of \texttt{BaroreflexDataProcessor}.
 
-Similarly as \textit{BaroreflexDataLoader}, this class inherits methods from \textit{DataProcessor} abstract class, that provides ready method for processing signals for all of the subjects and breathing stages for given \textit{\_process\_signle\_cb()} implementation.
+Similarly as \texttt{BaroreflexDataLoader}, this class inherits methods from the \texttt{DataProcessor} abstract class, that provides ready method for processing signals for all of the subjects and breathing stages for given \texttt{\_process\_single\_cb()} implementation.
 
 \begin{minted}{python}
 class BaroreflexDataProcessor(DataProcessor):
@@ -185,21 +189,11 @@ class BaroreflexDataProcessor(DataProcessor):
         return {'sap': sap, 'hp': hp, 'etco2': etco2_adjusted}
 \end{minted}
 
-The end goal of the \textit{DataProcessor} is to produce the final signals for TE alghorithms that are used for the BRS estimation - SAP, HP, ETCO$_2$, using abstracted \textit{process()} method.
+The end goal of the \texttt{DataProcessor} is to produce the final signals for TE algorithms that are used for the BRS estimation - SAP, HP, ETCO$_2$, using abstracted \texttt{process()} method.
 The crucial obstacle at this step is to find realiable way of peaks estimation in the signal.
-For this purpose \textit{neurokit2 python} package is leveraged, since it has a collection of ready to use professional alghorithms for physiological data processing \cite{neurokit2}.
+For this purpose \texttt{NeuroKit2} Python package is leveraged, since it has a collection of ready to use professional algorithms for physiological data processing \cite{neurokit2}.
 
 \begin{minted}{python}
-_DEFAULT_MIN_DELAY = 0.3
-_DEFAULT_FIND_PEAKS_METHOD = 'elgendi'
-
-
-class PeaksMode(Enum):
-    UP = 'up'
-    DOWN = 'down'
-    BOTH = 'both'
-
-
 def get_peaks(
     signal: NDArray[np.floating],
     mode: PeaksMode = PeaksMode.UP,
@@ -209,10 +203,8 @@ def get_peaks(
 ) -> NDArray[np.integer]:
     filled_signal = nk.signal_fillmissing(signal)
     cleaned_signal = cast(NDArray[np.floating], nk.ppg_clean(filled_signal, sampling_rate=sampling_rate, method=method))
-
     peaks_up: NDArray[np.integer] | None = None
     peaks_down: NDArray[np.integer] | None = None
-
     if mode in (PeaksMode.UP, PeaksMode.BOTH):
         peaks_up = _find_peaks(
             cleaned_signal,
@@ -227,13 +219,14 @@ def get_peaks(
             method=method,
             mindelay=mindelay,
         )
-
-    if peaks_up is not None and peaks_down is not None:
+    if mode == PeaksMode.BOTH:
+        assert peaks_up is not None and peaks_down is not None
         return np.sort(np.concatenate((peaks_up, peaks_down)))
-    if peaks_up is not None:
+    if mode == PeaksMode.UP:
+        assert peaks_up is not None
         return peaks_up
-    return cast(NDArray[np.integer], peaks_down)
-
+    assert peaks_down is not None
+    return peaks_down
 
 def _find_peaks(
     cleaned_signal: NDArray[np.floating],
@@ -250,31 +243,30 @@ def _find_peaks(
     return cast(NDArray[np.integer], peaks)
 \end{minted}
 
-%TODO: Teoretycznie jest to do PPG sygnałów, ale czy musze opisac czemu dla abp tez stosuje?
-There are 3 functions in total used from \textit{neurokit2} to get signal peaks in form of array of indecies at which peaks occur, using \textit{"elgendi"} peak detection method by a default \cite{elgendi2013systolic}.
+There are 3 functions in total used from \texttt{NeuroKit2} (aliased as \texttt{nk}) to get signal peaks in form of array of indecies at which peaks occur, using \textit{"elgendi"} peak detection method by a default. 
+While originally developed for photoplethysmography (PPG), this method is highly effective for ABP signals as both share similar pulse morphologies characterized by a rapid systolic rise \cite{elgendi2013systolic}.
 \begin{enumerate}
-  \item \textit{nk.signal\_fillmissing()} - fills missing values in signal (what does nothing for this study use case, since missing values were already filled at the preprocessing step).
-  \item \textit{nk.ppg\_clean()} - performs low-pass butterworth filtering (result in figure \ref{fig:nk-cleaned_signal})
-  \item \textit{nk.ppg\_findpeaks()} - squares positive values of the cleaned signal to amplify the systolic peak energy, then applies a dynamic threshold derived from short- and long-term moving averages to identify segments containing a potential beat. 
-    Within these high-energy segments, the most prominent local maximum in the original signal is selected as the final systolic peak (result in figure \ref{fig:nk-found_peaks}).
+  \item \texttt{nk.signal\_fillmissing()} - fills missing values in signal (what does nothing for this study use case, since missing values were already filled at the preprocessing step).
+  \item \texttt{nk.ppg\_clean()} - performs low-pass butterworth filtering (result in Figure \ref{fig:nk-cleaned_signal})
+  \item \texttt{nk.ppg\_findpeaks()} - squares positive values of the cleaned signal to amplify the systolic peak energy, then applies a dynamic threshold derived from short- and long-term moving averages to identify segments containing a potential beat. 
+    Within these high-energy segments, the most prominent local maximum in the original signal is selected as the final systolic peak (result in Figure \ref{fig:nk-found_peaks}).
 \end{enumerate}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/materials-methods/physiological/Cleaned ABP signal.png}
-    \caption{Cleaned ABP signal using \textit{nk.ppg\_clean()}}
+    \caption{Cleaned ABP signal using \texttt{nk.ppg\_clean()}}
     \label{fig:nk-cleaned_signal}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/materials-methods/physiological/ABP signal with detected peaks.png}
-    \caption{ABP signal with detected peaks using \textit{nk.ppg\_findpeaks()}}
+    \caption{ABP signal with detected peaks using \texttt{nk.ppg\_findpeaks()}}
     \label{fig:nk-found_peaks}
 \end{figure}
 
-Having found peaks in the ABP signal the SAP, HP, and adjusted ETCO$_2$ for each $i$-th $peak$ - which represent indecies in the ABP where they happen, can be calculated using the following formulas:
-
+Having found peaks in the ABP signal, the SAP, HP, and adjusted ETCO$_2$ for each $i$-th $peak$ - which represent indecies in the ABP where they happen, can be calculated using the following formulas:
 \begin{equation}
   \text{peaks} = [peak_0, peak_1, \dots, peak_i, \dots]
 \end{equation}
@@ -288,17 +280,15 @@ Having found peaks in the ABP signal the SAP, HP, and adjusted ETCO$_2$ for each
   \text{ETCO}_{2i} = \text{mean}(\text{ETCO}_{2peak_{i-1}},\text{ETCO}_{2peak_{i-1}+1}, \dots, \text{ETCO}_{2peak_i}) 
 \end{equation}
 
-The above equations correspond to the following code, and are ilustrated at figure \ref{fig:processing_signals}.
+The above equations correspond to the following code, and are ilustrated in Figure \ref{fig:processing_signals}.
 
 \begin{minted}{python}
-def get_hp(peaks: NDArray[np.integer], sampling_rate: int = SAMPLING_FREQUENCY) -> NDArray[np.floating]:
-    sampling_period = 1 / sampling_rate * 1000
-    return np.diff(peaks) * sampling_period
-
-
 def get_sap(abp: NDArray[np.floating], peaks: NDArray[np.integer]) -> NDArray[np.floating]:
     return np.array([abp[peak] for peak in peaks])[1:]  # skip first peak to match length of hp
 
+def get_hp(peaks: NDArray[np.integer], sampling_rate: int = SAMPLING_FREQUENCY) -> NDArray[np.floating]:
+    sampling_period = 1 / sampling_rate * 1000
+    return np.diff(peaks) * sampling_period
 
 def adjust_etco2(etco2: NDArray[np.floating], peaks: NDArray[np.integer]) -> NDArray[np.floating]:
     if len(etco2) < peaks[-1]:
@@ -309,22 +299,22 @@ def adjust_etco2(etco2: NDArray[np.floating], peaks: NDArray[np.integer]) -> NDA
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/materials-methods/physiological/Preprocessed raw signals, with annotations.png}
-    \caption{Processing signals with \textit{BaroreflexDataProcessor}}
+    \caption{Processing signals with \texttt{BaroreflexDataProcessor}}
     \label{fig:processing_signals}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/materials-methods/physiological/processed signals.png}
-    \caption{Processed signals with \textit{BaroreflexDataProcessor}}
+    \caption{Processed signals with \texttt{BaroreflexDataProcessor}}
     \label{fig:processed_signals}
 \end{figure}
 
-Processed signals like in the figure \ref{fig:processed_signals} can be easly then be used for TE calculations using the \textit{BaroreflexResultsGenerator} that just like classes above have abstracted methods for data processing for all the subjects.
+Processed signals like in the Figure \ref{fig:processed_signals} can be easly then be used for TE calculations using the \texttt{BaroreflexResultsGenerator} that just like classes above have abstracted methods for data processing for all the subjects.
 \begin{minted}{python}
 class BaroreflexResultsGenerator(ResultsGenerator):
-    def __init__(self, patients_processed_data: list[PatientData]) -> None:
-        super().__init__(patients_processed_data)
+    def __init__(self, processed_data: list[SubjectData]) -> None:
+        super().__init__(processed_data)
 
     def add_te(
         self,
@@ -332,25 +322,34 @@ class BaroreflexResultsGenerator(ResultsGenerator):
         y_name: str,
     ) -> str:
         field_name = f'te_{y_name}->{x_name}'
-        for patient_id, cb_data_type, cb_data in self.iterate_cb_data():
-            x, y = (self._get_signal(cb_data, sig_name, cb_data_type, patient_id) for sig_name in [x_name, y_name])
-            if x is not None and y is not None:
+        for subject_id, cb_data_type, cb_data in self.iterate_cb_data():
+            x, y = (self._get_signal(cb_data, sig_name, cb_data_type, subject_id) for sig_name in [x_name, y_name])
+            try:
+                if x is not None and y is not None:
+                    self._add_result(
+                        condition=cb_data_type,
+                        subject_id=subject_id,
+                        field_name=field_name,
+                        value=te_dv(x, y),
+                    )
+            except ValueError as e:
+                logger.error(f'TE calculation error for P{subject_id} {cb_data_type} {e}')
                 self._add_result(
-                    cb_data_type=cb_data_type,
-                    patient_id=patient_id,
+                    condition=cb_data_type,
+                    subject_id=subject_id,
                     field_name=field_name,
-                    value=te_dv(x, y),
+                    value=None,
                 )
         return field_name
 \end{minted}
 
-The end goal of this class is to generate \textit{csv} file with results for the statistical analysis, with usage of \textit{generate\_results\_csv()}.
-The analysis then are handled by the \textit{StatisticsAnalyzer} class.
+The end goal of this class is to generate CSV file with results for the statistical analysis, with usage of \texttt{generate\_results\_csv()}.
+The analysis then are handled by the \texttt{StatisticsAnalyzer} class.
 
-\section{TE and DVP Implementation}\label{sec:te_dvp-implementation}
+\section{TE with DVP Implementation}\label{sec:te_dvp-implementation}
 This section is the most crucial part of this thesis, since it describes all the details concerning TE implementation with DVP for propability estimation.
 
-Since TE is the most fundametal comparing to JTE, CTE, and CJTE (which, in fact, require only slight modification in the implementation), the TE workthrough in the following subsections will be used as an example.
+Since TE is very similar in the implementation to CJTE, the TE workthrough in the following subsections will be used as an example.
 
 \begin{minted}{python}
 def te_dv(
@@ -379,6 +378,10 @@ def te_dv(
     d = np.column_stack([pastX, pastY])
 
     dv_result = dv_partition_nd(a, alpha=dvp_alpha)
+    if len(dv_result) < MINIMAL_VALID_NUMBER_OF_DV_PARTITONS:
+        raise ValueError(
+            f'Number of detected bins below minimum: {MINIMAL_VALID_NUMBER_OF_DV_PARTITONS} > {len(dv_result)}'
+        )
     dimensions = a.shape[1]
     n_total = a.shape[0]
 
@@ -399,7 +402,6 @@ def te_dv(
 \end{minted}
 
 \subsection{Initial Step}
-
 Firstly, let`s take two signals (like in the figure \ref{fig:initial_signals}) for TE computation - $X$ = HP, and $Y$ = SAP, where both of them have to be of length $N=200$.
 Also lets use the default time delay $\tau=1$ and embedding dimension $d=1$
 \begin{figure}[H]
@@ -441,7 +443,7 @@ def rank_transform(x: NDArray[np.floating]) -> NDArray[np.integer]:
     \caption{Embedded Signals, with $tau=1, d=1$}
 \end{figure}
 
-Tweaking $\tau$ parameter to be equal to $2$ results in lagg between future and past embeddings is equal to $2$.
+Tweaking $\tau$ parameter to be equal to $2$ results in lag between future and past embeddings is equal to $2$.
 
 \begin{figure}[H]
     \centering
@@ -464,8 +466,8 @@ To finish step two, embedding vectors have to be transfered using ordinary ranki
     \caption{Ordinary Rank Transformed Vectors}
 \end{figure}
 
-\subsection{Propabilities Substitution}
-Since we are using DVP alghorithm we have to replace state joint propabilities $p$ from the formula \ref{eq:te-simplified} with propabilities of finding points in given subspaces $a_i,b_i,c_i,d_i$ for $i$-th DVP's space partition. 
+\subsection{Probabilities Substitution}
+Since we are using DVP alghorithm we have to replace state joint propabilities $p$ from the formula \ref{eq:te-simplified} with probabilities of finding points in given subspaces $a_i,b_i,c_i,d_i$ for $i$-th DVP's space partition. 
 \begin{equation}
   TE_{Y\to X}^{d} = \sum p(a_i) \cdot \text{log}(\frac{p(a_i)p(b_i)}{p(c_i)p(d_i)})
 \end{equation}
@@ -475,19 +477,18 @@ $$ p(x_{t-1}^{(d)}) \to p(b_i) $$
 $$ p(x_t,x_{t-1}^{(d)}) \to p(c_i) $$
 $$ p(x_{t-1}^{(d)},y_{t-1}^{(d)}) \to p(d_i) $$
 
-In fact here the biggest difference between TE,JTE,CTE, and CJTE lies, since each of them will have different subspace assigment for the incoming signals.
-Here is the example for CJTE:
+In fact here the biggest difference between TE  and CJTE lies, since each of them will have different subspace assigment for the incoming signals:
 \begin{equation}
-  CJTE_{(X,Y)\to Z|W}^{d} = \sum p(a_i) \cdot \text{log}(\frac{p(a_i)p(b_i)}{p(c_i)p(d_i)})
+  CJTE_{(X,Y)\to Z|Y}^{d} = \sum p(a_i) \cdot \text{log}(\frac{p(a_i)p(b_i)}{p(c_i)p(d_i)})
 \end{equation}
 where:
-$$ p(z_t,z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)},w_{t-1}^{(d)}) \to p(a_i) $$
-$$ p(z_{t-1}^{(d)},w_{t-1}^{(d)}) \to p(b_i) $$
-$$ p(z_t,z_{t-1}^{(d)},w_{t-1}^{(d)}) \to p(c_i) $$
-$$ p(z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)},w_{t-1}^{(d)}) \to p(d_i) $$
+$$ p(z_t,z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)}) \to p(a_i) $$
+$$ p(z_{t-1}^{(d)},y_{t-1}^{(d)}) \to p(b_i) $$
+$$ p(z_t,z_{t-1}^{(d)},y_{t-1}^{(d)}) \to p(c_i) $$
+$$ p(z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)}) \to p(d_i) $$
 
 \subsection{Appling DVP}
-The fourth step is to calculate the DVP space partitioning, for the space, with dimensions defined by the future of $X$ and past of $X$ and $Y$ (which for all transfer entropies is always defined already by $a$). 
+The fourth step is to calculate the DVP space partitioning, for the space $a$, (which in case of TE, contains vector embedding future of $X$, and past of $X$, and $Y$). 
 \begin{minted}{python}
 class DVPartition(TypedDict):
     mins: NDArray[np.integer]
@@ -500,7 +501,9 @@ def dv_partition_nd(
     maxs: NDArray[np.integer] | None = None,
     alpha: float = DEFAULT_SIGNIFICANCE_LEVEL,
 ) -> list[DVPartition]:
+    is_initial = False
     if mins is None or maxs is None:
+        is_initial = True
         mins = cast(NDArray[np.integer], np.min(data, axis=0))
         maxs = cast(NDArray[np.integer], np.max(data, axis=0))
     dimensions = len(mins)
@@ -517,7 +520,7 @@ def dv_partition_nd(
         return []
 
     parts = []
-    if (not is_uniform) and np.any(maxs - mins):
+    if is_initial or ((not is_uniform) and np.any(maxs - mins)):
         for child_mins, child_maxs in (child for child in children if child is not None):
             parts.extend(dv_partition_nd(data, child_mins, child_maxs, alpha))
 
@@ -541,6 +544,7 @@ def _get_current_box_data(
     inside = np.all((data >= mins) & (data <= maxs), axis=1)
     return data[inside]
 \end{minted}
+
 Then the safety check is done if the current box has any points.
 If current hyper box contains any points the equal space division along midpoints is performed resulting in children hyper boxes and counts of points inside of them.
 \begin{minted}{python}
@@ -549,7 +553,7 @@ def _get_children_with_counts(
     mins: NDArray[np.integer],
     maxs: NDArray[np.integer],
 ) -> tuple[list[tuple[NDArray[np.integer], NDArray[np.integer]] | None], NDArray[np.integer]]:
-    midpoints: NDArray[np.integer] = (mins + maxs) // 2
+    midpoints: NDArray[np.integer] = (mins + maxs) / 2  # type: ignore
     dimensions = len(mins)
 
     children = []
@@ -565,7 +569,6 @@ def _get_children_with_counts(
 
     return children, np.asarray(counts)
 
-
 def _get_child_box_bounds(
     bits: tuple[int, ...], mins: NDArray[np.integer], maxs: NDArray[np.integer], midpoints: NDArray[np.integer]
 ) -> tuple[NDArray[np.integer], NDArray[np.integer]]:
@@ -574,10 +577,12 @@ def _get_child_box_bounds(
     bits_array = np.array(bits)
     child_mins = np.where(bits_array == 0, mins, midpoints + 1)
     child_maxs = np.where(bits_array == 0, midpoints, maxs)
-    return child_mins, child_maxs  
+    return child_mins, child_maxs
 \end{minted}
 
 Finally, if the space division results in non-uniform points distribution among children, the recursion enters each of the children, else the whole current hyper box is treated as one partition and is returned.
+The above rule has the one expection - if this is the initial call of the function, the split is forced, since Chi-squared test often takes the initial distribution as uniform, preventing any recursion, which results in returning just the initial data.
+The significance level ($\alpha$) \texttt{alpha} to pass this uniformity test is by default set as $0.05$, what is proposed in the original paper, but my implementation allows for modification of this value \cite{dvp}.
 
 \begin{minted}{python}
 def _is_uniform(d: int, counts: NDArray, alpha: float) -> None | bool:
@@ -589,7 +594,7 @@ def _is_uniform(d: int, counts: NDArray, alpha: float) -> None | bool:
     return crit >= T
 \end{minted}
 
-After all the recursion instances are resolved, the division of space can be plotted as in the figure \ref{fig:dvp-example-implementation}.
+After all the recursion instances are resolved, the division of space can be plotted as in the Figure \ref{fig:dvp-example-implementation}.
 
 \begin{figure}[H]
     \centering
@@ -599,7 +604,7 @@ After all the recursion instances are resolved, the division of space can be plo
 \end{figure}
 
 \subsection{Summation}
-The final step in TE calculation is to count for each $i$-th space partition from DVP alghorithm the partial TE sum.
+The final step in TE (and CJTE) calculation is to count for each $i$-th space partition from DVP alghorithm the partial TE sum.
 To get the ammount of points in given subspace the following function is being used:
 \begin{minted}{python}
 def get_points_from_range(
@@ -624,11 +629,16 @@ def get_points_from_range(
 \end{minted}
 
 \section{Complete Workflow}
-This section demonstrates code snippet that executes the whole code written for this thesis - from loading data from csv files through processing signals, and calculating TE,CTE,JTE,CJTE, to generating plots with results and statistical analysis.
+All the code needed to produce the results included in the following chapter is gathered in a single \texttt{main.py} file. 
+Therefore, only the single command \texttt{uv run python main.py} is required, provided that the data is correctly placed in the \texttt{data/} directory. 
+Instructions for setting up the environment are provided in the \texttt{README.md} file. 
+
+The complete workflow is summarized in Figure \ref{fig:complete-workflow}.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/materials-methods/complete-workflow.png}
-    \caption{Complete workflow of the implemented code}
+    \caption{Diagram representing the complete workflow of the implemented code}
     \label{fig:complete-workflow}
 \end{figure}
 

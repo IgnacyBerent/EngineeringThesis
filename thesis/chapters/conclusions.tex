@@ -1,6 +1,11 @@
 \chapter{Conclusions}
-By comparing synthetic benchmarks with physiological measurements, this study highlights that while TE/CJTE via DVP is a powerful tool for detecting directionality and nonlinearity, the interpretation of "conditional" flow must be handled with caution when strong common drivers are present. 
-Future work should investigate bias-correction techniques or higher-order partitioning to further refine the independence of the CJTE metric.
+The implementation of Transfer Entropy and Conditional Joint Transfer Entropy via the DVP estimation technique allowed for a detailed characterization of information flow in both synthetic and physiological systems.
 
-Additionally longer measurements on larger cohort of subjects would be beneficial to provide data that would generize the results better.
-Morover studing non healthy patients, or varting age groups could provide additional insights into the proposed BRS estimation technique.
+By comparing synthetic benchmarks with physiological measurements, this study highlights that TE and CJTE are powerful tools for detecting directionality and nonlinearity. 
+While TE is an effective standalone tool in bivariate systems, CJTE provides superior insights in multivariate physiological environments where multiple regulatory factors interact. 
+However, a key limitation identified is the potential for misleading results (synergistic inflation), when a strong common driver is present alongside weak direct interaction. 
+Therefore, CJTE should not be used in isolation but rather complemented by TE to ensure the integrity of the causal interpretation.
+
+Future work should investigate bias-correction techniques or the systematic optimization of hyperparameter tuning, to further refine the partitioning process and improve the specificity of the CJTE metric.
+Additionally, longer measurements on larger cohorts, including pathological populations or varying age groups, would be beneficial to generalize these results and refine the proposed BRS estimation technique.
+

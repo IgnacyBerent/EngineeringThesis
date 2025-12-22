@@ -27,7 +27,6 @@ def get_peaks(
 ) -> NDArray[np.integer]:
     filled_signal = nk.signal_fillmissing(signal)
     cleaned_signal = cast(NDArray[np.floating], nk.ppg_clean(filled_signal, sampling_rate=sampling_rate, method=method))
-
     peaks_up: NDArray[np.integer] | None = None
     peaks_down: NDArray[np.integer] | None = None
 
@@ -46,11 +45,14 @@ def get_peaks(
             mindelay=mindelay,
         )
 
-    if peaks_up is not None and peaks_down is not None:
+    if mode == PeaksMode.BOTH:
+        assert peaks_up is not None and peaks_down is not None
         return np.sort(np.concatenate((peaks_up, peaks_down)))
-    if peaks_up is not None:
+    if mode == PeaksMode.UP:
+        assert peaks_up is not None
         return peaks_up
-    return cast(NDArray[np.integer], peaks_down)
+    assert peaks_down is not None
+    return peaks_down
 
 
 def _find_peaks(

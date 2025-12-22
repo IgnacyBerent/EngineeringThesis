@@ -20,21 +20,30 @@ Regarding signal quality, Subsection \ref{subsec:effect_of_noise} demonstrates t
 Significant degradation in information flow detection only occurred at an SNR of 10 or lower, suggesting that the method is well-suited for clinical environments where physiological signals (like ECG or blood pressure) are often contaminated by high-frequency noise.
 
 \section{The Confounding Effect of Common Drivers}
+The synthetic trivariate model was designed to simulate the impact of a common driver $Z$ (representing ETCO$_2$) on the interaction between two variables $X$ and $Y$ (representing $SAP$ and $HP$). 
+Results presented in Subsection \ref{subsec:effect_of_confounding_variable} reveal that while CJTE aims to isolate direct coupling, it does not completely neutralize the influence of the common drive. 
+Both TE and CJTE values were found to increase alongside the driving strength $a_z$, a phenomenon that can be attributed to \textit{synergistic inflation} rather than direct information transfer.
 
-The synthetic model of trivariate system with a common driver $Z$ was designed to share characteristics of the impact of $ETCO_2$ on the baroreflex. 
-Results in Subsection \ref{subsec:effect_of_confounding_variable} reveal that CJTE does not completely neutralize the confounding factor. 
-Both TE and CJTE values increased alongside the driving strength $a_z$, suggesting an "information leakage".
-
-As observed in Subsubsection \ref{subsubsubsec:synthetic_comparison_cjte-te}, this leakage is most prominent when the direct coupling between $X$ and $Y$ is weak. 
-In such cases, CJTE erroneously exceeded TE, whereas theoretical conditioning should ideally reduce the estimated information transfer. 
-This implies that in high-dimensional spaces, the DVP estimator may struggle to fully "partition out" the shared information, leading to an overestimation of the conditional flow.
+As observed in Subsubsection \ref{subsubsubsec:synthetic_comparison_cjte-te}, in the absence of a direct relationship between $X$ and $Y$ ($a_x = 0$), CJTE yielded significantly higher values than standard TE. 
+This suggests a synergistic effect where knowledge of the past of $Z$ renders the "echo" of the drive found in $X$ more predictive of $Y$. 
+While this is a documented property of information-theoretic measures in the presence of a common cause, it implies that in high-dimensional physiological spaces, the estimator may overestimate the conditional flow if the shared drive is dominant. 
+This serves as a critical methodological caution: a higher CJTE value does not always imply a stronger physical connection if a potent third-party driver is unaccounted for.
 
 \section{Physiological Interpretation and BRS}
-The physiological application confirmed several established cardiovascular phenomena. 
-The peak in Baroreflex Sensitivity (BRS) at 6 breaths/min aligns with the resonance effect between Respiratory Sinus Arrhythmia (RSA) and the baroreflex control loop. 
-Conversely, the attenuation at 15 breaths/min reflects the low-pass filtering characteristics of the Autonomic Nervous System (ANS), where the disparate response times of the sympathetic and parasympathetic branches lead to a dampening of the synergy \cite{heartmetronome}.
+The physiological application of these metrics confirmed several established cardiovascular phenomena. 
+The observed peak in Baroreflex Sensitivity (BRS) at 6 breaths/min aligns with the resonance effect between Respiratory Sinus Arrhythmia (RSA) and the baroreflex control loop. 
+Conversely, the attenuation at 15 breaths/min reflects the low-pass filtering characteristics of the Autonomic Nervous System (ANS), where the heart's response to rapid blood pressure fluctuations is dampened due to the finite response times of the autonomic branches \cite{heartmetronome}.
 
+In the context of ETCO$_2$ (Subsection \ref{subsec:phys-etco-effect}), the TE results suggest that ETCO$_2$ exerts a relatively constant baseline influence on both $SAP$ and $HP$ across all tasks. 
+A clear analogy can be drawn between the physiological results in Table \ref{subsec:phys-comparison-results} and the synthetic results in Table \ref{tab:comparison-trivariate-ax}. 
+At breathing frequencies where direct baroreflex coupling is lower (10 and 15 breaths/min), the CJTE values appear slightly inflated by the persistent ETCO$_2$ drive. 
 
-In the context of $ETCO_2$ (Subsection \ref{subsec:phys-etco-effect}), TE results suggest that ETCO$_2$ exerts a relatively constant influence on both Systolic Arterial Pressure (SAP) and Heart Period (HP). 
-When comparing these results in Subsection \ref{subsec:phys-comparison-results}, it becomes evident that the common driving force of $ETCO_2$ is substantial. 
-Given the leakage observed in the synthetic models, it is highly likely that current CJTE estimations in physiological data include a non-trivial amount of shared information from $ETCO_2$ that the algorithm cannot fully isolate.
+However, at the 6 breaths/min resonance frequency, the significant increase in both TE and CJTE confirms that a genuine and powerful \textit{direct coupling} ($a_x > 0$) has emerged. 
+This suggests that the baroreflex is the primary regulatory force at this frequency. 
+If hypoventilation had occurred specifically at 6 breaths/min, the information transfer from ETCO$_2$ to both $SAP$ and $HP$ would have spiked, causing the CJTE to "flatten" relative to the TE. 
+Since the ETCO$_2$ transfer remained stable, the CJTE effectively validates the baroreflex as the dominant regulatory mechanism during slow-breathing resonance.
+
+\section{Hyperparameter Tuning}
+While the DVP implementation is generally considered model-free, three parameters significantly influence its performance: dimensional embedding ($d$), time delay ($\tau$), and the significance level ($\alpha$) for the uniformity test. 
+Literature suggests that TE performance in higher-order synthetic relationships can be improved by adjusting $\tau$ \cite{rozo2021benchmarking}. 
+Since most research defaults to standard values, the optimization of these parameters—particularly for CJTE—remains a promising area for future study.
