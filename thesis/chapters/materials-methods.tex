@@ -7,7 +7,7 @@ The implementation was carried out fully in the Python programming language.
 The following libraries were utilized to facilitate data processing and analysis:
 \begin{itemize}
   \item \texttt{NumPy}: Used for high-performance numerical computations and multi-dimensional array operations \cite{numpy}.
-  \item \texttt{Pandas}: Employed for the manipulation and analysis of structured tabular datasets \cite{pandas}.
+  \item \texttt{Pandas}: Employed for the manipulation and analysis of structured tabular datasets (\cite{pandas};\cite{pandas2}).
   \item \texttt{Matplotlib}: Utilized for generating high-quality data visualizations and figures \cite{matplotlib}.
   \item \texttt{NeuroKit2}: A specialized library used for the processing and feature extraction of physiological signals \cite{neurokit2}.
   \item \texttt{Pingouin}: Leveraged for performing rigorous statistical tests and inference \cite{pingouin}.
@@ -15,7 +15,7 @@ The following libraries were utilized to facilitate data processing and analysis
 \end{itemize}
 
 \section{Synthetic signals}
-To validate correctness of my TE implementation, appropiate benchmark with usage of synthetic signals was performed.
+To validate correctness of proposed in this thesis TE implementation, appropiate benchmark with usage of synthetic signals was performed.
 The following factors have been tested:
 \begin{itemize}
   \item Effect of a linear coupling strength
@@ -94,22 +94,26 @@ It consists of $32$ young healthy volunteers ($14$ males, $18$ females, median a
 Everyone was instructed not to consume alcohol and caffeine 12 hours before the study and declared to be free of medication. 
 Measurements were taken under the supervision of a profesional physician and were approved by the Comission of Bioethics (KB-179/2023/N) \citep{Uryga_2024}.
 
-\subsection{Data acquisition}
+\subsection{Data Acquisition}
 For the BRS estimation, mentioned in section \ref{sec:baroreflex}, two raw signals were used among others for the calculations:
 \begin{itemize}
   \item ABP recorded noninvasively using a photoplethysmograph (Finometer MIDI)
-  \item ETCO$_{2}$ recorded using a capnograph
+  \item ETCO$_{2}$ recorded using a capnograph (NONIN)
 \end{itemize}
 
 Measurements were made at room temperature with minimal external stimuli as in Figure \ref{fig:experiment-setup} and were carried out in four stages lasting 5 minutes each and performed one after another. 
 In stage 1 subjects were breathing at their resting rate, and in stages 2,3,4 they were performing controlled breathing guided by metromone, respectively, at rates 6,10 and 15 breaths per minute (bpm).
 Each epoch was performed with a 5 minute long break, the ABP was sampled at $f_s=200 Hz$, and ETCO$_2$ was upsampled to match it.
 All the data was gathered into separate \textit{csv} format files, for each patient and breathing stage.
+Time or Index (i) on the X-axis of the plots were derived from the following property:
+\begin{equation}
+  \text{Time} = \frac{\text{Index}}{fs} \text{ } [s]
+\end{equation}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{figs/materials-methods/physiological/experiment_setup.jpg}
-    \caption{The experiment setup}
+    \includegraphics[width=0.47\linewidth]{figs/materials-methods/physiological/experiment_setup.jpg}
+    \caption{The measurement setup}
     \label{fig:experiment-setup}
 \end{figure}
 
@@ -139,7 +143,7 @@ As the result, signals provided for this study were resembling the following sam
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/materials-methods/physiological/Preprocessed raw signals.png}
-    \caption{Sample of preprocessed raw signals for breathing at rest}
+    \caption{An illustrative example of preprocessed raw signals for breathing at rest}
     \label{fig:raw-data}
 \end{figure}
 
@@ -255,14 +259,14 @@ While originally developed for photoplethysmography (PPG), this method is highly
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/materials-methods/physiological/Cleaned ABP signal.png}
-    \caption{Cleaned ABP signal using \texttt{nk.ppg\_clean()}}
+    \caption{ABP signal filtered using \texttt{nk.ppg\_clean()}}
     \label{fig:nk-cleaned_signal}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/materials-methods/physiological/ABP signal with detected peaks.png}
-    \caption{ABP signal with detected peaks using \texttt{nk.ppg\_findpeaks()}}
+    \caption{ABP signal with detected peaks obtained using \texttt{nk.ppg\_findpeaks()}}
     \label{fig:nk-found_peaks}
 \end{figure}
 
@@ -299,14 +303,14 @@ def adjust_etco2(etco2: NDArray[np.floating], peaks: NDArray[np.integer]) -> NDA
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/materials-methods/physiological/Preprocessed raw signals, with annotations.png}
-    \caption{Processing signals with \texttt{BaroreflexDataProcessor}}
+    \caption{Processing signals using \texttt{BaroreflexDataProcessor}}
     \label{fig:processing_signals}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/materials-methods/physiological/processed signals.png}
-    \caption{Processed signals with \texttt{BaroreflexDataProcessor}}
+    \caption{Processed signals using \texttt{BaroreflexDataProcessor}}
     \label{fig:processed_signals}
 \end{figure}
 
@@ -407,7 +411,7 @@ Also lets use the default time delay $\tau=1$ and embedding dimension $d=1$
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/materials-methods/te/Initial Signals.png}
-    \caption{Initial Signals}
+    \caption{Initial signals used to present TE implementation}
     \label{fig:initial_signals}
 \end{figure}
 
@@ -472,20 +476,28 @@ Since we are using DVP alghorithm we have to replace state joint propabilities $
   TE_{Y\to X}^{d} = \sum p(a_i) \cdot \text{log}(\frac{p(a_i)p(b_i)}{p(c_i)p(d_i)})
 \end{equation}
 where:
-$$ p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)}) \to p(a_i) $$
-$$ p(x_{t-1}^{(d)}) \to p(b_i) $$
-$$ p(x_t,x_{t-1}^{(d)}) \to p(c_i) $$
-$$ p(x_{t-1}^{(d)},y_{t-1}^{(d)}) \to p(d_i) $$
+\begin{equation}
+\begin{split}
+  p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)}) &\to p(a_i) \\
+  p(x_{t-1}^{(d)}) &\to p(b_i) \\
+  p(x_t,x_{t-1}^{(d)}) &\to p(c_i) \\
+  p(x_{t-1}^{(d)},y_{t-1}^{(d)}) &\to p(d_i)
+\end{split}
+\end{equation}
 
 In fact here the biggest difference between TE  and CJTE lies, since each of them will have different subspace assigment for the incoming signals:
 \begin{equation}
   CJTE_{(X,Y)\to Z|Y}^{d} = \sum p(a_i) \cdot \text{log}(\frac{p(a_i)p(b_i)}{p(c_i)p(d_i)})
 \end{equation}
 where:
-$$ p(z_t,z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)}) \to p(a_i) $$
-$$ p(z_{t-1}^{(d)},y_{t-1}^{(d)}) \to p(b_i) $$
-$$ p(z_t,z_{t-1}^{(d)},y_{t-1}^{(d)}) \to p(c_i) $$
-$$ p(z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)}) \to p(d_i) $$
+\begin{equation}
+\begin{split}
+  p(z_t,z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)}) &\to p(a_i) \\
+  p(z_{t-1}^{(d)},y_{t-1}^{(d)}) &\to p(b_i) \\
+  p(z_t,z_{t-1}^{(d)},y_{t-1}^{(d)}) &\to p(c_i) \\
+  p(z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)}) &\to p(d_i)
+\end{split}
+\end{equation}
 
 \subsection{Appling DVP}
 The fourth step is to calculate the DVP space partitioning, for the space $a$, (which in case of TE, contains vector embedding future of $X$, and past of $X$, and $Y$). 
@@ -582,7 +594,7 @@ def _get_child_box_bounds(
 
 Finally, if the space division results in non-uniform points distribution among children, the recursion enters each of the children, else the whole current hyper box is treated as one partition and is returned.
 The above rule has the one expection - if this is the initial call of the function, the split is forced, since Chi-squared test often takes the initial distribution as uniform, preventing any recursion, which results in returning just the initial data.
-The significance level ($\alpha$) \texttt{alpha} to pass this uniformity test is by default set as $0.05$, what is proposed in the original paper, but my implementation allows for modification of this value \cite{dvp}.
+The significance level ($\alpha$) \texttt{alpha} to pass this uniformity test is by default set as $0.05$, what is proposed in the original paper, but the implementation proposed in this thesis allows for modification of this value \cite{dvp}.
 
 \begin{minted}{python}
 def _is_uniform(d: int, counts: NDArray, alpha: float) -> None | bool:

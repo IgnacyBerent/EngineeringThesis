@@ -69,7 +69,7 @@ Conversely, when measuring TE in the direction against the real information flow
 
 \begin{table}[H]
 \centering
-\caption{Statistics analysis values for the figure \ref{fig:openloop-linear-a-against}}
+\caption{Statistics analysis values for the Figure \ref{fig:openloop-linear-a-against}}
 \begin{tabular}{llllll}
 \toprule
 ddof1 & ddof2 & F & p-unc & ng2 & eps \\
@@ -207,42 +207,6 @@ SNR=20 & SNR=10 & $3.71$ & $99$ & $< 0.001$ & $< 0.01$ \\
 \end{tabular}
 \label{tab:openloop-linear-e-along}
 \end{table}
-
-% \subsubsection{Effect on $TE_{Y \to X}$}
-%
-%
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.9\linewidth]{figs/results/synthetic/Varying SNR Linear Bivariate te_y->x.png}
-%     \caption{TE results for different SNR values in a linearly coupled synthetic signal, against the real information flow direction ($Y \to X$)}
-%     \label{fig:openloop-linear-e-against}
-% \end{figure}
-%
-% \begin{table}[H]
-% \centering
-% \caption{Statistical analysis values for the TE results against the direction $Y \to X$ (Figure \ref{fig:openloop-linear-e-against})}
-% \begin{tabular}{llllll}
-% \toprule
-% ddof1 & ddof2 & F & p-unc & ng2 & eps \\
-% \midrule
-% $3$ & $297$ & $1.127$ & $0.338$ & $0.006$ & $0.84$ \\
-% \bottomrule
-% \end{tabular}
-% \vspace{0.5em}
-% \begin{tabular}{llllll}
-% \toprule
-% A & B & T & dof & p-unc & p-corr \\
-% \midrule
-% SNR=None & SNR=30 & $0.52$ & $99$ & $0.604$ & $1.000$ \\
-% SNR=None & SNR=20 & $0.479$ & $99$ & $0.633$ & $1.000$ \\
-% SNR=None & SNR=10 & $1.554$ & $99$ & $0.123$ & $0.740$ \\
-% SNR=30 & SNR=20 & $0.107$ & $99$ & $0.915$ & $1.000$ \\
-% SNR=30 & SNR=10 & $1.239$ & $99$ & $0.218$ & $1.000$ \\
-% SNR=20 & SNR=10 & $1.246$ & $99$ & $0.216$ & $1.000$ \\
-% \bottomrule
-% \end{tabular}
-% \label{tab:openloop-linear-e-against}
-% \end{table}
 
 \subsection{Effect of Nonlinear Coupling Strength}\label{subsec:effect_of_nonlinear_coupling_strength}
 
@@ -682,10 +646,10 @@ For non existing direct coupling from $X \to Y$ ($a_x=0$) CJTE yield statistical
 
 \begin{table}[H]
 \centering
-\caption{Statistical results of comparison between $TE_{X->Y}$ and $CJTE_{(X,Z)->Y|Z}$}
+\caption{Statistical results of comparison between the mean $TE_{X->Y}$ and mean $CJTE_{(X,Z)->Y|Z}$}
 \begin{tabular}{lllllll}
 \toprule
-Condition & Mean te\_x->y & Mean cjte\_(x,z)->y|z & T & p-unc \\
+Condition & $TE_{X->Y}$ & $CJTE_{(X,Z)->Y|Z}$ & T & p-unc \\
 \midrule
 ax=0 & $0.104$ & $0.131$ & $-4.642$ & $< 0.001$ \\
 ax=0.1 & $0.137$ & $0.143$ & $-1.103$ & $0.273$ \\
@@ -766,8 +730,8 @@ The only statistically significant difference is only for flow to HP between bas
 \toprule
 Source & ddof1 & ddof2 & F & p-unc & ng2 & eps \\
 \midrule
-te\_etco2->sap & $3$ & $93$ & $0.407$ & $0.748$ & $0.01$ & $0.882$ \\
-te\_etco2->hp & $3$ & $93$ & $2.607$ & $0.056$ & $0.045$ & $0.932$ \\
+$TE_{\text{ETCO}_2\to \text{SAP}}$ & $3$ & $93$ & $0.407$ & $0.748$ & $0.01$ & $0.882$ \\
+$TE_{\text{ETCO}_2\to \text{HP}}$ & $3$ & $93$ & $2.607$ & $0.056$ & $0.045$ & $0.932$ \\
 \bottomrule
 \end{tabular}
 \vspace{0.5em}
@@ -775,18 +739,18 @@ te\_etco2->hp & $3$ & $93$ & $2.607$ & $0.056$ & $0.045$ & $0.932$ \\
 \toprule
 Source & A & B & T & dof & p-unc & p-corr \\
 \midrule
-te\_etco2->sap & CB BASELINE & CB 6 & $0.691$ & $31$ & $0.495$ & $1.000$ \\
-te\_etco2->sap & CB BASELINE & CB 10 & $0.674$ & $31$ & $0.505$ & $1.000$ \\
-te\_etco2->sap & CB BASELINE & CB 15 & $0.93$ & $31$ & $0.359$ & $1.000$ \\
-te\_etco2->sap & CB 6 & CB 10 & $-0.023$ & $31$ & $0.982$ & $1.000$ \\
-te\_etco2->sap & CB 6 & CB 15 & $0.39$ & $31$ & $0.699$ & $1.000$ \\
-te\_etco2->sap & CB 10 & CB 15 & $0.358$ & $31$ & $0.723$ & $1.000$ \\
-te\_etco2->hp & CB BASELINE & CB 6 & $2.872$ & $31$ & $< 0.01$ & $0.044$ \\
-te\_etco2->hp & CB BASELINE & CB 10 & $2.031$ & $31$ & $0.051$ & $0.306$ \\
-te\_etco2->hp & CB BASELINE & CB 15 & $1.856$ & $31$ & $0.073$ & $0.438$ \\
-te\_etco2->hp & CB 6 & CB 10 & $-0.939$ & $31$ & $0.355$ & $1.000$ \\
-te\_etco2->hp & CB 6 & CB 15 & $-0.692$ & $31$ & $0.494$ & $1.000$ \\
-te\_etco2->hp & CB 10 & CB 15 & $0.253$ & $31$ & $0.802$ & $1.000$ \\
+$TE_{\text{ETCO}_2\to \text{SAP}}$ & CB BASELINE & CB 6 & $0.691$ & $31$ & $0.495$ & $1.000$ \\
+$TE_{\text{ETCO}_2\to \text{SAP}}$ & CB BASELINE & CB 10 & $0.674$ & $31$ & $0.505$ & $1.000$ \\
+$TE_{\text{ETCO}_2\to \text{SAP}}$ & CB BASELINE & CB 15 & $0.93$ & $31$ & $0.359$ & $1.000$ \\
+$TE_{\text{ETCO}_2\to \text{SAP}}$ & CB 6 & CB 10 & $-0.023$ & $31$ & $0.982$ & $1.000$ \\
+$TE_{\text{ETCO}_2\to \text{SAP}}$ & CB 6 & CB 15 & $0.39$ & $31$ & $0.699$ & $1.000$ \\
+$TE_{\text{ETCO}_2\to \text{SAP}}$ & CB 10 & CB 15 & $0.358$ & $31$ & $0.723$ & $1.000$ \\
+$TE_{\text{ETCO}_2\to \text{HP}}$ & CB BASELINE & CB 6 & $2.872$ & $31$ & $< 0.01$ & $0.044$ \\
+$TE_{\text{ETCO}_2\to \text{HP}}$ & CB BASELINE & CB 10 & $2.031$ & $31$ & $0.051$ & $0.306$ \\
+$TE_{\text{ETCO}_2\to \text{HP}}$ & CB BASELINE & CB 15 & $1.856$ & $31$ & $0.073$ & $0.438$ \\
+$TE_{\text{ETCO}_2\to \text{HP}}$ & CB 6 & CB 10 & $-0.939$ & $31$ & $0.355$ & $1.000$ \\
+$TE_{\text{ETCO}_2\to \text{HP}}$ & CB 6 & CB 15 & $-0.692$ & $31$ & $0.494$ & $1.000$ \\
+$TE_{\text{ETCO}_2\to \text{HP}}$ & CB 10 & CB 15 & $0.253$ & $31$ & $0.802$ & $1.000$ \\
 \bottomrule
 \end{tabular}
 \label{tab:phys-etco2-results}
@@ -830,16 +794,16 @@ CB 10 & CB 15 & $2.466$ & $31$ & $0.019$ & $0.116$ \\
 \label{tab:phys-cjte-results}
 \end{table}
 
-\subsection{Comparison of TE and CJTE in BRS estimation}\label{subsec:phys-comparison-results}
+\subsection{Comparison of TE and CJTE in the BRS Estimation}\label{subsec:phys-comparison-results}
 The final result from Table \ref{tab:phys-comparison-results} in this thesis, contains comparison of the mean values of TE and CJTE.
 From pairwise comparisons it is shown that CJTE is significantly bigger for baseline, $10$ breaths/min, and $15$ breaths/min.
 
 \begin{table}[H]
 \centering
-\caption{Comparison of TE and CJTE in BRS estimation}
+\caption{Comparison of the mean TE and mean CJTE in BRS estimation}
 \begin{tabular}{lllll}
 \toprule
-Condition & Mean te\_sap->hp & Mean cjte\_(sap,etco2)->hp|etco2 & T & p-unc \\
+Condition & $TE_{\text{SAP}\to \text{HP}}$ & $CJTE_{(\text{SAP},\text{ETCO}_2)\to \text{HP}|\text{ETCO}_2}$ & T & p-unc \\
 \midrule
 CB BASELINE & $0.167$ & $0.297$ & $-8.401$ & $< 0.001$ \\
 CB 6 & $0.342$ & $0.36$ & $-1.009$ & $0.321$ \\

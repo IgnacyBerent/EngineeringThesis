@@ -8,15 +8,15 @@ The Darbellay-Vajda Partitioning (DVP) algorithm was selected for its reliabilit
 
 To evaluate these functions, three synthetic signal types were generated: a bivariate linear model, a bivariate nonlinear model, and a trivariate linear model with a common driver. 
 For physiological application, the baroreflex system was analyzed. 
-As a primary regulator of the autonomic nervous system, the baroreflex maintains homeostasis via a negative feedback loop that stabilizes heart period (HP) despite shifts in systolic arterial pressure (SAP). 
+As a primary regulator of the autonomic nervous system, the baroreflex maintains homeostasis by a negative feedback loop that stabilizes heart period (HP) despite shifts in systolic arterial pressure (SAP). 
 Baroreflex sensitivity (BRS) quantifies how HP fluctuates in response to SAP changes. 
-Notably, the chemoreflex effect, driven by ETCO$_2$ levels, often acts as a confounding factor in controlled breathing protocols, introducing bias in BRS estimation.
+Notably, the chemoreflex effect, driven by end-tidal carbon dioxide (ETCO$_2$) levels, often acts as a confounding factor in controlled breathing protocols, introducing bias in BRS estimation.
 
-Physiological signals were collected from 32 healthy volunteers (14 males, 18 females, median age: 22 years) during the \textit{AUTOMATIC} project at Wrocław University of Science and Technology. 
+Physiological signals were retrospectively analysed, from 32 healthy volunteers (14 males, 18 females, median age: 22 years) during the \textit{AUTOMATIC} project at Wrocław University of Science and Technology. 
 Measurements were physician-supervised and approved by the Bioethics Commission (KB-179/2023/N). 
 Participants underwent four 5-minute stages: breathing at rest, and at 6, 10, and 15 breaths per minute. 
-Arterial blood pressure and ETCO$_2$ were recorded noninvasively. 
-SAP and HP were then derived from the pressure signal, and ETCO$_2$ was upsampled to match their length.
+Arterial blood pressure (ABP) and ETCO$_2$ were recorded noninvasively. 
+SAP and HP were then derived from the ABP signal.
 
 Results showed that TE effectively detects both linear and nonlinear causalities in synthetic signals and remains resilient to mild noise. 
 Findings suggest that longer signal windows of at least $500$ to $1,000$ samples improve TE estimation precision.
@@ -29,7 +29,7 @@ Nevertheless, CJTE successfully reduced the ETCO$_2$ effect at the 6 bpm peak.
 
 The implementation of both TE and CJTE using the DVP algorithm, alongside the development of a systematic evaluation framework, enabled a robust comparison of these techniques.
 To address current limitations, CJTE should be used alongside TE rather than as a standalone method to ensure a comprehensive system explanation, until better, bias-reduction methods are found. 
-Future research with larger cohorts and longer recordings will offer more generalized insights.
+Future research with larger cohorts and longer recordings will offer more generalized findings.
 
 \paragraph*{Keywords}
 Transfer Entropy, Conditional Joint Transfer Entropy, Baroreflex Sensitivity, Darbellay-Vajda Partitioning, Autonomic Nervous System, Information Theory, Nonlinear Dynamics

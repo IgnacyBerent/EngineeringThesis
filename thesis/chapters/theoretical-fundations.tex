@@ -8,12 +8,12 @@ The cardiovascular system relies on several regulatory loops to maintain homeost
 Among these, the baroreflex is the most significant for the short-term control of blood pressure \cite{heartmetronome}.
 
 \subsection{Physiological Mechanism}
-The ANS is highly modulated by the baroreflex, a critical homeostatic mechanism.
-The baroreflex is a negative feedback control system that maintains ABP despite fluctuations in the RR interval, i.e., the heart period (HP).
+The autonomic nervous system (ANS) is highly modulated by the baroreflex, a critical homeostatic mechanism.
+The baroreflex is a negative feedback control system that maintains arterial blood pressure (ABP) despite fluctuations in the RR interval, i.e., the heart period (HP).
 Baroreceptors are the crucial component of this system, placed in the carotid sinuses and the aortic arch, as well as the chambers of the heart and vena cavae \cite{heartmetronome}.
 
 When active, baroreceptors fire action potenrials, with frequency corenspoding to the ABP level.
-This modulates ANS by activation of the PNS and inhibitation of th SNS, causing reduced peripheral resistance and decrease in heart rate (increasing HP) with contractility, leading to ABP reduction.
+This modulates ANS by activation of the parasympathetic nervous system (PNS) and inhibitation of the sympathetic nervous system (SNS), causing reduced peripheral resistance and decrease in heart rate (increasing HP) with contractility, leading to ABP reduction.
 In the oposite direction if SNS is activated, and vagal outflow inhibited the baroreflex increases ABP.
 
 \subsection{Introduction to BRS}\label{subsec:brs}
@@ -46,7 +46,6 @@ Therefore, continous end-tidal CO$_2$ (ETCO$_2$) level monitoring is essential t
 
 \subsection{BRS Measurement Methods}
 There are numerous ways of BRS measurement, each with its own benefits and drawbacks.
-
 The oldest one, called also pharmacological method, involced injection of vasoconstrictive agent to induce ABP increase.
 This forces cardiovascular system to operate over a wide range of pressures, allowing to obtain data points necessary to fit the complete baroreflex curve, as shown in Figure \ref{fig:baroreflexcurve}.
 While highly accurate, this method is highly invasive and not feasible for long-term monitoring or large-scale application \cite{la1995baroreflex}.
@@ -169,7 +168,7 @@ To break symetricy in MI, the time lag $\tau$ has been introduced, defined by th
 However $\tau$ called also embedding delay in the most cases is set to be equal to 1, therefore is not used in the notation.
 The order of markov process noted in equation \ref{eq:embedding-vector} as $k$ is often called embedding dimension.
 In the literature symbol for the embedding dimension for the other signal is often represented by $l$, but many articles, including the original paper suggests $k=l$.
-My notation will use symbol $d$ for embedding dimensions (\cite{Schreiber2000};\cite{lee2012transfer}).
+In this thesis, symbol $d$ will denote the embedding dimensions (\cite{Schreiber2000};\cite{lee2012transfer}).
 
 Finally asymetric conditional MI can be constructed, called TE that explicitly defines ammount of the information left in the system after reducing effect of knowing past of $Y$ and $X$ from effect of knowning just past $X$.
 \begin{equation}\label{eq:mi_te}
@@ -229,7 +228,7 @@ As the result, each box contains positive number of points (as presented on 2D e
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{figs/theoretical-fundations/dvp2d.png}
-    \caption{2D DVP visualization example, implemented from scratch}
+    \caption{Two-dimension DVP visualization example implemented from scratch}
     \label{fig:dvp-example}
 \end{figure}
 

@@ -12,10 +12,11 @@ Furthermore, Subsubsection \ref{subsubsubsec:drive_detection} demonstrates that 
 Crucially, TE remained statistically insignificant in directions opposing the natural flow. 
 The residual low values observed in these counter-examples are attributed to the non-negativity constraint of the DVP estimator; since it estimates probability densities via partitioning, the resulting entropy values are inherently positive even in the absence of a true causal link.
 
-\section{The Impact of Signal Length and Noise}
+\section{The Impact of Signal Length}
 The analysis of signal length (Subsection \ref{subsec:effect_of_signal_length}) suggests that DVP accuracy improves with larger datasets. 
 The findings indicate that while the physiological segments used in this thesis provided stable results, future studies could benefit from longer recording windows to minimize the estimation bias inherent in data-partitioning methods.
 
+\section{The Impact of Noise}
 Regarding signal quality, Subsection \ref{subsec:effect_of_noise} demonstrates that the DVP-based TE is remarkably robust to stochastic interference. 
 Significant degradation in information flow detection only occurred at an SNR of 10 or lower, suggesting that the method is well-suited for clinical environments where physiological signals (like ECG or blood pressure) are often contaminated by high-frequency noise.
 
@@ -25,8 +26,8 @@ Results presented in Subsection \ref{subsec:effect_of_confounding_variable} reve
 Both TE and CJTE values were found to increase alongside the driving strength $a_z$, a phenomenon that can be attributed to \textit{synergistic inflation} rather than direct information transfer.
 
 As observed in Subsubsection \ref{subsubsubsec:synthetic_comparison_cjte-te}, in the absence of a direct relationship between $X$ and $Y$ ($a_x = 0$), CJTE yielded significantly higher values than standard TE. 
-This suggests a synergistic effect where knowledge of the past of $Z$ renders the "echo" of the drive found in $X$ more predictive of $Y$. 
-While this is a documented property of information-theoretic measures in the presence of a common cause, it implies that in high-dimensional physiological spaces, the estimator may overestimate the conditional flow if the shared drive is dominant. 
+This indicates a synergistic interaction: when Z is known, the residual information in X, originating from the common drive, becomes more predictive of Y. 
+This leads to an inflation of the CJTE despite the absence of a direct physical coupling.
 This serves as a critical methodological caution: a higher CJTE value does not always imply a stronger physical connection if a potent third-party driver is unaccounted for.
 
 \section{Physiological Interpretation and BRS}
