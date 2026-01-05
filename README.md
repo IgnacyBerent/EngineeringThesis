@@ -50,5 +50,5 @@ source .venv/bin/activate
 ### 4. Run
 
 ```bash
-uv run python <filename>.py
+uv run python main.py
 ```
