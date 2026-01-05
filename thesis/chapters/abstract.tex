@@ -1,4 +1,4 @@
-\chapter*{Abstract}
+\chapter*{Abstract (ENG)}
 Information theory-based methods are increasingly popular for analyzing causal relationships. 
 Unlike classical methods such as spectral analysis or Granger causality, these techniques can detect directional dependencies in dynamic, nonlinear systems.
 
@@ -31,6 +31,42 @@ The implementation of both TE and CJTE using the DVP algorithm, alongside the de
 To address current limitations, CJTE should be used alongside TE rather than as a standalone method to ensure a comprehensive system explanation, until better, bias-reduction methods are found. 
 Future research with larger cohorts and longer recordings will offer more generalized findings.
 
-\paragraph*{Keywords}
+\paragraph*{Keywords:}
 Transfer Entropy, Conditional Joint Transfer Entropy, Baroreflex Sensitivity, Darbellay-Vajda Partitioning, Autonomic Nervous System, Information Theory, Nonlinear Dynamics
+
+\chapter*{Abstrakt (PL)}
+Metody oparte na teorii informacji zyskują coraz większą popularność w analizie związków przyczynowych. 
+W przeciwieństwie do klasycznych metod, takich jak analiza spektralna czy przyczynowość Grangera, techniki te pozwalają na wykrywanie kierunkowych zależności w dynamicznych układach nieliniowych.
+
+W niniejszej pracy porównano Entropię Przenoszenia (Transfer Entropy – TE) oraz jej zaawansowany wariant – Warunkową Łączną Entropię Przenoszenia (Conditional Joint Transfer Entropy – CJTE). 
+Ponieważ techniki te wymagają oszacowania prawdopodobieństwa stanów przejścia, wyniki różnią się znacząco w zależności od zastosowanej implementacji. 
+Wybrano algorytm partycjonowania Darbellay-Vajda (DVP) ze względu na jego niezawodność i podejście nieparametryczne (model-free).
+
+W celu ewaluacji tych funkcji wygenerowano trzy rodzaje sygnałów syntetycznych: dwuwymiarowy model liniowy, dwuwymiarowy model nieliniowy oraz trójwymiarowy model liniowy ze wspólnym źródłem (common driver). 
+W ramach zastosowań fizjologicznych analizie poddano układ barorefleksu. 
+Jako główny regulator autonomicznego układu nerwowego, barorefleks utrzymuje homeostazę poprzez pętlę ujemnego sprzężenia zwrotnego, która stabilizuje czas trwania cyklu pracy serca (HP) pomimo zmian skurczowego ciśnienia tętniczego (SAP). 
+Wrażliwość barorefleksu (BRS) określa ilościowo, jak zmienia się HP w odpowiedzi na zmiany SAP. 
+Należy zauważyć, że efekt chemorefleksu, stymulowany poziomem dwutlenku węgla w końcowej fazie wydechu (ETCO2), często działa jako czynnik zakłócający w protokołach z kontrolowanym oddechem, wprowadzając błąd w oszacowaniu BRS.
+
+
+Sygnały fizjologiczne 32 zdrowych ochotników (14 mężczyzn, 18 kobiet, mediana wieku: 22 lata) zebrane podczas projektu AUTOMATIC na Politechnice Wrocławskiej poddano analizie retrospektywnej. 
+Pomiary były nadzorowane przez lekarza i zatwierdzone przez Komisję Bioetyczną (KB-179/2023/N). 
+Uczestnicy przeszli cztery 5-minutowe etapy: oddech spoczynkowy oraz oddech z częstotliwością 6, 10 i 15 oddechów na minutę. 
+Ciśnienie tętnicze krwi (ABP) oraz ETCO2 rejestrowano nieinwazyjnie. Wartości SAP i HP wyznaczono następnie z sygnału ABP.
+
+Wyniki wykazały, że TE skutecznie wykrywa przyczynowość zarówno liniową, jak i nieliniową w sygnałach syntetycznych i pozostaje odporna na umiarkowany szum. 
+Wyniki sugerują, że dłuższe okna sygnałowe (co najmniej $500$ do $1000$ próbek) poprawiają precyzję estymacji TE. 
+Porównanie TE i CJTE przeprowadzono na trójwymiarowym układzie liniowym oraz na barorefleksie – w obu przypadkach występowała charakterystyka wspólnego źródła. 
+TE błędnie zidentyfikowała wpływ czynnika zakłócającego (pośredniczonego przez Z) jako siłę napędową relacji $X\to Y$. 
+Jednakże CJTE z algorytmem DVP wykazała ograniczenia: w przypadkach silnych sił wymuszających i słabego sprzężenia bezpośredniego dochodziło do synergistycznego zawyżenia wyników (synergistic inflation), co prowadziło do przeszacowania wartości transferu informacji. 
+Zjawisko to zaobserwowano również w estymacjach BRS podczas oddechu spoczynkowego oraz przy 10 i 15 oddechach na minutę. 
+Niemniej jednak, CJTE skutecznie zredukowała wpływ ETCO2 przy piku 6 oddechów na minutę.
+
+Implementacja zarówno TE, jak i CJTE przy użyciu algorytmu DVP, wraz z opracowaniem systematycznych ram ewaluacji, umożliwiła rzetelne porównanie tych technik. 
+Aby zaradzić obecnym ograniczeniom, CJTE powinna być stosowana równolegle z TE, a nie jako samodzielna metoda, co zapewni kompleksowe wyjaśnienie systemu do czasu znalezienia lepszych metod redukcji obciążeń (bias). 
+Przyszłe badania na większych kohortach i dłuższych nagraniach pozwolą na uzyskanie bardziej uogólnionych wniosków.
+
+\paragraph*{Słowa Kluczowe:}
+Entropia Przenoszenia, Warunkowa Łączna Entropia Przenoszenia, Wrażliwość Barorefleksu, Partycjonowanie Darbellay-Vajda, Autonomiczny Układ Nerwowy, Teoria Informacji, Dynamika Nieliniowa.
+
 
