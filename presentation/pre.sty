@@ -1,0 +1,57 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{pre}
+
+% --- Core Theme ---
+\usetheme{Madrid}
+\usecolortheme{whale}
+
+% --- Fonts (Fixes the Small Caps warnings) ---
+\RequirePackage[T1]{fontenc}
+\RequirePackage{lmodern} % Latin Modern supports Small Caps better than standard CM
+\RequirePackage{helvet}
+
+% --- PWr Colors ---
+\definecolor{PWrRed}{RGB}{153, 0, 0}
+\definecolor{PWrGrey}{RGB}{87, 87, 86}
+\definecolor{PWrLightGrey}{RGB}{235, 235, 235}
+
+\setbeamercolor{palette primary}{bg=PWrRed, fg=white}
+\setbeamercolor{palette secondary}{bg=PWrGrey, fg=white}
+\setbeamercolor{palette tertiary}{bg=black, fg=white}
+\setbeamercolor{structure}{fg=PWrRed}
+%\setbeamercolor{block title example}{bg=PWrGrey, fg=white} % Grey header
+\setbeamercolor{block title example}{bg=PWrRed!80!black, fg=white}
+\setbeamercolor{block body example}{bg=PWrLightGrey, fg=black} % Light grey body
+
+\setbeamertemplate{navigation symbols}{}
+
+% --- Fixed Footer (No more 910pt overfull hbox) ---
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{palette primary}%
+    WUST / PWr%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{palette secondary}%
+    Engineering Thesis%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,right]{palette tertiary}%
+    \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}%
+  \end{beamercolorbox}%
+  }%
+  \vskip0pt%
+}
+
+% --- Bibliography Setup ---
+\RequirePackage[style=ieee, backend=biber]{biblatex}
+\addbibresource{refs.bib} % Points to your .bib file
+
+% Make the bibliography text smaller so it fits on slides
+\setbeamerfont{bibliography item}{size=\footnotesize}
+\setbeamerfont{bibliography entry author}{size=\footnotesize}
+\setbeamerfont{bibliography entry title}{size=\footnotesize}
+\setbeamerfont{bibliography entry location}{size=\footnotesize}
+\setbeamerfont{bibliography entry note}{size=\footnotesize}
+
+% Remove the ugly document icon next to references
+\setbeamertemplate{bibliography item}{\insertbiblabel}

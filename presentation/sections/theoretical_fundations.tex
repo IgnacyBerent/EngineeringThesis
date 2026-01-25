@@ -1,0 +1,124 @@
+\section{Theoretical Foundations}
+\begin{frame}{Information Theory Foundation}
+\begin{block}{Goal}
+  Establish a quantitative measure of information independent of its meaning \cite{Shannon1948}.
+    \end{block}
+    \vspace{0.3cm}
+    \begin{itemize}
+        \item \textbf{(Shannon) Entropy} $H(X)$
+            \begin{itemize}
+                \item The theoretical maximum compression of a message (measured in bits) without losing information it conveys.
+            \end{itemize}
+    \end{itemize}
+
+
+    \begin{itemize}
+        \item \textbf{Noisy Channel Capacity}
+            \begin{itemize}
+                \item The maximum rate at which information can be transmitted at nearly zero error.
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \begin{exampleblock}{Shannon Entropy}
+        For a discrete random variable $X$ with probability mass function $p(x) = Pr\{X = x\}, x \in X$, the entropy is defined as:
+        \begin{equation}
+            H(X) = -\sum_{x \in X} p(x) \log_2(p(x))
+        \end{equation}
+        \textit{\small Base 2 denotes the unit in bits. In biological contexts, this represents the total uncertainty or complexity of system $X$.}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Joint and Conditional Entropy}
+    \begin{exampleblock}{Joint Entropy}
+        For a pair of discrete random variables with a joint distribution $p(x,y)$, the Joint Entropy (JE) is defined as:
+        \begin{equation}
+            H(X,Y) = -\sum p(x,y) \log_2(p(x,y))
+        \end{equation}
+        \textit{\small Note: For simplification, $\sum$ denotes the double summation over all $x \in X$ and $y \in Y$ \cite{Cover2006}.}
+    \end{exampleblock}
+
+    \begin{exampleblock}{Conditional Entropy}
+        The entropy over the conditioning variable $Y$ represents the remaining uncertainty of $X$ given $Y$:
+        \begin{equation}
+            H(X|Y) = -\sum p(x,y) \log_2(p(x|y))
+        \end{equation}
+        \textit{\small Chain Rule: $H(X|Y) = H(X,Y) - H(Y)$ \cite{Cover2006}.}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Mutual Information (MI)}
+    \begin{block}{Concept}
+      Measures the statistical dependence between two random variables. It quantifies how much information is shared between $X$ and $Y$ \cite{Cover2006}.
+    \end{block}
+
+    \begin{exampleblock}{Mathematical Definition}
+        Mutual Information is defined by the reduction in uncertainty of $X$ due to the knowledge of $Y$:
+        \begin{equation}
+            I(X;Y) = H(X) - H(X|Y) = \sum p(x,y) \log_2\left(\frac{p(x,y)}{p(x)p(y)}\right)
+        \end{equation}
+        \textit{\small If $X$ and $Y$ are independent, $p(x,y) = p(x)p(y)$, resulting in $I(X;Y) = 0$.}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Markov Process}
+\begin{block}{Transition to Dynamics}
+        To move beyond static probabilities, we implement the dynamical structure of data using transition probabilities from a \textbf{Markov process}.
+    \end{block}
+
+    \begin{exampleblock}{The Markov Property (Order $k$)}
+        A random process $X$ of order $k$ has the property that the conditional probability of finding it in state $x_t$ depends only on the $k$ previous states:
+        \begin{equation}
+            p(x_t | x_{t-1}, \dots, x_{t-k-1}) = p(x_t | x_{t-1}, \dots, x_{t-k})
+        \end{equation}
+    \end{exampleblock}
+
+    \begin{itemize}
+        \item \textbf{Shorthand Notation:} $x_t^{(k)} = (x_t, \dots, x_{t-k})$ represents the state vector.
+        \item \textbf{Embedding Dimension:} The order $k$ is often referred to as the embedding dimension (denoted as $d$ in this thesis).
+        \item \textbf{Memory:} The process "forgets" any history older than $k$ steps, allowing for a finite-dimensional analysis of system dynamics.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Transfer Entropy (TE)}
+    \begin{block}{Concept}
+      Introduced as a model-free, asymmetric alternative to Mutual Information to measure directed information transfer in dynamic systems \cite{Schreiber2000},\cite{wen2023kendall}.
+    \end{block}
+
+    \begin{exampleblock}{Information Theoretic Construction}
+        TE defines the amount of information left in the system after reducing the effect of knowing the past of $Y$ and $X$ from the effect of knowing just the past of $X$:
+        \begin{equation}
+            TE_{Y\to X}^{d} = I(X_t;Y_{t-1}^d|X_{t-1}^d) = H(X_t|X_{t-1}^d) - H(X_t|X_{t-1}^d,Y_{t-1}^d)
+        \end{equation}
+    \end{exampleblock}
+
+    \begin{itemize}
+        \item \textbf{Asymmetry:} Unlike MI, $TE_{Y\to X} \neq TE_{X\to Y}$, allowing for directional causality analysis.
+        \item \textbf{Transition Probabilities:} Using the Markov property, it can be expressed as:
+        \begin{equation}
+          TE_{Y\to X}^{d} = \sum p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)}) \cdot \text{log}(\frac{p(x_t,x_{t-1}^{(d)},y_{t-1}^{(d)})p(x_{t-1}^{(d)})}{p(x_t,x_{t-1}^{(d)})p(x_{t-1}^{(d)},y_{t-1}^{(d)})})
+        \end{equation}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Conditional Joint Transfer Entropy (CJTE)}
+\begin{exampleblock}{General Formulation}
+        The most general form defines information transfer to $Z$ from $X$ and $Y$, conditioned on $W$:
+        \begin{equation}
+            CJTE_{(X,Y)\to Z|W}^{d} = I(Z_t ; (X_{t-1}^{d}, Y_{t-1}^{d}) | Z_{t-1}^{d}, W_{t-1}^{d})
+        \end{equation}
+        \textit{\small Note: A prominent notation in literature is $CJTE_{X_i,X_c \to Y|X_c}$, where $X_i$ is the input, $Y$ the output, and $X_c$ the conditioning \cite{bari2017cerebrovascular}.}
+    \end{exampleblock}
+
+    \begin{exampleblock}{Expanded Definition}
+        Applying the joint conditional probability law to simplify implementation:
+        \begin{equation}
+        \begin{split}
+            CJTE_{(X,Y)\to Z|Y}^{d} &= \sum p(z_t,z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)}) \\
+            &\cdot \log_2\left(\frac{p(z_t,z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)})p(z_{t-1}^{(d)},y_{t-1}^{(d)})}{p(z_t,z_{t-1}^{(d)},y_{t-1}^{(d)})p(z_{t-1}^{(d)},x_{t-1}^{(d)},y_{t-1}^{(d)})}\right)
+        \end{split}
+        \end{equation}
+    \end{exampleblock}
+\end{frame}

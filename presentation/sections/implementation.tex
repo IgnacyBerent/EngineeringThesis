@@ -1,0 +1,62 @@
+\section{Implementation}
+\begin{frame}{Code Diagram}
+\begin{figure}
+        \centering
+        \includegraphics[height=0.82\textheight]{figs/complete-workflow.png}
+        \vspace{-0.4cm}
+        \caption{Diagram representing the complete workflow of the implemented code}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Example flow - Initial Signals}
+\begin{figure}
+        \centering
+        \includegraphics[width=0.9\textwidth]{figs/implementation/Initial Signals.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Example flow - Dimensional Embedding}
+\begin{figure}
+        \centering
+        \includegraphics[width=0.9\textwidth]{figs/implementation/Embedded Signals.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Example flow - Ordinar Ranking}
+\begin{figure}
+        \centering
+        \includegraphics[width=0.9\textwidth]{figs/implementation/Ordinary Rank Transformed Signals.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Example Flow: DVP and TE Calculation}
+  \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{figs/implementation/Darbellay-Vajda Adaptive Partitioning (3D).png}
+            \end{figure}
+          \end{column}
+
+        \begin{column}{0.48\textwidth}
+            \begin{exampleblock}{Subspace Mapping}
+                For each $i$-th partition, state probabilities are substituted with box counts:
+                \begin{equation}
+                \small
+                TE_{Y\to X}^{d} = \sum p(a_i) \log_2\left(\frac{p(a_i)p(b_i)}{p(c_i)p(d_i)}\right)
+                \end{equation}
+                \scriptsize
+                Mapping from thesis Section 4.3:
+                \begin{itemize}
+                    \item $p(a_i) \to$ Joint ($X_t, X_{t-1}^d, Y_{t-1}^d$)
+                    \item $p(b_i) \to$ Past ($X_{t-1}^d$)
+                    \item $p(c_i) \to$ ($X_t, X_{t-1}^d$)
+                    \item $p(d_i) \to$ ($X_{t-1}^d, Y_{t-1}^d$)
+                \end{itemize}
+                \textbf{Estimation:} $p(a_i) = \frac{n_{a,i}}{N}$ \cite{dvp}
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+

@@ -1,0 +1,56 @@
+\section{Physiological Application}
+
+\begin{frame}{Data}
+  \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{itemize}
+                \item 32 healthy subjects:
+                \begin{itemize}
+                    \item 14 Males, 18 Females
+                    \item age $18$ to $31$ years
+                \end{itemize}
+                \item Continuous recordings of:
+                \begin{itemize}
+                    \item Arterial Blood Pressure (ABP) -- photoplethysmograph (Finometer MIDI)
+                    \item ETCO2 recorded using a capnograph (NONIN)
+                \end{itemize}
+                \item Experiment protocol (5 min each):
+                \begin{itemize}
+                    \item baseline (natural breathing)
+                    \item 6 breaths/min 
+                    \item 10 breaths/min 
+                    \item 15 breaths/min 
+                \end{itemize}
+              \item Systoic Arterial Pressure (SAP) and Heart Period (HP) extracted from ABP signal, and ETCO2 averaged to match length
+              \end{itemize}
+          \end{column}
+
+        \begin{column}{0.48\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[height=0.8\textheight]{figs/experiment_setup.jpg}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+
+\begin{frame}{Results}
+  \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+
+            \begin{figure}
+                \centering
+                \includegraphics[height=0.85\textheight]{figs/results/te_sap->hp.png}
+            \end{figure}
+          \end{column}
+
+        \begin{column}{0.48\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[height=0.85\textheight]{figs/results/cjte_(sap,etco2)->hp|etco2.png}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}

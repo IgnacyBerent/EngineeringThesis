@@ -1,0 +1,65 @@
+\section{Motivation}
+\begin{frame}{Biological Context}
+  \begin{columns}[T] % [T] aligns columns at the top
+    \begin{column}{0.48\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[height=0.75\textheight]{figs/ans_anatomy.png}
+        \vspace{-0.7cm}
+        \caption{Autonomic Nervous System (ANS) Structure}
+        \vspace{-0.4cm}
+        {\tiny Source: \cite{ans_anatomy}}
+    \end{figure}
+  \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \begin{block}{The Baroreflex Mechanism}
+              \begin{itemize}
+                  \item \textbf{Homeostatic Function:} One of the most critical regulatory systems governing the Autonomic Nervous System (ANS) and cardiovascular stability, controling arterial blood pressure (ABP). \cite{heartmetronome}.
+                  \item \textbf{Negative Feedback:} Baroreceptors sense ABP fluctuations and modulate the ANS to adjust the heart period (HP) \cite{heartmetronome}.
+                  \item \textbf{Complexity:} A healthy system exhibits high variability; a "loss of complexity" is often a marker of aging or pathology \cite{lossofcomplexity}.
+              \end{itemize}
+          \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Baroreflex and it's Sensitivity (BRS)}
+  \begin{columns}[T] 
+        \begin{column}{0.48\textwidth}
+        \begin{block}{Baroreflex Sensitivity (BRS)}
+            \begin{itemize}
+              \item \textbf{Definition:} The quantitative relationship between the SAP stimulus (input) and the HP reflex response (output) \cite{baroreflexcurve}.
+              \item \textbf{Closed-Loop Nature:} Bidirectional interaction (Neural: SAP $\to$ HP vs. Mechanical: HP $\to$ SAP) complicates linear analysis \cite{javorka2017causal}.
+              \item \textbf{Confounding Factors:} Respiration ("respiratory gate") and $CO_2$ levels can modulate or override the baroreflex response \cite{russo2017physiological, Uryga_2024}.
+          \end{itemize}
+        \end{block}
+        \end{column}
+
+        \begin{column}{0.48\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/baroreflex-curve.png}
+                \vspace{-0.4cm}
+                \caption{Synthetically generated baroreflex curve of healthy subject based on \cite{baroreflexcurve}}
+            \end{figure}
+        \end{column}
+        
+    \end{columns}
+\end{frame}
+
+\begin{frame}{BRS Estimation Techniques}
+\begin{enumerate}
+        \item \textbf{Pharmacological method} -- not suitable for experiments including large cohort of subjects
+        \item \textbf{Time Series Analysis} -- don't include the directionality of the relation
+        \begin{enumerate}
+        \item frequency / time cross correlation functions
+        \item frequency / time coherence functions
+        \item frequency spectrum analysis
+        \end{enumerate}
+        \item \textbf{Mutual Information} - handle nonlinearity, but not directional
+        \item \textbf{Granger Causality} -- directional, but linear
+        \item \textbf{Transfer Entropy (TE)} -- directional, handle nonlinear and dynamic relationships, model free with the right implementation
+        \item \textbf{Conditional Joint Transfer Entropy (CJTE)} -- expands TE with conditioning, to eliminate biases \cite{mehta2018directional}, \cite{shahsavari2020estimating}
+    \end{enumerate}
+\end{frame}
