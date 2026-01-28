@@ -1,8 +1,26 @@
 \section{Implementation}
+\begin{frame}{Implementation Chalanges}
+  \begin{block}{Chalanges}
+    \begin{itemize}
+        \item \textbf{Empirical Uncertainty:} The true probability distribution of transition states is unknown and must be estimated from finite data.
+        \item \textbf{Computational Complexity:} The original formulation requires iterating over all possible state combinations, leading to exponential scaling.
+        \item \textbf{Methodological Sensitivity:} The choice of estimation method dictates how data is handeled inside TE, but also very result of the calculation \cite{genccaga2018transfer}, \cite{rozo2021benchmarking}, \cite{lee2012transfer}.
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Proposed Solution}
+    \begin{itemize}
+      \item Implement from scratch Darbellay-Vajda Partitioning (DVP) algorithm for probability estimation \cite{dvp}, \cite{rozo2021benchmarking}, \cite{lee2012transfer}.
+      \item Do it for both TE and CJTE 
+      \item Make it general for any number of dimensions
+    \end{itemize}
+  \end{block}
+\end{frame}
+
 \begin{frame}{Code Diagram}
 \begin{figure}
         \centering
-        \includegraphics[height=0.82\textheight]{figs/complete-workflow.png}
+        \includegraphics[height=0.82\textheight]{figs/code_diagram_v2.png}
         \vspace{-0.4cm}
         \caption{Diagram representing the complete workflow of the implemented code}
     \end{figure}
@@ -34,7 +52,8 @@
         \begin{column}{0.48\textwidth}
             \begin{figure}
                 \centering
-                \includegraphics[width=\textwidth]{figs/implementation/Darbellay-Vajda Adaptive Partitioning (3D).png}
+                \vspace{-0.6cm}
+                \includegraphics[width=1.1\textwidth]{figs/implementation/Darbellay-Vajda Adaptive Partitioning (3D).png}
             \end{figure}
           \end{column}
 
